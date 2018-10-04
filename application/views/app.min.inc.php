@@ -18,6 +18,9 @@
 
 <!-- BEGIN PAGE LEVEL PLUGINS -->
 <script type="text/javascript" src="<?php echo base_url('metronic/global/plugins/select2/js/select2.full.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo base_url('metronic/global/scripts/app.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo base_url('metronic/global/plugins/select2/js/select2.min.js'); ?>"></script>
+
 <script type="text/javascript" src="<?php echo base_url('metronic/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo base_url('metronic/global/plugins/bootstrap-toastr/toastr.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo base_url('metronic/global/scripts/datatable.js'); ?>"></script>
@@ -26,7 +29,6 @@
 <script type="text/javascript" src="<?php echo base_url('metronic/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js'); ?>"></script>
 
 <script type="text/javascript" src="<?php echo base_url('metronic/global/scripts/dataTables.checkboxes.min.js'); ?>"></script>
-
 <script type="text/javascript" src="<?php echo base_url('metronic/pages/scripts/table-datatables-editable.min.js'); ?>"></script>
 
 <!-- END PAGE LEVEL PLUGINS -->

@@ -32,7 +32,7 @@ Class Hps_mdl extends CI_Model {
             elseif ($src_category == 'ZoneID')
                 $src_category = 'zone.ZoneName';
 
-            $division = $this->db2->query("SELECT hps.HpsID, hps.StartDate, hps.EndDate , hps.Price, item.ItemName, zone.ZoneName FROM Mst_HPS hps 
+            $division = $this->db2->query("SELECT hps.HpsID, hps.StartDate, hps.EndDate , hps.Price, item.ItemName, zone.ZoneName FROM hps_tiket_mdl hps 
 				INNER JOIN Mst_ItemList item ON hps.ItemID = item.ItemID
 				INNER JOIN Mst_Zonasi zone ON hps.ZoneID = zone.ZoneID
 				where hps.Is_trash=0 " . $zone . "  and $src_category like '%$src%' 
@@ -44,7 +44,7 @@ Class Hps_mdl extends CI_Model {
             } else {
                 $of = 0;
             }
-            $division = $this->db2->query("SELECT hps.HpsID, hps.StartDate, hps.EndDate , hps.Price, item.ItemName, zone.ZoneName FROM Mst_HPS hps 
+            $division = $this->db2->query("SELECT hps.HpsID, hps.StartDate, hps.EndDate , hps.Price, item.ItemName, zone.ZoneName FROM hps_tiket_mdl hps 
 				INNER JOIN Mst_ItemList item ON hps.ItemID = item.ItemID
 				INNER JOIN Mst_Zonasi zone ON hps.ZoneID = zone.ZoneID
 				where hps.Is_trash=0 " . $zone . " 
@@ -67,7 +67,7 @@ Class Hps_mdl extends CI_Model {
     function seldetil($id) {
         $db2 = $this->load->database('config1', true);
         $division = $db2->query('SELECT hps.HpsID,hps.ZoneID, hps.StartDate, hps.EndDate, hps.Price, item.ItemID, item.ItemName, class.IClassID, type.ItemTypeID
-								FROM Mst_HPS hps
+								FROM hps_tiket_mdl hps
 								INNER JOIN Mst_ItemList item ON hps.ItemID = item.ItemID
 								INNER JOIN Mst_ItemType type ON item.ItemTypeID = type.ItemTypeID
 								INNER JOIN Mst_ItemClass class ON type.IClassID = class.IClassID
@@ -102,10 +102,10 @@ Class Hps_mdl extends CI_Model {
         $this->db2->close();
     }
 
-    function updatedata($id,$sZone) {
+    function updatedata($id) {
         $divisiondata = array(
             // 'ItemID'=>$this->input->post('item'),
-            'ZoneID' => $sZone,
+            // 'ZoneID' => $sZone,
             'StartDate' => date('Y-m-d', strtotime($this->input->post('StartDate'))),
             'EndDate' => date('Y-m-d', strtotime($this->input->post('EndDate'))),
             'UpdateDate' => date('Y-m-d H:i:s'),
@@ -125,12 +125,14 @@ Class Hps_mdl extends CI_Model {
         $this->db2->close();
     }
 
+
     function deletedata($id) {
         $data = array(
             'Is_trash' => 1,
             'DeleteDate' => date('Y-m-d H:i:s'),
             'DeleteBy' => $this->session->userdata('id_user')
         );
+        // print_r($id); die();
         $this->db2 = $this->load->database('config1', true);
         $this->db2->trans_begin();
         $this->db2->where('HpsID', $id);
@@ -224,25 +226,52 @@ Class Hps_mdl extends CI_Model {
 
     function getAllItem() {
         $this->db2 = $this->load->database('config1', true);
-        $division = $this->db2->query('SELECT ItemID,ItemName FROM Mst_ItemList WHERE Is_trash=0');
-        return $division->result();
+        $division = $this->db2->query("SELECT B.ItemID, B.ItemName, A.StartDate, A.EndDate, A.Price
+                        FROM       
+                        Mst_HPS AS A RIGHT OUTER JOIN
+                        Mst_ItemList AS B ON B.ItemID = A.ItemID INNER JOIN
+                        TBL_T_TIKET_HPS AS C ON B.ID_TIKET_HPS = C.ID_TIKET_HPS
+                        WHERE C.STATUS='ONPROSES'");
+                    return $division->result();
     }
 
-    function simpanData($zone, $itemid, $nama, $price, $start, $end) {
+    public function simpan($tabel, $data) {
+//        print_r($tabel);
+//        print_r($data);
+        $this->db->trans_begin();
+        $model = $this->db->insert($tabel, $data);
+//        echo $this->db->last_query(); die();
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            return false;
+        } else {
+            $this->db->trans_commit();
+            return true;
+        }
+    }
+
+    function simpanData($itemid, $nama, $start, $end, $price) {
         $this->db2 = $this->load->database('config1', true);
-        $this->db2->query("IF NOT EXISTS ( SELECT ItemID FROM Mst_HPS WHERE ItemID = '" . $itemid . "' AND ZoneID = '" . $zone . "' )
+        $this->db2->query("
                 BEGIN
-                    INSERT INTO Mst_HPS (ItemID, ZoneID, StartDate, EndDate, CreateDate, CreateBy, Is_trash,Price) VALUES 
-                    ('" . $itemid . "', '" . $zone . "', '" . date('Y-m-d H:i:s', strtotime($start)) . "','" . date('Y-m-d H:i:s', strtotime($end)) . "',
+                    INSERT INTO Mst_HPS (ItemID, StartDate, EndDate, CreateDate, CreateBy, Is_trash,Price) VALUES 
+                    ('" . $itemid . "', '" . date('Y-m-d H:i:s', strtotime($start)) . "','" . date('Y-m-d H:i:s', strtotime($end)) . "',
                         '" . date('Y-m-d H:i:s') . "','" . $this->session->userdata('id_user') . "','0','" . str_replace(",", "", $price) . "')
-                END
-                ELSE 
-                BEGIN 
-                    UPDATE Mst_HPS 
-                    SET ZoneID = '" . $zone . "', StartDate = '" . date('Y-m-d H:i:s', strtotime($start)) . "',
-                    EndDate = '" . date('Y-m-d H:i:s', strtotime($end)) . "', UpdateDate ='" . date('Y-m-d H:i:s') . "' , UpdateBy = '" . $this->session->userdata('id_user') . "', Price = '" . str_replace(",", "", $price) . "'
-                    WHERE ItemID = " . $itemid . " AND ZoneID='" . $zone . "'
-                END ");
+                END");
+
+         // $this->db2->query("IF NOT EXISTS ( SELECT ItemID FROM Mst_HPS WHERE ItemID = '" . $itemid . "' )
+         //        BEGIN
+         //            INSERT INTO Mst_HPS (ItemID, StartDate, EndDate, CreateDate, CreateBy, Is_trash,Price) VALUES 
+         //            ('" . $itemid . "', '" . date('Y-m-d H:i:s', strtotime($start)) . "','" . date('Y-m-d H:i:s', strtotime($end)) . "',
+         //                '" . date('Y-m-d H:i:s') . "','" . $this->session->userdata('id_user') . "','0','" . str_replace(",", "", $price) . "')
+         //        END
+         //        ELSE 
+         //        BEGIN 
+         //            UPDATE Mst_HPS 
+         //            SET StartDate = '" . date('Y-m-d H:i:s', strtotime($start)) . "',
+         //            EndDate = '" . date('Y-m-d H:i:s', strtotime($end)) . "', UpdateDate ='" . date('Y-m-d H:i:s') . "' , UpdateBy = '" . $this->session->userdata('id_user') . "', Price = '" . str_replace(",", "", $price) . "'
+         //            WHERE ItemID = " . $itemid . " AND ZoneID='" . $zone . "'
+         //        END ");
     }
 
     // PENAMBAHAN WILLY 16 AGUSTUS

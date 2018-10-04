@@ -24,7 +24,7 @@
                 <ul class="nav nav-pills">
                     <li class="linav active" id="linav1">
                         <a href="#tab_2_1" data-toggle="tab" id="navitab_2_1" class="anavitab">
-                            Form Request </a>
+                            Form Request</a>
                     </li>
                     <li class="linav" id="linav2">
                         <a href="#tab_2_2" data-toggle="tab" id="navitab_2_2" class="anavitab">
@@ -37,10 +37,33 @@
                         <div class="panel panel-inverse">
                             <hr class="dotted">
                             <!--tambahkan enctype="multipart/form-data" u/ upload-->
-                            <!--<form class="validator-form form-horizontal" id="datasavez" enctype="multipart/form-data"  action="<?php echo base_url(); ?>procurement/requestproc/add_requestproc/prc" method="POST">-->
                             <form class="validator-form form-horizontal" id="fm_datasave" enctype="multipart/form-data" method="POST">
                                 <div class="validator-form form-horizontal">
                                     <div class="form-group">
+                                        <label class="control-label col-sm-3">Jenis Pengadaan </label>
+                                        <div class="col-md-7">
+                                            <select id="JenisPR" name="JenisPR" class="form-control" onchange="check_JenisPR(this.value)">
+												<option value="Baru">Baru</option>
+												<option value="Tambahan">Tambahan</option>
+												<option value="Ulang">Ulang</option>
+											</select>
+										</div>
+                                    </div>
+                                    <div class="form-group" id="PR_rev" style="display:none">
+										<label class="control-label col-sm-3">PR Reverensi </label>
+                                        <div class="col-sm-7">
+                                            <input type="hidden" class="form-control" id="BranchID" name="BranchID"  value="<?php echo $this->session->userdata('BranchID'); ?>"/>
+                                            <select name="PR_rev" class="form-control">
+                                                <option selected="" disabled="" value="">-Select-</option>
+                                                <?php foreach ($outReq as $outReqrow) { ?>
+                                                    <option value="<?= $outReqrow['RequestID'] ?>"> 
+                                                        PR-<?= $outReqrow['RequestID'] ?>
+                                                    </option>
+                                                <?php } ?>
+                                            </select>
+										</div>
+									</div>
+									<div class="form-group">
                                         <label class="control-label col-sm-3">Request Type </label>
                                         <div class="col-sm-7">
                                             <input type="hidden" class="form-control" id="BranchID" name="BranchID"  value="<?php echo $this->session->userdata('BranchID'); ?>"/>
@@ -66,7 +89,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <hr class="dotted">
                                     <!--LOAD SEL OPTION RKT-->
                                     <div id="load_Rkt"  hidden></div>
                                     <div class="form-group" id="hdrAddBtn" hidden>
@@ -75,53 +97,60 @@
                                             <button onclick="itemList()" id="addbutton" class="btn btn-primary btn-xs" type="button">Add New Item</button>
                                         </div>
                                     </div>
+                                    
+									<!----------------------->
                                     <hr class="dotted">
-                                    <!--LOAD SEL OPTION EXSEKUTOR-->
-                                    <div id="load_exsekutor">
-                                        <div class='form-group period_area'>
-                                            <label class='control-label col-sm-3'>Jenis Periode Sewa</label>
-                                            <div class='col-sm-7'>
-                                                <select id="jenis_periode_sewa" name="jenis_periode_sewa" class="form-control" onchange="onjenisperiode(this.value)">
-                                                    <option selected="" value="3">Tahunan</option>
-                                                    <option selected="" value="2">Bulanan</option>
-                                                    <option selected="" value="1">Harian</option>
-                                                </select>
-
-                                            </div>
-                                        </div>
-
-                                        <div class='form-group period_area'>
-                                            <label class='control-label col-sm-3'>Periode <div id="ket1">Hari</div></label>
-                                            <div class='col-sm-7'>
-                                                <input type='text' name='jangka_waktu' id='jangka_waktu' onkeyup='angka(this);' size='3' class='form-control' >
-                                            </div>
-                                        </div>
-
-                                        <div class='form-group period_area'>
-                                            <label class='control-label col-sm-3'>Termin<div id="ket2">/Hari</div></label>
-                                            <div class='col-sm-7'>
-                                                <input type='text' class='form-control' name='priod' id='priod' size='5' onkeyup='angka(this);' onfocusout="cek_sumperiod();" >    
-                                            </div>
-                                        </div>
-
-                                        <div class='form-group period_area' id="tempo_sewa" >
-                                            <label class='control-label col-sm-3'>Notifikasi Jatuh Tempo Sewa(Satuan Bulan)</label>
-                                            <div class='col-sm-7'>
-                                                <input type='text' name='jtempo_sewa' id='jtempo_sewa' class='form-control' >    
-                                            </div>
-                                        </div>
-
+									<div class="col-md-6">
+                                        <div class="form-group">
+											<label class="control-label col-sm-4">Project Name</label>
+											<div class="col-md-7">
+												<input class="form-control" name="ProjectName">
+											</div>
+										</div>
+                                        <div class="form-group">
+											<label class="control-label col-sm-4">Nomor Memo </label>
+											<div class="col-md-7">
+												<input class="form-control" name="NomorMemo">
+											</div>
+										</div>
                                     </div>
-                                    <!-- END SEL OPTION EKSEKUTOR -->
+									<div class="col-md-6">
+                                        <div class="form-group">
+											<label class="control-label col-sm-4">Branch </label>
+											<div class="col-md-7">
+												<select name="BranchID" class="form-control">
+													<option value="">- Branch -</option>
+													<?php
+														foreach($ms_branch as $mb){
+															echo '
+																<option value="'.$mb['FLEX_VALUE'].'">'.$mb['BRANCH_DESC'].'</option>
+															';
+														}
+													?>
+												</select>
+											</div>
+										</div>
+                                        <div class="form-group">
+											<label class="control-label col-sm-4">Division </label>
+											<div class="col-md-7">
+												<select name="DivisionID" class="form-control">
+													<option value="">- Division -</option>
+													<?php
+														foreach($ms_divisi as $md){
+															echo '
+																<option value="'.$md['FLEX_VALUE'].'">'.$md['DIV_DESC'].'</option>
+															';
+														}
+													?>
+												</select>
+											</div>
+										</div>
+                                    </div>
+									<!----------------------->
 
                                     <hr class="dotted">
-                                    <div class="form-group">
-                                        <div class="col-sm-5">
-                                            <div id="Coa_Code" class='hidden'></div>
-                                            <input type='hidden' class='form-control' name='budgetCOA' id='budgetCOA' size='5' required />
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
+									<a href="#" onclick="itemList()" class="btn btn-success">Add Item</a>
+                                    <div class="form-group" style="margin-top:1em">
                                         <div class="col-sm-12" align="center">
                                             <table class="table table-striped table-bordered table-hover text_kanan" id="table_gridItemProcess">
                                                 <thead>
@@ -170,7 +199,6 @@
                                         <label class="control-label col-sm-3"></label>
                                         <div class="col-sm-7">
                                             <div id="prosessloading"/>
-                                            <!-- <button type="submit" class="btn btn-primary" id="reqsave" name="reqsave" value="Submit" onclick="prosses_save();">Save & Process</button>  -->
                                             <button type="submit" class="btn btn-primary" id="reqsave" name="reqsave" value="Submit" >Save & Process</button>       
                                         </div>
                                     </div>
@@ -186,9 +214,37 @@
                                     <button type="button" class="close" id="closetab" data-dismiss="modal" aria-hidden="true"></button>
                                     <h4 class="modal-title">ITEM</h4>
                                 </div>
+                                <div class="modal-header">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+											<label class="control-label col-sm-4">Class Item </label>
+											<div class="col-md-7">
+												<select id="ItemClass" name="ItemClass" class="form-control" onchange="getTypeItem(this.value)">
+													<option value="">- Class Item -</option>
+													<?php
+														foreach($Mst_ItemClass as $ic){
+															echo '<option value="'.$ic['IClassID'].'">'.$ic['IClassName'].'</option>';
+														}
+													?>
+												</select>
+											</div>
+										</div>
+                                    </div>
+									<div class="col-md-6">
+                                        <div class="form-group">
+											<label class="control-label col-sm-4">Type Item </label>
+											<div class="col-md-7">
+												<div id="drp_ItemType">
+													<select id="ItemType" name="ItemType" class="form-control">
+														<option value="">- Type Item -</option>
+													</select>
+												</div>
+											</div>
+										</div>
+                                    </div>
+                                </div>
                                 <div class="modal-body">
-<!--<table class="table table-striped table-bordered table-hover table-checkable dataTable no-footer" id="datatable_ajax" aria-describedby="datatable_ajax_info" role="grid" id="table_gridItemList_1">-->
-                                    <table class="table table-striped table-bordered table-hover table-checkable order-column dataTable no-footern" id="table_gridItemList">
+                                   <table class="table table-striped table-bordered table-hover table-checkable order-column dataTable no-footern" id="table_gridItemList">
                                         <thead>
                                             <tr>
                                                 <th>NO</th>     
@@ -212,51 +268,13 @@
                             </div>
                         </div>
                     </div>
-
-                    <!--                    <div id="myadd" class="modal fade" >
-                                            <form class="validator-form form-horizontal" id="itemprosess" action="" method="POST">
-                                                <div class="modal-dialog">
-                                                     Modal content
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                                            <h4 class="modal-title">ITEM</h4>
-                                                        </div>
-                                                        <div id="search_load" ></div>
-                                                        <div id="search_load" class="modal-body">
-                                                            <table class="table table-striped table-bordered table-hover text_kanan" id="table_gridItemList">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>NO</th>     
-                                                                        <th>Image</th>
-                                                                        <th>Item</th>
-                                                                        <th>Type</th>
-                                                                        <th>Unit Price</th>
-                                                                        <th></th>
-                    
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody></tbody>
-                                                                <tfoot></tfoot>
-                                                            </table>
-                                                        </div>
-                                                        <div id="modal-add" class="modal-add" style="display:none;"><img src="<?php echo base_url(); ?>assets/img/Loadingcc.gif">
-                    
-                                                        <div class="modal-footer">
-                                                            <button type="submit" class="btn btn-primary" id="proccesbtn" name="proccesbtn" value="Submit">Process</button> 
-                                                            <button type="button" class="btn btn-default" data-dismiss="modal" onclick="">Close</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                        </div>
-                                        </form>-->
                 </div>
                 <!--end--> 
                 <div class="tab-pane fade" id="tab_2_2">
                     <div class="row">
                         <input type="hidden" class="form-control" name="src" id="src"/>
 
-                        <div class="col-md-12">
+                        <div class="col-md-12" id="table_outReq">
 
                             <table class="table table-striped table-bordered table-hover dataTable no-footer" id="table_gridOutRequest" >
                                 <thead>
@@ -271,12 +289,11 @@
                                         <th>Status</th>
                                         <th>Upload PR</th>
                                         <th></th>
-                                        <th></th>
 
                                     </tr>
                                 </thead>
                                 <tbody>
-
+									
 
                                 </tbody>
                                 <tfoot>

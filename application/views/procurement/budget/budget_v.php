@@ -6,6 +6,8 @@
 <!-- KONTEN DI SINI YA -->
 <input type="hidden" id="id_userName" value="<?php echo $this->session->userdata('user_name'); ?>">
 <input type="hidden" id="id_posisi" value="<?php echo $this->session->userdata('posisi_desc'); ?>">
+
+
 <div class="row">
     <div class="col-md-12">
         <!-- BEGIN VALIDATION STATES-->
@@ -81,7 +83,7 @@
                                 <div class="col-md-12">
                                     <br>
                                     <a class="btn btn-sm btn-primary" href="#" id="btnAdd" data-toggle="modal" data-target="#myadd">Upload Budget</a>
-                                    <a class="btn btn-sm btn-success" href="<?php echo base_url("/procurement/budget_capex/downloadWord"); ?>" download>Download Template Budget</a>
+                                    <a class="btn btn-sm btn-success" href="<?php echo base_url("/procurement/budget/downloadTemplate"); ?>">Download Template Budget</a>
                                     <!-- <button class="btn btn-sm btn-default">Add Item Category</button> -->
                                 </div>
                                 <div class="col-md-12" >

@@ -1,9 +1,4 @@
-<!-- BEGIN PAGE BREADCRUMB --> 
 
-<!-- END PAGE BREADCRUMB -->
-<!-- END PAGE HEADER-->
-<!-- BEGIN PAGE CONTENT-->
-<!-- KONTEN DI SINI YA -->
 <div class="row">
     <div class="col-md-12">
         <!-- BEGIN VALIDATION STATES-->
@@ -40,14 +35,30 @@
                                     <button id="id_Reload" style="display: none;"></button>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-4">
+                            <!-- <div class="row"> -->
+                                <!-- <div class="cotable_gridHPSl-md-4"> -->
+                                    <div class="form-body">
                                     <a class="btn btn-sm btn-primary" href="#" id="btnAdd" data-toggle="modal" data-target="#myadd" onclick="dd_Zone('B')">Upload HPS</a>
                                     <a class="btn btn-sm btn-success" href="<?php echo base_url("/procurement/hps/downloadWord"); ?>" download>Download Template HPS</a>
+                                    <a class="btn btn-sm btn-warning" href="#" id="btnAdd" data-toggle="modal" data-target="" modal="#" ><i class="fa fa-eye"></i>&nbsp;Lihat</a>
+                                    <a class="btn btn-sm btn-warning" href="<?php echo base_url(""); ?>" ><i class="fa fa-refresh"></i>&nbsp;Refresh</a>
                                     <!-- <button class="btn btn-sm btn-default">Add Item Category</button> -->
                                 </div>
+                                <br>
+                                <div class="col-md-4">
+                              <div class="form-group">
+                                    <label>Branch : </label>
+                                    <input required="required" class="form-control" type="text" id="" name=""/>
+                                    </div>
+                                  </div>
+                                <!-- </div> -->
+                                <!-- </div> -->
                                 <div class="col-md-12">&nbsp;</div>
-<!--                                <div class="col-sm-4">
+
+
+
+
+                          <!--       <div class="col-sm-4">
                                     <div class="form-group" id="displaydivisi">
                                         <label class="control-label col-sm-4">Zone Name</label>
                                         <div class="col-sm-7">
@@ -61,22 +72,20 @@
                                         <option value="ItemName">Item Name</option>
                                         <option value="ZoneName">Zone</option>
                                     </select>
-                                </div>-->
+                                </div> -->
 
                                 <div class="col-md-12">
 
                                     <table class="table table-striped table-bordered table-hover text_kanan" id="table_gridHPS">
                                         <thead>
                                             <tr>
-                                                <th>NO</th>     
-                                                <th>Zone</th>
-                                                <th>Item Name</th>
-                                                <th>Price</th>
-                                                <th>Start Date</th>
-                                                <th>End Date</th>
-                                                <th>Action</th>
-                                                <th>HpsID</th>
-                                                <th>ZoneID</th>
+                                                <th class='row-2'>NO</th>     
+                                                <th class='row-md-3'>Nama Item</th>
+                                                <th class='row-md-5'>Harga</th>
+                                                <th class='row-md-6'>Tanggal Mulai Berlaku</th>
+                                                <th class='row-md-6'>Tanggal Selesai Berlaku</th>
+                                                <th class='row-md-3'>Aksi</th>
+                                                <th class='row-md-3'></th>
 
                                             </tr>
                                         </thead>
@@ -118,12 +127,12 @@
                     <h4 class="modal-title">Upload HPS</h4>
                 </div>
                 <div class="modal-body" >
-                    <div class="form-group">
+       <!--              <div class="form-group">
                         <label class="control-label col-sm-3">Zone Name</label>
                         <div class="col-sm-7">
                             <div id="ddZone2"></div>                
                         </div>
-                    </div>  
+                    </div>   -->
                     <div class="form-group">
                         <label class="control-label col-sm-3">Upload File (.xlsx/.xls)</label>
                         <div class="col-sm-7">
@@ -157,12 +166,12 @@
                             <input type="text" requered="" name="ItemName" class="form-control" id="ItemName" readonly>
                         </div>
                     </div>        
-                    <div class="form-group" id="displaydivisi">
+                  <!--   <div class="form-group" id="displaydivisi">
                         <label class="control-label col-sm-3">Zone Name</label>
                         <div class="col-sm-7">
                             <div id="ddZone"></div>
                         </div>
-                    </div>        
+                    </div>    -->     
                     <div class="form-group">
                         <label class="control-label col-sm-3">Start - End Date</label>
                         <div class="col-sm-7">

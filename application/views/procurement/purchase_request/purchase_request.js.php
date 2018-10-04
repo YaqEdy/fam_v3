@@ -8,26 +8,77 @@
     jQuery(document).ready(function () {
         loadGridOutRequest();
     });
-    // jQuery(document).ready(function () {
-    //     TableManaged.init();
-    // });
-    btnStart();
+    // btnStart();
+	
+
+	function check_JenisPR(a){
+		if(a=="Tambahan" || a=="Ulang"){
+			$("#PR_rev").show();
+		}
+	}
+	function delete_pr(a){
+		if (confirm("Anda yakin menghapus PR ini?") == true) {
+			$.post('<?= base_url("/procurement/purchase_request/delete_Request");?>', {
+				RequestID : a
+			},
+			function(data){
+					alert("Data berhasil dihapus");
+					location.reload();
+			})
+		} else {
+			//alert("no");
+		}
+		
+	}
+	
+	function getTypeItem(a){
+		$.post('<?= base_url("/procurement/purchase_request/get_dropdown_ItemType");?>', {
+			ItemClass : a
+		},
+		function(data){
+			$('#drp_ItemType').html(data);
+		})
+	}
+	
+	function loadGridItemList(ItemType) {
+		$('#table_gridItemList').dataTable().fnDestroy();
+        $('#mdl_Add').modal({show: true});
+        dataTable = $('#table_gridItemList').DataTable({
+            "lengthMenu": [
+                [5, 10, 15, 20, -1],
+                [5, 10, 15, 20, "All"] // change per page values here
+            ],
+            // set the initial value
+            retrieve: true,
+            "pageLength": 5,
+            "processing": true,
+            "serverSide": true,
+            "ajax": {
+                url: "<?php echo base_url("/procurement/purchase_request/ajax_GridPopupItemList?ItemType="); ?>"+ItemType,
+                type: "get", // method  , by default get
+                error: function () {  // error handling
+                    $(".table_gridItemList-error").html("");
+                    $('#table_gridItemList tbody').html('<tbody class="employee-grid-error"><tr><th colspan="4">No data found in the server</th></tr></tbody>');
+                    $("#table_gridItemList_processing").css("display", "none");
+                }
+            },
+            "columnDefs": [
+                {"targets": [-1], "orderable": false, "searchable": false},
+                {"targets": [0], "orderable": false},
+                {"targets": [1], "orderable": false},
+                {"targets": [2], "orderable": false},
+                {"targets": [3], "orderable": false},
+                {"targets": [4], "orderable": false},
+                {"targets": [5], "checkboxes": {"selectRow": true}},
+            ],
+            "select": {"style": "multi"},
+        });
+    }
+	
+	
 //===== form request =====
     function onDDCategory() {
         var RequestID = document.getElementById('ReqTypeID').value;
-        if (RequestID == 3) {
-            $(".period_area").show();
-            $("#tempo_sewa").hide();
-        } else {
-            var pr = document.getElementById('priod');
-            if (pr != '') {
-                document.getElementById('priod').value = '0';
-            } else {
-                document.getElementById('priod').value = '0';
-            }
-            $(".period_area").hide();
-        }
-        $('#load_reqcategory').fadeIn('slow');
         $.ajax({
             url: "<?php echo base_url("/procurement/purchase_request/dd_selreqcategory"); ?>", // json datasource
             type: "POST",
@@ -40,48 +91,14 @@
         });
     }
 
-    function onDDRkt() {
-        var iReqCategoryID = document.getElementById('ReqCategoryID').value;
-
-        $('#load_Rkt').fadeIn('slow');
-        $.ajax({
-            url: "<?php echo base_url("/procurement/purchase_request/dd_Rkt"); ?>", // json datasource
-            type: "POST",
-            cache: false,
-            dataType: "html",
-            data: {sReqCategoryID: iReqCategoryID},
-            success: function (jawaban) {
-                $('#load_Rkt').html(jawaban);
-            },
-        });
-    }
-
     function itemList() {
         $('#mdl_Add').modal({show: true});
-        dataTableItmPr.destroy();
-//        console.log(dataTable);
-//    for (var index = 1; index < dataTable[0].rows.length; index++)
-//    {
-//        var row = dataTable[0].rows[index];
-//        var phaCheckbox = $(row.cells[11]).find('input');
-//        var profilerCheckbox = $(row.cells[12]).find('input');
-// 
-//        if (!phaCheckbox.is(':checked') || !profilerCheckbox.is(':checked'))
-//        {
-//            $(row.cells[0]).removeClass('select-checkbox');
-//        }
-//    }
+        // dataTableItmPr.destroy();
     }
-    function loadGridItemList() {
+    function loadGridItemList_old() {
         console.log($("#ReqCategoryID").val());
         var iReqTypeID = document.getElementById('ReqTypeID').value;
-        if (iReqTypeID == 2) {
-            onDDRkt();
-            $("#load_Rkt").show();
-        } else {
-            onDDRkt();
-            $("#load_Rkt").hide();
-        }
+		
         $('#mdl_Add').modal({show: true});
         dataTable = $('#table_gridItemList').DataTable({
             "lengthMenu": [
@@ -96,12 +113,8 @@
             "ajax": {
                 url: "<?php echo base_url("/procurement/purchase_request/ajax_GridPopupItemList"); ?>",
                 type: "post", // method  , by default get
-//                data: function (z) {
-//                    z.sSearch = iSearch;
-//                },
                 error: function () {  // error handling
                     $(".table_gridItemList-error").html("");
-                    // $("#lookup").append('<tbody class="employee-grid-error"><tr><th colspan="3">No data found in the server</th></tr></tbody>');
                     $('#table_gridItemList tbody').html('<tbody class="employee-grid-error"><tr><th colspan="4">No data found in the server</th></tr></tbody>');
                     $("#table_gridItemList_processing").css("display", "none");
                 }
@@ -109,26 +122,31 @@
             "columnDefs": [
                 {"targets": [-1], "orderable": false, "searchable": false},
                 {"targets": [0], "orderable": false},
-//                {"targets": [1], "orderable": false},
-//                {"targets": [2], "orderable": false},
-//                {"targets": [3], "orderable": false},
-//                {"targets": [4], "orderable": false},
+                {"targets": [1], "orderable": false},
+                {"targets": [2], "orderable": false},
+                {"targets": [3], "orderable": false},
+                {"targets": [4], "orderable": false},
                 {"targets": [5], "checkboxes": {"selectRow": true}},
-//                { "targets": 0, "checkboxes":{ "selectRow":true}}
             ],
             "select": {"style": "multi"},
         });
     }
 
     function processItem() {
-        $("#hdrAddBtn").show();
+		
         var rows_selected = dataTable.column(5).checkboxes.selected();
+		console.log(iItemID);
         if (iItemID == "") {
             iItemID = iItemID + rows_selected.join(",");
         } else {
-            iItemID = rows_selected.join(",");
+            iItemID = iItemID + rows_selected.join(",");
         }
-//        console.log(iItemID);
+		console.log(iItemID);
+		var last_str = iItemID.charAt( iItemID.length-1 );
+		console.log(last_str);
+		if(last_str !== ','){iItemID = iItemID + ',';}
+		console.log(iItemID);
+		$('#table_gridItemProcess').dataTable().fnDestroy();
         dataTableItmPr = $('#table_gridItemProcess').DataTable({
             "lengthMenu": [
                 [5, 10, 15, 20, -1],
@@ -148,7 +166,6 @@
                 },
                 error: function () {  // error handling
                     $(".table_gridItemProcess-error").html("");
-                    // $("#lookup").append('<tbody class="employee-grid-error"><tr><th colspan="3">No data found in the server</th></tr></tbody>');
                     $('#table_gridItemProcess tbody').html('<tbody class="employee-grid-error"><tr><th colspan="4">No data found in the server</th></tr></tbody>');
                     $("#table_gridItemProcesss_processing").css("display", "none");
                 }
@@ -164,10 +181,7 @@
                 {"targets": [6], "orderable": false},
                 {"targets": [7], "orderable": false},
                 {"targets": [8], "orderable": false},
-//                {"targets": [5], "checkboxes": {"selectRow": true}},
-//                { "targets": 0, "checkboxes":{ "selectRow":true}}
             ],
-//            "select": {"style": "multi"},
         });
 
     }
@@ -196,8 +210,6 @@
     }
 
     $("#fm_datasave").submit(function (e) {  // passing down the event 
-        console.log(document.getElementById('Rkt').value);
-        e.preventDefault(); // could also use: return false;
         $.ajax({
             url: "<?php echo base_url("/procurement/purchase_request/add_requestproc"); ?>",
             type: 'POST',
@@ -208,6 +220,7 @@
             async: false,
             dataType: "JSON",
             success: function (e) {
+				$("#fm_datasave")[0].reset();
                 if (e.istatus) {
                     alert(e.iremarks);
                 } else {
@@ -215,32 +228,25 @@
                 }
 
             },
-            error: function () {
-                alert("Fail")
+            error: function (e) {
+                alert("error");
             }
         });
+		
     });
-
-
-
-
-
 
     function onjenisperiode(val) {
         var ket = "Hari";
         if (val == 1) {
             $("#tempo_sewa").hide();
             ket = "Hari";
-            //alert('a');
 
         } else if (val == 2) {
             $("#tempo_sewa").show();
             ket = "Bulan";
-            //alert('b');
         } else {
             $("#tempo_sewa").show();
             ket = "Tahun";
-            //alert('b');
         }
         document.getElementById("ket1").innerHTML = ket;
         document.getElementById("ket2").innerHTML = "/ " + ket;
@@ -272,9 +278,15 @@
     function search(e) {
         iSearch = e;
     }
-    function loadGridOutRequest() {
-//         var category = document.getElementById("category").value;
-//           var src = document.getElementById("src").value;
+	function loadGridOutRequest(){
+		// alert();
+		$.post('<?= base_url("/procurement/purchase_request/ajax_GridOutRequest");?>', {
+		},
+		function(data){
+			$("#table_outReq").html(data);
+		})
+	}
+    function loadGridOutRequest_old() {
         dataTable = $('#table_gridOutRequest').DataTable({
             dom: 'C<"clear">l<"toolbar">frtip',
             initComplete: function () {
@@ -295,7 +307,7 @@
                 [5, 10, 15, 20, -1],
                 [5, 10, 15, 20, "All"] // change per page values here
             ],
-//                // set the initial value
+               // set the initial value
             "autoWidth": true,
             "pageLength": 5,
             "processing": true,
@@ -308,7 +320,6 @@
                 },
                 error: function () {  // error handling
                     $(".table_gridOutRequest-error").html("");
-                    // $("#lookup").append('<tbody class="employee-grid-error"><tr><th colspan="3">No data found in the server</th></tr></tbody>');
                     $('#table_gridOutRequest tbody').html('<tbody class="employee-grid-error"><tr><th colspan="4">No data found in the server</th></tr></tbody>');
                     $("#table_gridOutRequest_processing").css("display", "none");
                 }
@@ -338,7 +349,6 @@
 
 
     function detailOR(e) {
-//alert(e);
         $.ajax({
             url: "<?php echo base_url("procurement/purchase_request/detil_requestproc"); ?>", // json datasource
             dataType: "html", // what to expect back from the PHP script, if anything
@@ -347,9 +357,6 @@
             data: {sId: e},
             success: function (a) {
                 document.getElementById("modal-body1").innerHTML = a;
-//                $("#ddProject").empty();
-//                $("#ddProject").append(e);
-                // console.log(e);
             }
         });
     }
@@ -547,7 +554,7 @@
         $('#mdl_Update').find('.modal-title').text('Update');
         var iclosestRow = $(this).closest('tr');
         var idata = dataTable.row(iclosestRow).data();
-//        console.log(idata);
+		// console.log(idata);
         ddBranch(idata[10], idata[11]);
         $("#BudgetCOA").val(idata[1]);
         $("#BudgetValue").val(idata[5]);

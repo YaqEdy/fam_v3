@@ -20,19 +20,18 @@
     }
 
     function loadGridHPS() {
-        iZone = $("#dd_id_zone_A").val();
+        // iZone = $("#dd_id_zone_A").val();
         dataTable = $('#table_gridHPS').DataTable({
             dom: 'C<"clear">l<"toolbar">frtip',
             initComplete: function () {
                 $("div.toolbar").append('<div class="col-md-8">\n\
             <div class="row">\n\
                 <div class="col-md-1"></div>\n\
-                <div class="col-md-2 text-right">Zone Name</div>\n\
-                <div class="col-md-3"><div id="ddZone3"></div></div>\n\
-                <div class="col-md-3 text-right">Search Param</div>\n\
+                <div class="col-md-3"><div id="branch"></div></div>\n\
+                <div class="col-md-3 text-right">Param</div>\n\
                 <div class="col-md-3">\n\
                     <select id="cat_itemclass" name="cat_itemclass" onchange="search(this.value)" class="form-control">\n\
-                        <option value="ItemName">Item Name</option>\n\
+                        <option value="ItemName">Item</option>\n\
                         <option value="ZoneName">Zone</option>\n\
                     </select>\n\
                 </div>\n\
@@ -64,15 +63,9 @@
             },
             "columnDefs": [
                 {"targets": [-1], "orderable": false, "searchable": false},
-//                {"targets": [0], "orderable": false},
-//                {"targets": [1], "orderable": false},
-//                {"targets": [2], "orderable": false},
-//                {"targets": [3], "orderable": false},
-//                {"targets": [4], "orderable": false},
-//                {"targets": [5], "orderable": false},
-                {"targets": [6], "orderable": false},
-                {"targets": [7], "visible": false, "searchable": false},
-                {"targets": [8], "visible": false, "searchable": false},
+
+                {"targets": [6], "visible": false, "searchable": true},
+
             ],
         });
     }
@@ -82,13 +75,13 @@
 
         var iclosestRow = $(this).closest('tr');
         var idata = dataTable.row(iclosestRow).data();
-        dd_Zone(idata[8]);
-
-        $("#ItemName").val(idata[2]);
-        $("#StartDate").val(idata[4]);
-        $("#EndDate").val(idata[5]);
-        $("#price").val(idata[3]);
-        $("#HpsID").val(idata[7]);
+        // dd_Zone(idata[8]);
+        console.log(idata);
+        $("#ItemID").val(idata[1]);
+        $("#price").val(idata[2].trim());
+        $("#StartDate").val(idata[3]);
+        $("#EndDate").val(idata[3]);
+        $("#HpsID").val(idata[6]);
     });
 
     function dd_Zone(a) {
@@ -116,6 +109,15 @@
                 }
             }
         });
+    }
+
+    function branch(b){
+        $.ajax({
+            url: "<?php echo base_url("/procurement/hps/ddZone"); ?>?sParam=" + a, // json datasource
+            dataType: "JSON",
+            type: 'input',
+            cache: true,
+        })
     }
 
     function onZone(e) {
@@ -154,7 +156,7 @@
             cache: false,
             dataType: "JSON",
             url: "<?php echo base_url("/procurement/hps/ajax_Delete"); ?>", // json datasource
-            data: {sID: idata[7]},
+            data: {sID: idata[6]},
             success: function (e) {
                 // console.log(e);
                 if (e.istatus == true) {
@@ -173,7 +175,7 @@
     $("#fmsaveUpload").submit(function (event) {
         event.preventDefault();
         $.ajax({
-            url: "<?php echo base_url("/procurement/hps/readExcel"); ?>?sZone=" + $("#dd_id_zone_B").val(), // json datasource
+            url: "<?php echo base_url("/procurement/hps/readExcel"); ?>", // json datasource
             type: 'POST',
             data: new FormData(this),
             processData: false,

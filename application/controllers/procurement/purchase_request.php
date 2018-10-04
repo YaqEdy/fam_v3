@@ -4,24 +4,20 @@ if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 date_default_timezone_set('Asia/Jakarta');
 
-class Purchase_request extends CI_Controller {
+class purchase_request extends CI_Controller {
 
     function __construct() {
         parent::__construct();
-                if ($this->session->userdata("is_login") === FALSE) {
-            $this->sso->log_sso();
-        } else {
         session_start();
         $this->load->model('home_m');
         $this->load->model('admin/konfigurasi_menu_status_user_m');
-//        $this->load->model('zsessions_m');
         $this->load->model('global_m');
         $this->load->model('procurement/budget_mdl', 'Budget_mdl');
         $this->load->model('procurement/requestproc_mdl', 'Requestproc_mdl');
+        $this->load->model('procurement/requestproc_v3_mdl', 'Requestproc_v3_mdl');
         $this->load->model('procurement/menu_mdl', 'Menu_mdl');
         $this->load->model('datatables');
         $this->load->model('datatables_custom');
-        }
     }
 
     public function index() {
@@ -34,8 +30,9 @@ class Purchase_request extends CI_Controller {
             $this->template->load('template/template1', 'global/index', $data);
         }
     }
-
+## //------------- v3 ----------// ##
     function home() {
+		// die();
         $menuId = $this->home_m->get_menu_id('procurement/purchase_request/home');
         $data['menu_id'] = $menuId[0]->menu_id;
         $data['menu_parent'] = $menuId[0]->parent;
@@ -44,24 +41,893 @@ class Purchase_request extends CI_Controller {
         $this->auth->restrict($data['menu_id']);
         $this->auth->cek_menu($data['menu_id']);
         $data['group_user'] = $this->konfigurasi_menu_status_user_m->get_status_user();
-        //$data['level_user'] = $this->sec_user_m->get_level_user();
 
         $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
-        $data['menu_all'] = $this->user_m->get_menu_all(0);
-//        $data['karyawan'] = $this->global_m->tampil_id_desk('master_karyawan', 'id_kyw', 'nama_kyw', 'id_kyw');
-//        $data['goluser'] = $this->global_m->tampil_id_desk('sec_gol_user', 'goluser_id', 'goluser_desc', 'goluser_id');
-//        $data['statususer'] = $this->global_m->tampil_id_desk('sec_status_user', 'statususer_id', 'statususer_desc', 'statususer_id');
+        // $data['menu_all'] = $this->user_m->get_menu_all(0);
+        // $data['karyawan'] = $this->global_m->tampil_id_desk('master_karyawan', 'id_kyw', 'nama_kyw', 'id_kyw');
+        // $data['goluser'] = $this->global_m->tampil_id_desk('sec_gol_user', 'goluser_id', 'goluser_desc', 'goluser_id');
+        // $data['statususer'] = $this->global_m->tampil_id_desk('sec_status_user', 'statususer_id', 'statususer_desc', 'statususer_id');
 
         $data['selreqtype'] = $this->Requestproc_mdl->selreqtype();
+		
+        $data['outReq'] = $this->Requestproc_v3_mdl->get_outReq($this->session->userdata('user_id'))->result_array();
+        $data['Mst_ItemClass'] = $this->Requestproc_v3_mdl->getMaster('Mst_ItemClass')->result_array();
+        $data['ms_branch'] = $this->Requestproc_v3_mdl->getMasterOra('TBL_M_BRANCH')->result_array();
+        $data['ms_divisi'] = $this->Requestproc_v3_mdl->getMasterOra('TBL_M_DIVISION')->result_array();
+		
 
         $this->template->set('title', 'Purchase Request');
         $this->template->load('template/template_dataTable', 'procurement/purchase_request/purchase_request_v', $data);
     }
+	
+	function see_session(){
+		print_r($this->session->userdata);
+	}
 
+    function add_requestproc() {
+		$post = $this->input->post();
+
+        $divid = $this->input->post('DivisionID');
+        $ReqTypeID = $this->input->post('ReqTypeID');
+        $BranchID = $this->input->post('BranchID');
+        $ReqCategoryID = $this->input->post('ReqCategoryID');
+        $ProjectName = $this->input->post('ProjectName');
+        $budgetCOA = $this->input->post('budgetCOA');
+        $BudgetUsed = $this->input->post('BudgetUsed');
+		
+        $JenisPR = $this->input->post('JenisPR');
+        $NomorMemo = $this->input->post('NomorMemo');
+		
+		# ambil max RequestID
+		$max_RequestID = $this->Requestproc_v3_mdl->getMax('RequestID','tbl_request')->row()->RequestID;
+		$new_RequestID = $max_RequestID + 1;
+		
+		# ambil flow 
+		$ambil_flow = $this->Requestproc_v3_mdl->get_flow('ias','approve','1-1')->row();
+		
+		# insert table transaksi tbl_request
+		$data_add['RequestID'] = $new_RequestID;
+		$data_add['flow_id'] = $ambil_flow->flow_id;
+		$data_add['status'] = $ambil_flow->status_ke;
+		$data_add['BranchID'] = $BranchID;
+		$data_add['DivisionID'] = $divid;
+		$data_add['ReqTypeID'] = $ReqTypeID;
+		$data_add['ReqCategoryID'] = $ReqCategoryID;
+		$data_add['ProjectName'] = $ProjectName;
+		$data_add['budgetCOA'] = $budgetCOA;
+		$data_add['BudgetUsed'] = $BudgetUsed;
+		$data_add['JenisPR'] = $JenisPR;
+		$data_add['NomorMemo'] = $NomorMemo;
+		$data_add['CreateDate'] = date("Y-m-d H:i:s");
+		$data_add['CreateBy'] = $this->session->userdata('id_user');
+		
+		$add = $this->Requestproc_v3_mdl->tbl_insert('tbl_request',$data_add);
+		
+		# insert item
+        $row = $this->input->post('row');
+		for($i=1;$i<=$row;$i++){
+			$data_add_item['RequestID'] = $new_RequestID;
+			$data_add_item['ItemID'] = $this->input->post('ItemID_'.$i);
+			$data_add_item['Qty'] = $this->input->post('price_'.$i);
+			$data_add_item['HargaHPS'] = $this->input->post('HargaHPS_'.$i);
+			$data_add_item['AssetType'] = $this->input->post('AssetType_'.$i);
+			$data_add_item['keterangan'] = $this->input->post('Keterangan'.$i);
+			$add_item = $this->Requestproc_v3_mdl->tbl_insert('tbl_request_itemlist',$data_add_item);
+		}
+        
+		# tinggal tambah insert log
+		$data_log['RequestID'] = $new_RequestID;
+		$data_log['status_dari'] = $ambil_flow->status_dari;
+		$data_log['action'] = $ambil_flow->action;
+		$data_log['status_ke'] = $ambil_flow->status_ke;
+		$data_log['user_id'] = $this->session->userdata('id_user');
+		$data_log['date'] = date("Y-m-d H:i:s");
+		$add_request_log = $this->Requestproc_v3_mdl->tbl_insert('tbl_request_log',$data_log);
+		
+        $result = array('istatus' => true, 'iremarks' => 'Data Berhasil Diinput.');
+        echo json_encode($result);
+    }
+
+	function app_requestproc() {
+		$data['RequestID'] = $this->input->post('RequestID');
+		$data['flow_id'] = $this->input->post('flow_id');
+		$data['status_current'] = $this->input->post('status');
+		$data['action'] = $this->input->post('action');
+		$data['notes'] = $this->input->post('notes');
+		$data['pic_po'] = $this->input->post('pic_po');
+		
+		$up_status = $this->Requestproc_v3_mdl->update_status($data);
+
+		if($up_status){
+			echo "Success.";
+		}
+        else{
+			echo "Gagal.";
+		}
+    }
+	
+	function app_check_request() {
+		$RequestID = $this->input->post('RequestID');
+		
+		$data_update['Priority'] = $this->input->post('Priority');
+		$up_status = $this->Requestproc_v3_mdl->update_request($RequestID,$data_update);
+		
+		$data['RequestID'] = $this->input->post('RequestID');
+		$data['flow_id'] = $this->input->post('flow_id');
+		$data['status_current'] = $this->input->post('status');
+		$data['action'] = $this->input->post('action');
+		$data['notes'] = $this->input->post('notes');
+		$data['pic_po'] = '';
+		
+		
+		$up_status = $this->Requestproc_v3_mdl->update_status($data);
+		
+        if($up_status){
+			echo "Success.";
+		}
+        else{
+			echo "Gagal.";
+		}
+    }
+	
+	function list_approve(){
+		$menuId = $this->home_m->get_menu_id('procurement/purchase_request/home');
+        $data['menu_id'] = $menuId[0]->menu_id;
+        $data['menu_parent'] = $menuId[0]->parent;
+        $data['menu_nama'] = $menuId[0]->menu_nama;
+        $data['menu_header'] = $menuId[0]->menu_header;
+		
+        $data['group_user'] = $this->konfigurasi_menu_status_user_m->get_status_user();
+        $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
+        $data['menu_all'] = $this->user_m->get_menu_all(0);
+        
+		$data['grup'] = $this->Requestproc_v3_mdl->getData('ms_grup')->result_array();
+		
+        $this->template->set('title', 'Approve');
+		$this->template->load('template/template_dataTable', 'procurement/purchase_request/list_approve', $data);
+	}
+	
+	function check_request(){
+		$menuId = $this->home_m->get_menu_id('procurement/purchase_request/home');
+        $data['menu_id'] = $menuId[0]->menu_id;
+        $data['menu_parent'] = $menuId[0]->parent;
+        $data['menu_nama'] = $menuId[0]->menu_nama;
+        $data['menu_header'] = $menuId[0]->menu_header;
+		
+        $data['group_user'] = $this->konfigurasi_menu_status_user_m->get_status_user();
+        $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
+        $data['menu_all'] = $this->user_m->get_menu_all(0);
+        
+		$data['grup'] = $this->Requestproc_v3_mdl->getData('ms_grup')->result_array();
+		
+        $this->template->set('title', 'Approve');
+		$this->template->load('template/template_dataTable', 'procurement/purchase_request/check_purchase_request_v', $data);
+	}
+	
+	function get_list_approval(){
+		$grup = $this->input->post('grup');
+		$get_list = $this->Requestproc_v3_mdl->get_list_approval($grup)->result_array();
+		
+		echo '
+		<table id="datatables" class="datatables">
+			<thead>
+				<tr>
+                    <th>No PR</th>
+                    <th>Request Date</th>
+                    <th>Request Type</th>
+                    <th>Request Category</th>
+                    <th>Request Project</th>
+                    <th>Branch</th>
+                    <th>Division</th>
+                    <th>Status</th>
+                    <th>Action</th>
+				</tr>
+			</thead>
+			<tbody>
+		';
+		foreach($get_list as $ls){
+			echo '
+				<tr>
+					<td>PR-'.$ls['RequestID'].'</td>
+					<td>'.date("d-m-Y", strtotime($ls['CreateDate'])).'</td>
+					<td>'.$ls['ReqTypeName'].'</td>
+					<td>'.$ls['ReqCategoryName'].'</td>
+					<td>'.$ls['ProjectName'].'</td>
+					<td>'.$ls['BRANCH_DESC'].'</td>
+					<td>'.$ls['DIV_DESC'].'</td>
+					<td>'.$ls['status_request'].'</td>
+					<td><a href="'.base_url().'procurement/purchase_request/appove_requestproc/'.$ls['RequestID'].'" class="btn btn-primary">Lihat</a></td>
+				</tr>
+			';
+		}
+		echo '
+			</tbody>
+		</table>
+		<script>
+			$(document).ready( function () {
+				$(\'#datatables\').DataTable();
+			} );
+		</script>
+		';
+	}
+	
+	function get_list_check_request(){
+		$grup = $this->input->post('grup');
+		$get_list = $this->Requestproc_v3_mdl->get_list_approval($grup)->result_array();
+		
+		echo '
+		<table id="datatables" class="datatables">
+			<thead>
+				<tr>
+                    <th>No PR</th>
+                    <th>Request Date</th>
+                    <th>Request Type</th>
+                    <th>Request Kategori</th>
+                    <th>Request Project</th>
+                    <th>Branch</th>
+                    <th>Division</th>
+                    <th>Status</th>
+                    <th>Action</th>
+				</tr>
+			</thead>
+			<tbody>
+		';
+		foreach($get_list as $ls){
+			echo '
+				<tr>
+					<td>PR-'.$ls['RequestID'].'</td>
+					<td>'.date("d-m-Y", strtotime($ls['CreateDate'])).'</td>
+					<td>'.$ls['ReqTypeName'].'</td>
+					<td>'.$ls['ReqCategoryName'].'</td>
+					<td>'.$ls['ProjectName'].'</td>
+					<td>'.$ls['BRANCH_DESC'].'</td>
+					<td>'.$ls['DIV_DESC'].'</td>
+					<td>'.$ls['status_request'].'</td>
+					<td><a href="'.base_url().'procurement/purchase_request/data_check_request/'.$ls['RequestID'].'" class="btn btn-primary">Lihat</a></td>
+				</tr>
+			';
+		}
+		echo '
+			</tbody>
+		</table>
+		<script>
+			$(document).ready( function () {
+				$(\'#datatables\').DataTable();
+			} );
+		</script>
+		';
+	}
+	
+	function get_list_close_check_request(){
+		$grup = $this->input->post('grup');
+		$get_list = $this->Requestproc_v3_mdl->get_list_request_after($grup)->result_array();
+		
+		echo '
+		<table id="datatables" class="datatables">
+			<thead>
+				<tr>
+                    <th>No PR</th>
+                    <th>Request Date</th>
+                    <th>Request Type</th>
+                    <th>Request Kategori</th>
+                    <th>Request Project</th>
+                    <th>Branch</th>
+                    <th>Division</th>
+                    <th>Status</th>
+                    <th>Action</th>
+				</tr>
+			</thead>
+			<tbody>
+		';
+		foreach($get_list as $ls){
+			echo '
+				<tr>
+					<td>PR-'.$ls['RequestID'].'</td>
+					<td>'.date("d-m-Y", strtotime($ls['CreateDate'])).'</td>
+					<td>'.$ls['ReqTypeID'].'</td>
+					<td>'.$ls['ReqCategoryID'].'</td>
+					<td>'.$ls['RktID'].'</td>
+					<td>'.$ls['BranchID'].'</td>
+					<td>'.$ls['DivisionID'].'</td>
+					<td>'.$ls['status_request'].'</td>
+					<td><a href="'.base_url().'procurement/purchase_request/data_check_request/'.$ls['RequestID'].'" class="btn btn-primary">Lihat</a></td>
+				</tr>
+			';
+		}
+		echo '
+			</tbody>
+		</table>
+		<script>
+			$(document).ready( function () {
+				$(\'#datatables\').DataTable();
+			} );
+		</script>
+		';
+	}
+	
+	function appove_requestproc(){
+		$menuId = $this->home_m->get_menu_id('procurement/purchase_request/home');
+        $data['menu_id'] = $menuId[0]->menu_id;
+        $data['menu_parent'] = $menuId[0]->parent;
+        $data['menu_nama'] = $menuId[0]->menu_nama;
+        $data['menu_header'] = $menuId[0]->menu_header;
+		
+        $data['group_user'] = $this->konfigurasi_menu_status_user_m->get_status_user();
+        $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
+        $data['menu_all'] = $this->user_m->get_menu_all(0);
+		
+		$RequestID = $this->uri->segment(4);
+        
+		$data['approve_pr'] = $this->Requestproc_v3_mdl->get_data_request($RequestID)->row();
+		$data['item'] = $this->Requestproc_v3_mdl->get_item($RequestID)->result_array();
+		$data['list_pic'] = $this->Requestproc_v3_mdl->get_pic()->result_array();
+		
+        $this->template->set('title', 'Approve');
+		$this->template->load('template/template_dataTable', 'procurement/purchase_request/appove_requestproc', $data);
+	}
+
+	function data_check_request(){
+		$menuId = $this->home_m->get_menu_id('procurement/purchase_request/home');
+        $data['menu_id'] = $menuId[0]->menu_id;
+        $data['menu_parent'] = $menuId[0]->parent;
+        $data['menu_nama'] = $menuId[0]->menu_nama;
+        $data['menu_header'] = $menuId[0]->menu_header;
+		
+        $data['group_user'] = $this->konfigurasi_menu_status_user_m->get_status_user();
+        $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
+        $data['menu_all'] = $this->user_m->get_menu_all(0);
+		
+		$RequestID = $this->uri->segment(4);
+        
+		$data['approve_pr'] = $this->Requestproc_v3_mdl->get_data_request($RequestID)->row();
+		$data['item'] = $this->Requestproc_v3_mdl->get_item($RequestID)->result_array();
+		
+        $this->template->set('title', 'Approve');
+		$this->template->load('template/template_dataTable', 'procurement/purchase_request/data_check_request', $data);
+	}
+
+	function dd_selreqcategory() {
+        $reqtypeid = $this->input->post('sRequestID');
+        $ddSelReqcategory = $this->Requestproc_v3_mdl->selreqcategory($reqtypeid);
+        $branchid = $this->session->userdata('BranchID');
+        $divid = $this->session->userdata('DivisionID');
+        // $last_query = $this->db->last_query();
+		// print_r($last_query);die();
+        //KONDISI JIKA REQUEST TYPENYA SAMA DENGAN 2/PROJECT MAKA ONCHANGE Tidak BELAKU-------------------/
+        if ($reqtypeid == 2 || $reqtypeid == 5) {
+            // echo "<select class='form-control' name='ReqCategoryID' id='ReqCategoryID' onchange='loadGridItemList()'>";
+            echo "<select class='form-control' name='ReqCategoryID' id='ReqCategoryID'>";
+        } else {
+            // echo "<select class='form-control' name='ReqCategoryID' id='ReqCategoryID' onchange='loadGridItemList()'>";
+            echo "<select class='form-control' name='ReqCategoryID' id='ReqCategoryID'>";
+        }
+        echo "<option value='' disabled='' selected=''>--Select--</option>";
+        foreach ($ddSelReqcategory as $row) {
+            echo "<option value='$row->ReqCategoryID'>$row->ReqCategoryName</option>";
+        }
+        echo "</select>";
+    }
+
+    function ajax_GridProcessItem() {
+        $iparam_in = null;
+        $iwhere_in = array();
+        $i_param_in = array();
+        $iparam_not_in = null;
+        $iwhere_not_in = array();
+        $i_param_not_in = array();
+        $icolumn = array('ItemID', 'ItemName', 'Image', 'AssetType', 'Price','ItemTypeName');
+        $iwhere = array();
+        $iParam = explode(",", $this->input->post('sItemID'));
+        $iParamDel = explode(",", $this->input->post('sItemIDDelete'));
+
+        if ($this->input->post('sItemIDDelete') != "") {
+            foreach ($iParamDel as $ielementDel) {
+                $i_param_not_in[] = $ielementDel;
+            }
+        }
+        foreach ($iParam as $ielement) {
+            $i_param_in[] = $ielement;
+        }
+        $iparam_in = 'ItemID';
+        $iwhere_in = $i_param_in;
+
+        if ($this->input->post('sItemIDDelete') != "") {
+            $iparam_not_in = 'ItemID';
+            $iwhere_not_in = $i_param_not_in;
+        }
+        $iorder = array('ItemID' => 'asc');
+        $list = $this->datatables->get_datatables('VW_ITEM_LIST', $icolumn, $iorder, $iwhere
+                , $iwhere_in, $iparam_in, $iwhere_not_in, $iparam_not_in);
+
+        $data = array();
+        $no = $_POST['start'];
+        foreach ($list as $idatatables) {
+
+            $no++;
+            $row = array();
+            $row[] = $no;
+
+            $row[] = '<img src="' . base_url() . 'uploads/Item_Images/' . $idatatables->Image . '" width="45">';
+            $row[] = $idatatables->ItemName;
+            $row[] = $idatatables->ItemTypeName;
+            $row[] = $idatatables->AssetType;
+            $row[] = '<input type="text" class="form-control nomor1" name="price_' . $no . '" id="' . $idatatables->Price . '" onkeyup="totalPrice(this)">';
+            $row[] = $idatatables->Price;
+            $row[] = '<textarea rows="2" cols="40" name="Keterangan'.$no.'" id="keteranganID'.$no.'"></textarea>';
+            $row[] = '<input type="text" id="price_' . $no . '" class="form-control nomor" style="border:0px; width:auto" value="0" readonly>
+					  <input type="hidden" name="ItemID_'.$no.'" value="'.$idatatables->ItemID.'">
+					  <input type="hidden" name="AssetType_'.$no.'" value="'.$idatatables->AssetType.'">
+					  <input type="hidden" name="HargaHPS_'.$no.'" value="'.$idatatables->Price.'">
+					  <input type="hidden" name="row" value="'.$no.'">
+					';
+            $row[] = '<button id="' . $idatatables->ItemID . '" onclick="deleteItem(this)" class="btn btn-sm btn-danger"><i class="fa fa-remove"></i></button>';
+
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
+            "data" => $data,
+        );
+        //output to json format
+        echo json_encode($output);
+    }
+
+    function dd_Rkt() {
+        $code = $this->input->post('sReqCategoryID');
+        $reqCategotyid = explode('--', $code);
+		// print_r($code);
+		// print_r(count($reqCategotyid));
+		// die();
+		$selcatid = $code;
+		if(count($reqCategotyid)>1){$selcatid=$reqCategotyid[1];}
+        $sel_rkt = $this->Requestproc_mdl->sel_optrtk($selcatid);
+        echo "<div class='form-group'>";
+        echo "<label class='control-label col-sm-3'>RKT / Project</label>";
+        echo "<div class='col-sm-7'>";
+        echo "<select class='form-control' name='Rkt' id='Rkt'>";
+        echo "<option value='0' disabled='' selected=''>--Select--</option>";
+        foreach ($sel_rkt as $row) {
+            echo "<option value='$row->RktID-$row->ZoneID'>$row->RktName</option>";
+        }
+        echo "</select>";
+        echo "</div>";
+        echo "</div>";
+        //$this->load->view('requestproc/js/popupitem_list.js');
+    }
+	
+	function ajax_GridOutRequest() {
+        $list = $this->Requestproc_v3_mdl->get_outReq($this->session->userdata('user_id'))->result_array();
+		// print_r($list);die();
+
+        $data = array();
+		echo '
+		<table class="table table-striped table-bordered table-hover dataTable no-footer" id="table_gridOutRequest_new" >
+            <thead>
+                <tr>
+                    <th>No PR</th>
+                    <th>Request Date</th>
+                    <th>Request Type</th>
+                    <th>Request Category</th>
+                    <th>Request Project</th>
+                    <th>Branch</th>
+                    <th>Division</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+		';
+        foreach ($list as $idatatables) {
+			echo '
+				<tr>
+					<td>PR-'.$idatatables['RequestID'].'</td>
+					<td>'.date("d-m-Y", strtotime($idatatables['CreateDate'])).'</td>
+					<td>'.$idatatables['ReqTypeID'].'</td>
+					<td>'.$idatatables['ReqCategoryID'].'</td>
+					<td>'.$idatatables['ProjectName'].'</td>
+					<td>'.$idatatables['BranchID'].'</td>
+					<td>'.$idatatables['DivisionID'].'</td>
+					<td>'.$idatatables['status_request'].'</td>
+					<td><a onclick="delete_pr('.$idatatables['RequestID'].')" class="btn btn-danger" title="Hapus"><i class="fa fa-remove"></i></a></td>
+				</tr>
+			';
+        }
+		echo '
+			</tbody>
+        </table>
+		<script>
+			$(\'#table_gridOutRequest_new\').DataTable({
+			});
+		</script>
+		';
+        
+    }
+
+	function delete_Request(){
+		$RequestID = $this->input->post('RequestID');
+		$up = $this->Requestproc_v3_mdl->delete_PR($RequestID);
+		if($up){
+			echo 'ok';
+		}
+		else{
+			echo 'fail';
+		}
+	}
+	
+	function get_dropdown_ItemType(){
+		$ItemClass = $this->input->post('ItemClass');
+		$get_ItemType = $this->Requestproc_v3_mdl->get_ItemType($ItemClass)->result_array();
+		// echo $this->db->last_query();die();
+		echo '<select onchange="loadGridItemList(this.value)" id="ItemType" name="ItemType" class="form-control">';
+			echo '<option value="">- Type Item -</option>';
+		foreach($get_ItemType as $it){
+			echo '<option value="'.$it['ItemTypeID'].'">'.$it['ItemTypeName'].'</option>';
+		}
+		echo '</select>';
+	}
+	
+	function ajax_GridPopupItemList() {
+        // $icolumn = array('ItemID', 'ItemName', 'Image', 'AssetType', 'Price');
+        // $iorder = array('ItemID' => 'asc');
+		// $iwhere = array('ItemTypeID' => $_GET['ItemType']);
+        // $list = $this->datatables->get_datatables('VW_ITEM_LIST', $icolumn, $iorder, $iwhere);
+		
+		// $ItemType = $this->input->post('ItemType');
+		$ItemType = $_GET['ItemType'];
+		$list = $this->Requestproc_v3_mdl->get_ItemList($ItemType)->result();
+
+        $data = array();
+        $no = 0;
+        foreach ($list as $idatatables) {
+
+            $no++;
+            $row = array();
+            $row[] = $no;
+
+            $row[] = $idatatables->Image;
+            $row[] = $idatatables->ItemName;
+            $row[] = $idatatables->AssetType;
+            $row[] = $idatatables->Price;
+            $row[] = $idatatables->ItemID;
+
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => $_GET['draw'],
+            "recordsTotal" => $no,
+            "recordsFiltered" => $no,
+            "data" => $data,
+        );
+        //output to json format
+        echo json_encode($output);
+    }
+
+	function list_pemilihan_vendor(){
+		// echo 'A';
+		$menuId = $this->home_m->get_menu_id('procurement/purchase_request/home');
+        $data['menu_id'] = $menuId[0]->menu_id;
+        $data['menu_parent'] = $menuId[0]->parent;
+        $data['menu_nama'] = $menuId[0]->menu_nama;
+        $data['menu_header'] = $menuId[0]->menu_header;
+		
+        $data['group_user'] = $this->konfigurasi_menu_status_user_m->get_status_user();
+        $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
+        $data['menu_all'] = $this->user_m->get_menu_all(0);
+        
+		$data['grup'] = $this->Requestproc_v3_mdl->getData('ms_grup')->result_array();
+		
+        $this->template->set('title', 'Pemilihan Vendor');
+		$this->template->load('template/template_dataTable', 'procurement/purchase_request/list_pemilihan_vendor', $data);
+	}
+	
+	function get_list_pemilihan_vendor(){
+		$status = '7-1';
+		$get_list = $this->Requestproc_v3_mdl->get_list_approval_status($status)->result_array();
+		
+		echo '
+		<table id="datatables" class="datatables">
+			<thead>
+				<tr>
+                    <th>No PR</th>
+                    <th>Request Date</th>
+                    <th>Request Type</th>
+                    <th>Request Category</th>
+                    <th>Request Project</th>
+                    <th>Branch</th>
+                    <th>Division</th>
+                    <th>Status</th>
+                    <th>Action</th>
+				</tr>
+			</thead>
+			<tbody>
+		';
+		foreach($get_list as $ls){
+			echo '
+				<tr>
+					<td>PR-'.$ls['RequestID'].'</td>
+					<td>'.date("d-m-Y", strtotime($ls['CreateDate'])).'</td>
+					<td>'.$ls['ReqTypeName'].'</td>
+					<td>'.$ls['ReqCategoryName'].'</td>
+					<td>'.$ls['ProjectName'].'</td>
+					<td>'.$ls['BRANCH_DESC'].'</td>
+					<td>'.$ls['DIV_DESC'].'</td>
+					<td>'.$ls['status_request'].'</td>
+					<td><a href="'.base_url().'procurement/purchase_request/pemilihan_vendor/'.$ls['RequestID'].'" class="btn btn-primary">Lihat</a></td>
+				</tr>
+			';
+		}
+		echo '
+			</tbody>
+		</table>
+		<script>
+			$(document).ready( function () {
+				$(\'#datatables\').DataTable();
+			} );
+		</script>
+		';
+	}
+	
+	function pemilihan_vendor(){
+		$menuId = $this->home_m->get_menu_id('procurement/purchase_request/home');
+        $data['menu_id'] = $menuId[0]->menu_id;
+        $data['menu_parent'] = $menuId[0]->parent;
+        $data['menu_nama'] = $menuId[0]->menu_nama;
+        $data['menu_header'] = $menuId[0]->menu_header;
+		
+        $data['group_user'] = $this->konfigurasi_menu_status_user_m->get_status_user();
+        $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
+        $data['menu_all'] = $this->user_m->get_menu_all(0);
+		
+		$RequestID = $this->uri->segment(4);
+        
+		$data['approve_pr'] = $this->Requestproc_v3_mdl->get_data_request($RequestID)->row();
+		$data['item'] = $this->Requestproc_v3_mdl->get_item($RequestID)->result_array();
+		$data['list_pic'] = $this->Requestproc_v3_mdl->get_pic()->result_array();
+		
+        $this->template->set('title', 'Approve');
+		$this->template->load('template/template_dataTable', 'procurement/purchase_request/pemilihan_vendor', $data);
+	}
+	
+	function ajax_GridPopupVendorList() {
+        $list = $this->Requestproc_v3_mdl->getMaster('Mst_Vendor')->result();
+
+        $data = array();
+        $no = 0;
+        foreach ($list as $idatatables) {
+
+            $no++;
+            $row = array();
+            $row[] = $no;
+
+            $row[] = $idatatables->VendorName;
+            $row[] = $idatatables->VendorAddress;
+            $row[] = $idatatables->NoTlp;
+            $row[] = $idatatables->NoRekening;
+            $row[] = $idatatables->JoinDate;
+
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $no,
+            "recordsFiltered" => $no,
+            "data" => $data,
+        );
+        //output to json format
+        echo json_encode($output);
+    }
+
+	function app_requestproc_vendor() {
+		$data['RequestID'] = $this->input->post('RequestID');
+		$data['flow_id'] = $this->input->post('flow_id');
+		$data['status'] = $this->input->post('status');
+		// $data['action'] = $this->input->post('action');
+		// $data['notes'] = $this->input->post('notes');
+		$data['JenisPengadaan'] = $this->input->post('JenisPengadaan');
+		$data['VendorPemenang'] = $this->input->post('VendorPemenang');
+		$data['HargaVendor'] = $this->input->post('HargaVendor');
+		$data['PPN'] = $this->input->post('ppn');
+		
+		$up_status = $this->Requestproc_v3_mdl->update_pr_action($data,$this->input->post('action'),$this->input->post('notes'));
+
+		if($up_status){
+			echo "Success.";
+		}
+        else{
+			echo "Gagal.";
+		}
+    }
+	
+	function list_request_anggaran(){
+		// echo 'A';
+		$menuId = $this->home_m->get_menu_id('procurement/purchase_request/home');
+        $data['menu_id'] = $menuId[0]->menu_id;
+        $data['menu_parent'] = $menuId[0]->parent;
+        $data['menu_nama'] = $menuId[0]->menu_nama;
+        $data['menu_header'] = $menuId[0]->menu_header;
+		
+        $data['group_user'] = $this->konfigurasi_menu_status_user_m->get_status_user();
+        $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
+        $data['menu_all'] = $this->user_m->get_menu_all(0);
+        
+		$data['grup'] = $this->Requestproc_v3_mdl->getData('ms_grup')->result_array();
+		
+        $this->template->set('title', 'Request Anggaran');
+		$this->template->load('template/template_dataTable', 'procurement/purchase_request/list_request_anggaran', $data);
+	}
+	
+	function get_list_request_anggaran(){
+		$status = '8-1';
+		$get_list = $this->Requestproc_v3_mdl->get_list_approval_status($status)->result_array();
+		
+		echo '
+		<table id="datatables" class="datatables">
+			<thead>
+				<tr>
+                    <th>No PR</th>
+                    <th>Request Date</th>
+                    <th>Request Type</th>
+                    <th>Request Category</th>
+                    <th>Request Project</th>
+                    <th>Branch</th>
+                    <th>Division</th>
+                    <th>Status</th>
+                    <th>Action</th>
+				</tr>
+			</thead>
+			<tbody>
+		';
+		foreach($get_list as $ls){
+			echo '
+				<tr>
+					<td>PR-'.$ls['RequestID'].'</td>
+					<td>'.date("d-m-Y", strtotime($ls['CreateDate'])).'</td>
+					<td>'.$ls['ReqTypeName'].'</td>
+					<td>'.$ls['ReqCategoryName'].'</td>
+					<td>'.$ls['ProjectName'].'</td>
+					<td>'.$ls['BRANCH_DESC'].'</td>
+					<td>'.$ls['DIV_DESC'].'</td>
+					<td>'.$ls['status_request'].'</td>
+					<td><a href="'.base_url().'procurement/purchase_request/request_anggaran/'.$ls['RequestID'].'" class="btn btn-primary">Lihat</a></td>
+				</tr>
+			';
+		}
+		echo '
+			</tbody>
+		</table>
+		<script>
+			$(document).ready( function () {
+				$(\'#datatables\').DataTable();
+			} );
+		</script>
+		';
+	}
+	
+	function request_anggaran(){
+		$menuId = $this->home_m->get_menu_id('procurement/purchase_request/home');
+        $data['menu_id'] = $menuId[0]->menu_id;
+        $data['menu_parent'] = $menuId[0]->parent;
+        $data['menu_nama'] = $menuId[0]->menu_nama;
+        $data['menu_header'] = $menuId[0]->menu_header;
+		
+        $data['group_user'] = $this->konfigurasi_menu_status_user_m->get_status_user();
+        $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
+        $data['menu_all'] = $this->user_m->get_menu_all(0);
+		
+		$RequestID = $this->uri->segment(4);
+        
+		$data['approve_pr'] = $this->Requestproc_v3_mdl->get_data_request($RequestID)->row();
+		$data['item'] = $this->Requestproc_v3_mdl->get_item($RequestID)->result_array();
+		$data['list_pic'] = $this->Requestproc_v3_mdl->get_pic()->result_array();
+		
+        $this->template->set('title', 'Approve');
+		$this->template->load('template/template_dataTable', 'procurement/purchase_request/request_anggaran', $data);
+	}
+	
+	function list_verifikasi_vendor(){
+		// echo 'A';
+		$menuId = $this->home_m->get_menu_id('procurement/purchase_request/home');
+        $data['menu_id'] = $menuId[0]->menu_id;
+        $data['menu_parent'] = $menuId[0]->parent;
+        $data['menu_nama'] = $menuId[0]->menu_nama;
+        $data['menu_header'] = $menuId[0]->menu_header;
+		
+        $data['group_user'] = $this->konfigurasi_menu_status_user_m->get_status_user();
+        $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
+        $data['menu_all'] = $this->user_m->get_menu_all(0);
+        
+		$data['grup'] = $this->Requestproc_v3_mdl->getData('ms_grup')->result_array();
+		
+        $this->template->set('title', 'Verifikasi Vendor');
+		$this->template->load('template/template_dataTable', 'procurement/purchase_request/list_verifikasi_vendor', $data);
+	}
+	
+	function get_list_verifikasi_vendor(){
+		$status = '11-1';
+		$get_list = $this->Requestproc_v3_mdl->get_list_approval_status($status)->result_array();
+		
+		echo '
+		<table id="datatables" class="datatables">
+			<thead>
+				<tr>
+                    <th>No PR</th>
+                    <th>Request Date</th>
+                    <th>Request Type</th>
+                    <th>Request Category</th>
+                    <th>Request Project</th>
+                    <th>Branch</th>
+                    <th>Division</th>
+                    <th>Status</th>
+                    <th>Action</th>
+				</tr>
+			</thead>
+			<tbody>
+		';
+		foreach($get_list as $ls){
+			echo '
+				<tr>
+					<td>PR-'.$ls['RequestID'].'</td>
+					<td>'.date("d-m-Y", strtotime($ls['CreateDate'])).'</td>
+					<td>'.$ls['ReqTypeName'].'</td>
+					<td>'.$ls['ReqCategoryName'].'</td>
+					<td>'.$ls['ProjectName'].'</td>
+					<td>'.$ls['BRANCH_DESC'].'</td>
+					<td>'.$ls['DIV_DESC'].'</td>
+					<td>'.$ls['status_request'].'</td>
+					<td><a href="'.base_url().'procurement/purchase_request/verifikasi_vendor/'.$ls['RequestID'].'" class="btn btn-primary">Lihat</a></td>
+				</tr>
+			';
+		}
+		echo '
+			</tbody>
+		</table>
+		<script>
+			$(document).ready( function () {
+				$(\'#datatables\').DataTable();
+			} );
+		</script>
+		';
+	}
+	
+	function verifikasi_vendor(){
+		$menuId = $this->home_m->get_menu_id('procurement/purchase_request/home');
+        $data['menu_id'] = $menuId[0]->menu_id;
+        $data['menu_parent'] = $menuId[0]->parent;
+        $data['menu_nama'] = $menuId[0]->menu_nama;
+        $data['menu_header'] = $menuId[0]->menu_header;
+		
+        $data['group_user'] = $this->konfigurasi_menu_status_user_m->get_status_user();
+        $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
+        $data['menu_all'] = $this->user_m->get_menu_all(0);
+		
+		$RequestID = $this->uri->segment(4);
+        
+		$data['approve_pr'] = $this->Requestproc_v3_mdl->get_data_request($RequestID)->row();
+		$data['item'] = $this->Requestproc_v3_mdl->get_item($RequestID)->result_array();
+		// $data['list_pic'] = $this->Requestproc_v3_mdl->get_pic()->result_array();
+		
+        $this->template->set('title', 'Verifikasi Vendor');
+		$this->template->load('template/template_dataTable', 'procurement/purchase_request/verifikasi_vendor', $data);
+	}
+	
+	
+	
+	
+## //------------- v3 ----------// ##
+	
 //======== Form Request =========
-    public function dd_selreqcategory() {
+    public function dd_selreqcategory_old() {
         $reqtypeid = $this->input->post('sRequestID');
         $ddSelReqcategory = $this->Requestproc_mdl->selreqcategory($reqtypeid);
+        $branchid = $this->session->userdata('BranchID');
+        $divid = $this->session->userdata('DivisionID');
+        $last_query = $this->db->last_query();
+		print_r($last_query);die();
         //KONDISI JIKA REQUEST TYPENYA SAMA DENGAN 2/PROJECT MAKA ONCHANGE Tidak BELAKU-------------------/
         if ($reqtypeid == 2 || $reqtypeid == 5) {
             echo "<select class='form-control' name='ReqCategoryID' id='ReqCategoryID' onchange='loadGridItemList()'>";
@@ -82,7 +948,7 @@ class Purchase_request extends CI_Controller {
 //        $this->load->view('procurement/popupitem_list.js.php');
     }
 
-    public function dd_Rkt() {
+    public function dd_Rkt_old() {
         $code = $this->input->post('sReqCategoryID');
         $reqCategotyid = explode('--', $code);
 //        echo $reqCategotyid[1];die;
@@ -101,8 +967,8 @@ class Purchase_request extends CI_Controller {
         //$this->load->view('requestproc/js/popupitem_list.js');
     }
 
-    public function ajax_GridPopupItemList() {
-        $icolumn = array('ItemID', 'Image','ItemName', 'AssetType', 'Price');
+    public function ajax_GridPopupItemList_old() {
+        $icolumn = array('ItemID', 'ItemName', 'Image', 'AssetType', 'Price');
 
         $iorder = array('ItemID' => 'asc');
         $list = $this->datatables->get_datatables('vw_pr_itemlist', $icolumn, $iorder);
@@ -134,14 +1000,14 @@ class Purchase_request extends CI_Controller {
         echo json_encode($output);
     }
 
-    public function ajax_GridProcessItem() {
+    public function ajax_GridProcessItem_old() {
         $iparam_in = null;
         $iwhere_in = array();
         $i_param_in = array();
         $iparam_not_in = null;
         $iwhere_not_in = array();
         $i_param_not_in = array();
-        $icolumn = array('ItemID', 'Image', 'ItemName', 'AssetType', 'Price','ItemTypeName');
+        $icolumn = array('ItemID', 'ItemName', 'Image', 'AssetType', 'Price','ItemTypeName');
         $iwhere = array();
         $iParam = explode(",", $this->input->post('sItemID'));
         $iParamDel = explode(",", $this->input->post('sItemIDDelete'));
@@ -180,7 +1046,10 @@ class Purchase_request extends CI_Controller {
             $row[] = '<input type="text" class="form-control nomor1" name="price_' . $no . '" id="' . $idatatables->Price . '" onkeyup="totalPrice(this)">';
             $row[] = $idatatables->Price;
             $row[] = '<textarea rows="2" cols="40" name="keterangan'.$no.'" id="keteranganID'.$no.'"></textarea>';
-            $row[] = '<input type="text" id="price_' . $no . '" class="form-control nomor" style="border:0px; width:auto" value="0" readonly>';
+            $row[] = '<input type="text" id="price_' . $no . '" class="form-control nomor" style="border:0px; width:auto" value="0" readonly>
+					  <input type="hidden" name="ItemID_'.$no.'" value="'.$idatatables->ItemID.'">
+					  <input type="hidden" name="row" value="'.$no.'">
+					';
             $row[] = '<button id="' . $idatatables->ItemID . '" onclick="deleteItem(this)" class="btn btn-sm btn-danger"><i class="fa fa-remove"></i></button>';
 
             $data[] = $row;
@@ -196,7 +1065,8 @@ class Purchase_request extends CI_Controller {
         echo json_encode($output);
     }
 
-    public function add_requestproc() {
+    public function add_requestproc_ori() {
+		// print_r($this->input->post());die();
         $divid = $this->session->userdata('DivisionID');
         $reqid = $this->input->post('ReqTypeID');
 //        $reqname = $this->input->post('requestprocName');
@@ -317,7 +1187,8 @@ class Purchase_request extends CI_Controller {
 
 //======== End Form Request =========
 //======== Out Request =========
-    public function ajax_GridOutRequest() {
+    public function ajax_GridOutRequest_old() {
+		print_r($this->input->post());die();
         $sessid = $this->session->userdata('usergroup');
         $method = $this->uri->segment('2');
         $accesdata = $this->Menu_mdl->get_menusetting2($sessid, $method);

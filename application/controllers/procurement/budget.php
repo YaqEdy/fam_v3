@@ -8,6 +8,7 @@ class Budget extends CI_Controller {
 
     function __construct() {
         parent::__construct();
+         
         if ($this->session->userdata("is_login") === FALSE) {
             $this->sso->log_sso();
         } else {
@@ -32,6 +33,16 @@ class Budget extends CI_Controller {
     }
 
     function home() {
+//        print_r($this->global_m->getFlow('7-2'));die();
+//        $db1 = $this->load->database('config1', true);
+//        $this->load->database();
+//        $querydata1 = $this->db->query("SELECT ID_JNS_BUDGET,BUDGET_DESC FROM TBL_R_JNS_BUDGET");
+//        print_r($querydata1->result());
+//
+//        $db2 = $this->load->database('oracle', true);
+//        $querydata2 = $db2->query("select VENDOR_NAME,CITY from PNM_FAM_SUPPLIERS_STG");
+//        print_r($querydata2->result());die();
+        
         $menuId = $this->home_m->get_menu_id('procurement/budget/home');
         $data['menu_id'] = $menuId[0]->menu_id;
         $data['menu_parent'] = $menuId[0]->parent;
@@ -45,8 +56,8 @@ class Budget extends CI_Controller {
         $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
         $data['menu_all'] = $this->user_m->get_menu_all(0);
         $data['dd_jns_budget'] = $this->global_m->tampil_data('SELECT ID_JNS_BUDGET,BUDGET_DESC FROM TBL_R_JNS_BUDGET');
-        $data['dd_Division'] = $this->global_m->tampil_data("SELECT DivisionID, DivisionName FROM Mst_Division where Is_trash=0");
-        $data['dd_Branch'] = $this->global_m->tampil_data("SELECT BranchID, BranchName FROM Mst_Branch where Is_trash=0");
+        $data['dd_Division'] = $this->global_m->tampil_data("SELECT FLEX_VALUE as DivisionID,DIV_DESC as DivisionName FROM TBL_M_DIVISION where Is_trash=0");
+        $data['dd_Branch'] = $this->global_m->tampil_data("SELECT FLEX_VALUE as BranchID,BRANCH_DESC as BranchName FROM TBL_M_BRANCH where Is_trash=0");
 
 //        print_r($this->global_m->tampil_data('SELECT * FROM TBL_R_JNS_BUDGET'));die();
 //            $data['karyawan'] = $this->global_m->tampil_id_desk('master_karyawan', 'id_kyw', 'nama_kyw', 'id_kyw');
@@ -109,7 +120,7 @@ class Budget extends CI_Controller {
     }
 
     public function readExcel() {
-        $config['upload_path'] = "./uploads/";
+        $config['upload_path'] = "./uploads/budget/";
         $config['allowed_types'] = 'xlsx|xls';
         $config['max_size'] = '25000';
         $config['file_name'] = 'BUDGET-' . date('YmdHis');
@@ -119,7 +130,7 @@ class Budget extends CI_Controller {
 
         if ($this->upload->do_upload("namafile")) {
             $data = $this->upload->data();
-            $file = './uploads/' . $data['file_name'];
+            $file = './uploads/budget/' . $data['file_name'];
 
             //load the excel library
             $this->load->library('excel/phpexcel');
@@ -147,7 +158,7 @@ class Budget extends CI_Controller {
 
             foreach ($arr_data as $key => $value) {
                 if (!empty($value["F"]) && $value["F"] != "-" && $value["F"] != "" && !empty($value["A"])) {
-                    $this->Budget_mdl->simpan($value["A"], $value["B"], $value["D"], $value["E"], $value["F"]);
+                    $this->Budget_mdl->simpan($value["A"], $value["B"], $value["D"], $value["E"], $value["F"], $value["G"]);
                 }
             }
 
@@ -158,7 +169,7 @@ class Budget extends CI_Controller {
         echo json_encode(TRUE);
     }
 
-    public function downloadWord() {
+    public function downloadTemplate() {
         $this->load->helper('download');
 
         $this->load->library('excel/phpexcel');
@@ -178,9 +189,11 @@ class Budget extends CI_Controller {
         $objPHPExcel->getActiveSheet()->setCellValue('D1', 'BranchID');
         $objPHPExcel->getActiveSheet()->setCellValue('E1', 'DivisionID');
         $objPHPExcel->getActiveSheet()->setCellValue('F1', 'BudgetValue');
+        $objPHPExcel->getActiveSheet()->setCellValue('G1', 'JenisBudget');
 
-        $objPHPExcel->getActiveSheet()->setCellValue('I1', 'LENGKAPI DATA HANYA DI BAGIAN COA, YEAR DAN BUDGET VALUE');
+        $objPHPExcel->getActiveSheet()->setCellValue('I1', 'LENGKAPI DATA HANYA DI BAGIAN COA, YEAR, BUDGET VALUE DAN JENIS BUDGET');
         $objPHPExcel->getActiveSheet()->setCellValue('I2', 'DILARANG MENGUBAH DATA SELAIN KOLOM YANG DISEBUTKAN DIATAS');
+        $objPHPExcel->getActiveSheet()->setCellValue('I3', 'JENIS BUDGET (1=CAPEX) , (2=OPEX)');
 
         //make the font become bold
         $objPHPExcel->getActiveSheet()->getStyle('A1')->getFont()->setBold(true);
@@ -189,15 +202,17 @@ class Budget extends CI_Controller {
         $objPHPExcel->getActiveSheet()->getStyle('D1')->getFont()->setBold(true);
         $objPHPExcel->getActiveSheet()->getStyle('E1')->getFont()->setBold(true);
         $objPHPExcel->getActiveSheet()->getStyle('F1')->getFont()->setBold(true);
+        $objPHPExcel->getActiveSheet()->getStyle('G1')->getFont()->setBold(true);
         $data = $this->Budget_mdl->allBranch();
         $counter = 2;
         foreach ($data as $key) {
 
-            $objPHPExcel->getActiveSheet()->setCellValue('A' . $counter, " " . $key->coa);
+            $objPHPExcel->getActiveSheet()->setCellValue('A' . $counter, " " . $key->COA);
             $objPHPExcel->getActiveSheet()->setCellValue('B' . $counter, date("Y"));
-            $objPHPExcel->getActiveSheet()->setCellValue('C' . $counter, ((int) $key->BranchCode == 00000) ? $key->BranchName . "-" . $key->DivisionName : $key->BranchName);
-            $objPHPExcel->getActiveSheet()->setCellValue('D' . $counter, $key->BranchID);
-            $objPHPExcel->getActiveSheet()->setCellValue('E' . $counter, ((int) $key->BranchCode == 00000) ? $key->DivisionID : " ");
+            $objPHPExcel->getActiveSheet()->setCellValue('C' . $counter, $key->BRANCH_DIV);
+            $objPHPExcel->getActiveSheet()->setCellValue('D' . $counter, $key->BRANCH_ID);
+            $objPHPExcel->getActiveSheet()->setCellValue('E' . $counter, $key->DIV_ID);
+            $objPHPExcel->getActiveSheet()->setCellValue('F' . $counter, "");
             $objPHPExcel->getActiveSheet()->setCellValue('F' . $counter, "");
             $objPHPExcel->getActiveSheet()->getStyle('A1:A' . $counter)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
             $counter++;
@@ -220,15 +235,24 @@ class Budget extends CI_Controller {
 
     public function ddBranchTF() {
         $iAsal = $this->input->post('sDivAsal');
-        $ddBranchTujuan = $this->global_m->tampil_data("SELECT DivisionID, DivisionName FROM Mst_Division where Is_trash=0 and DivisionID!=$iAsal");
-        $options = "<select id='dd_tf_tujuan' name='tf_tujuan' class='form-control input-sm select2me'>";
-        $options .= "<option value=''>-- Select --</option>";
-        foreach ($ddBranchTujuan as $k) {
-            $options .= "<option  value='" . $k->DivisionID . "'>" . $k->DivisionName . "</option>";
-        }
-        $options .= "</select>";
+//        $ddBranchTujuan = $this->global_m->tampil_data("SELECT DivisionID, DivisionName FROM Mst_Division where Is_trash=0 and DivisionID!=$iAsal");
+        $ddBranchTujuan = $this->global_m->tampil_data("SELECT FLEX_VALUE AS DivisionID, DIV_DESC AS DivisionName FROM TBL_M_DIVISION where IS_TRASH=0 and FLEX_VALUE!='$iAsal'");
 
-        echo json_encode($options);
+        $data = array();
+        $data[''] = '';
+        foreach ($ddBranchTujuan as $row) :
+            $data[$row->DivisionID] = $row->DivisionName;
+        endforeach;
+        echo json_encode(form_dropdown('tf_tujuan', $data, '', 'id="dd_tf_tujuan" class="form-control  input-sm select2me" required="required" '));
+
+//        $options = "<select id='dd_tf_tujuan' name='tf_tujuan' class='form-control input-sm select2me'>";
+//        $options .= "<option value=''>-- Select --</option>";
+//        foreach ($ddBranchTujuan as $k) {
+//            $options .= "<option  value='" . $k->DivisionID . "'>" . $k->DivisionName . "</option>";
+//        }
+//        $options .= "</select>";
+
+//        echo json_encode($options);
     }
 
     public function ddBranch() {
@@ -280,8 +304,8 @@ class Budget extends CI_Controller {
             'TANGGAL' => date('Y-m-d', strtotime($this->input->post('tf_tanggal'))),
             'NAMA' => $this->input->post('tf_nama'),
             'POSISI' => $this->input->post('tf_posisi'),
-            'BRANCH_DIV_ASAL' => (int) $this->input->post('tf_asal'),
-            'BRANCH_DIV_TUJUAN' => (int) $this->input->post('tf_tujuan'),
+            'BRANCH_DIV_ASAL' => $this->input->post('tf_asal'),
+            'BRANCH_DIV_TUJUAN' => $this->input->post('tf_tujuan'),
             'JUMLAH' => str_replace(",", "", $this->input->post('tf_jumlah')),
             'CREATE_BY' => $this->session->userdata("id_user"),
             'CREATE_DATE' => date('Y-m-d h:i:s')
