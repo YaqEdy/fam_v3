@@ -149,6 +149,15 @@ Class Requestproc_v3_mdl extends CI_Model {
 		return $get;
 	}
 
+	function get_history_approval($RequestID){
+		$this->db->where('RequestID', $RequestID);
+		$this->db->order_by('RequestID', 'ASC');
+		$this->db->order_by('order', 'ASC');
+		$get = $this->db->get('VW_APPROVAL');
+		
+		return $get;
+	}
+	
 	function get_list_approval($grup){
 		$this->db->like('status', $grup.'-', 'after');
 		$this->db->where('is_trash', 0);

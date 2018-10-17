@@ -16,6 +16,7 @@ class ias extends CI_Controller {
             $this->load->model('admin/konfigurasi_menu_status_user_m');
             $this->load->model('global_m');
             $this->load->model('procurement/ias_mdl');
+            $this->load->model('procurement/cek_barang_mdl');
             $this->load->model('datatables_custom');
         }
     }
@@ -61,11 +62,16 @@ class ias extends CI_Controller {
         $ops = $this->ias_mdl->get_var();
         $ret_val = "<option disabled selected>Pilih Variable</option>";
         foreach ($ops as $op) {
-            $ret_val .= "<option value='".$op->BOBOT."'>".$op->VARIABEL."</option>";
+            $ret_val .= "<option value='" . $op->BOBOT . "-" . $op->ID_VNILAI . "'>" . $op->VARIABEL . "</option>";
         }
-
         $data['var'] = $ret_val;
 
+        $ndoc = $this->ias_mdl->get_doc();
+        $doc_val = "<option disabled selected>Pilih Dokumen</option>";
+        foreach ($ndoc as $doc) {
+            $doc_val .= "<option value='" . $doc->ID_DOC . "'>" . $doc->NAMA_DOC . "</option>";
+        }
+        $data['doc'] = $doc_val;
 
         $menuId = $this->home_m->get_menu_id('procurement/budget/home');
         $data['menu_id'] = $menuId[0]->menu_id;
@@ -77,7 +83,15 @@ class ias extends CI_Controller {
         $data['group_user'] = $this->konfigurasi_menu_status_user_m->get_status_user();
         //$data['level_user'] = $this->sec_user_m->get_level_user();
         $data['ias'] = $this->ias_mdl->get_ias($id);
-        // var_dump(json_encode($data['var']));exit();
+        $data['dpp'] = $this->ias_mdl->get_dpp($id);
+        $data['detail'] = $this->cek_barang_mdl->get_detail($id);
+        $data['barang'] = $this->cek_barang_mdl->get_one_barang($id);
+        $data['all_item'] = $this->cek_barang_mdl->get_all_barang($data['detail']->ID_PO);
+        $jt_barang = new DateTime($this->cek_barang_mdl->get_termin($data['detail']->ID_PO)->TGL_JT_TERIMA_BRG);
+        $jt_po = new DateTime($data['barang']->TGL_TERIMA);
+        $diff = $jt_barang->diff($jt_po);
+        $total = $data['detail']->TTL_HARGA;
+        $data['total'] = intval((1 / 1000) * $total * $diff->days);
 
         $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
         $data['menu_all'] = $this->user_m->get_menu_all(0);
@@ -94,9 +108,8 @@ class ias extends CI_Controller {
         $this->template->load('template/template_dataTable', 'procurement/ias/form_ias', $data);
     }
 
-    public function savedata()
-    {
-        $id_ias = $this->global_m->getIdMax('ID_IAS','TBL_T_IAS');
+    public function savedata() {
+        $id_ias = $this->global_m->getIdMax('ID_IAS', 'TBL_T_IAS');
         $head['ID_IAS'] = $id_ias;
         $head['NO_PA'] = $this->input->post('id_pa');
         $head['NO_PO'] = $this->input->post('id_po');
@@ -106,33 +119,144 @@ class ias extends CI_Controller {
         $head['DENDA'] = $this->input->post('denda');
         $head['NILAI_DIBAYARKAN'] = $this->input->post('dibayarkan');
         $head['NILAI_VENDOR'] = $this->input->post('akhir');
+        if ($_FILES["dok"]['name'] != NULL) {
+            $new_name = time() . $_FILES["foto"]['name'];
+            $config = array(
+                'upload_path' => "./uploads/doc/",
+                'allowed_types' => "zip|rar",
+                'file_name' => $new_name,
+                'overwrite' => TRUE,
+                    // 'max_size' => "2048000", // Can be set to particular file size , here it is 2 MB(2048 Kb)
+                    // 'max_height' => "2048",
+                    // 'max_width' => "2048"
+            );
+            $upload = $this->load->library('upload', $config);
+            if ($this->upload->do_upload('dok')) {
+                $head['DOC_PATH'] = 'uploads/doc/' . $new_name;
+            } else {
+                $this->session->set_flashdata('error', $this->upload->display_errors());
+                redirect('procurement/ias/home');
+            }
+        }
         $this->ias_mdl->save_ias($head);
 
-        for ($i=0; $i < count($_POST['nama_dokumen']); $i++) {
+        for ($i = 0; $i < count($_POST['nama_dokumen']); $i++) {
             $doc = array(
-                            'ID' => $this->global_m->getIdMax('ID','TBL_T_IAS_DOC'),
-                            'ID_IAS' => $id_ias,
-                            'NAMA_DOC' => $_POST['nama_dokumen'][$i],
-                            'NO_DOC' => $_POST['no_dokumen'][$i],
-                            'TGL' => DateTime::createFromFormat('d/m/Y', $_POST['tanggal'][$i])->format('Y-m-d')
-                            );
+                'ID' => $this->global_m->getIdMax('ID', 'TBL_T_IAS_DOC'),
+                'ID_IAS' => $id_ias,
+                'NAMA_DOC' => $_POST['nama_dokumen'][$i],
+                'NO_DOC' => $_POST['no_dokumen'][$i],
+                'TGL' => DateTime::createFromFormat('d/m/Y', $_POST['tanggal'][$i])->format('Y-m-d')
+            );
+
 
             $this->ias_mdl->save_ias_doc($doc);
         }
 
-        for ($i=0; $i < count($_POST['varia']); $i++) {
+        for ($i = 0; $i < count($_POST['varia']); $i++) {
             $nilai = array(
-                            'ID_PENILAIAN' => $this->global_m->getIdMax('ID_PENILAIAN','TBL_T_PENILAIAN_VENDOR'),
-                            'ID_IAS' => $id_ias,
-                            'VARIABEL' => $_POST['variable'][$i],
-                            'PENILAIAN' => $_POST['penilaian'][$i],
-                            'BOBOT' => $_POST['varia'][$i]
-                            );
+                'ID_PENILAIAN' => $this->global_m->getIdMax('ID_PENILAIAN', 'TBL_T_PENILAIAN_VENDOR'),
+                'ID_IAS' => $id_ias,
+                'VARIABEL' => $_POST['variable'][$i],
+                'PENILAIAN' => $_POST['penilaian'][$i],
+                'BOBOT' => $_POST['vars'][$i]
+            );
 
             $this->ias_mdl->save_penilaian($nilai);
         }
 
+        $this->insert_ias_orc($this->input->post('id_po'));
+        $this->session->set_flashdata('success', 'Data Berhasil Disimpan');
         redirect('procurement/ias/home');
+    }
+
+    function insert_ias_orc($ID_PO) {
+        $this->load->database();
+        $query2 = $this->db->query("SELECT * FROM VW_IAS_TO_ORC_HEADER WHERE ID_PO=" . $ID_PO);
+        $dataH = $query2->result();
+
+        $query = $this->db->query("SELECT LINK FROM TBL_API_LINK WHERE API_NAME='CRUD ORACLE'");
+        $result = $query->result()[0];
+
+//        $arrData = [];
+        foreach ($dataH as $hdr) {
+//            $query3 = $this->db->query("SELECT *,A.QTY AS QTY_ FROM TBL_T_TERIMA_BARANG AS A
+//                                    INNER JOIN TBL_T_PO_DETAIL AS B ON A.ID_PO=B.ID_PO_DETAIL
+//                                    INNER JOIN TBL_T_PO AS C ON B.ID_PO=C.ID_PO
+//                                    WHERE C.ID_PO=" . $ID_PO . " AND B.VENDOR_ID=" . $hdr->VendorID);
+              $query3 = $this->db->query("SELECT * FROM VW_IAS_TO_ORC_DETAIL
+                                    WHERE ID_PO_=" . $ID_PO . " AND VENDOR_ID=" . $hdr->VendorID);
+            $dataD = $query3->result();
+            foreach ($dataD as $dtl) {
+//                $iLine = 0;
+                for ($i = 0; $i < $dtl->QTY_; $i++) {
+                    $iLine = $i + 1;
+//                    $arrData[] = array(array(
+                    $data['data'] = array(array(
+                            'OPERATING_UNIT' => 'PNM Kantor Pusat G',
+                            'INVOICE_NUM' => $hdr->ID_PO,
+                            'INVOICE_TYPE' => 'STANDARD',
+                            'VENDOR_NAME' => $hdr->VendorName,
+                            'VENDOR_SITE_CODE' => $hdr->City,
+                            'INVOICE_DATE' => date('Y-m-d h:i:s'),
+                            'INVOICE_CURRENCY_CODE' => $hdr->Currency,
+                            'INVOICE_AMOUNT' => $hdr->HargaVendor,
+                            'TERMS_NAME' => 'Immediate',
+                            'LIABILITY_ACCOUNT' => $dtl->AccountLiability,//VENDOR 
+                            'INVOICE_DESCRIPTION' => $hdr->ProjectName,//NAMA PROJECT PR
+                            'FAKTUR_PAJAK' => '',
+                            'NOMORPO' => 'PO/' . $hdr->ID_PO,
+                            'LINE_NUMBER' => $iLine,
+                            'LINE_TYPE_LOOKUP_CODE' => 'ITEM ',//ASER 'AWT' BARANG 'ITEM'
+                            'AMOUNT' => $dtl->HARGA,//HARGA+PPN
+                            'AKUN_DISTRIBUSI' => '',//AMBIL DARI COA PER ITEM(tunggu design table)
+                            'LINE_DESCRIPTION' => $dtl->NAMA_BARANG,//NAMA ITEM
+                            'ITEM_DESCRIPTION' => '',
+                            'ASSET_BOOK_NAME' => 'PNM COM BOOK',//PAREN COM BOOK
+                            'ASSET_CATEGORY' => '',//ITEM CATEGORY
+                            'JENIS_BARANG' => '',//ITEM TYPE
+                            'UMUR_FISKAL' => '',//ITEM CATEGORY
+                            'AMORTIZATION' => '',
+                            'FAM_ASSET_ID' => '',
+                            'DEFERRED_ACCTG_FLAG' => '',
+                            'DEF_ACCTG_START_DATE' => '',
+                            'DEF_ACCTG_END_DATE' => '',
+                            'SOURCE' => 'INTEGRATION',//DEFAULT
+                            'PAYMENT_METHOD_CODE' => '',
+                            'FAM_INVOICE_ID' => '',
+                            'TGL_PENGAKUAN_BRG' => '',
+                            'STATUS' => '',
+                            'ERROR_CODE' => '',
+                            'ERROR_MESSAGE' => '',
+                            'PROCESS_ID' => ''
+                        )
+                    );
+//print_r($data);
+                    $curlurl = $result->LINK . "/insert_invoice";
+
+                    $ch = curl_init($curlurl);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+                    $responsejson = curl_exec($ch);
+                    curl_close($ch);
+                }
+            }
+        }
+//        $data['data'] = $arrData;
+//        print_r($data);
+//        die();
+//        $curlurl = $result->LINK . "/insert_invoice";
+//
+//        $ch = curl_init($curlurl);
+//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+//        $responsejson = curl_exec($ch);
+//        print_r($responsejson);die();
+//        curl_close($ch);
+////
+//        $response = json_decode($responsejson, true);
+//
+//        print_r($response);
     }
 
     public function ajax_GridBudgetCapex() {
@@ -147,7 +271,7 @@ class ias extends CI_Controller {
                 'TGL_PR <' => date("Y-m-d", strtotime($this->input->post('sMulai'))),
                 'TGL_PR >' => date("Y-m-d", strtotime($this->input->post('sSampai')))
             );
-        }else{
+        } else {
             $iwhere = array();
         }
 
@@ -169,7 +293,7 @@ class ias extends CI_Controller {
             $row[] = $idatatables->status_ke;
             $row[] = $idatatables->STATUS_CEK;
             $row[] = $idatatables->ID_PO;
-            $row[] = '<a href="http://localhost/fam_v3/procurement/ias/ias_form/'.$idatatables->ID_PO.'" class="btn btn-primary">Upload</a>';
+            $row[] = '<a href="' . base_url() . 'procurement/ias/ias_form/' . $idatatables->ID_PO . '" class="btn btn-primary">Upload</a>';
 
             $data[] = $row;
         }
@@ -184,12 +308,11 @@ class ias extends CI_Controller {
         echo json_encode($output);
     }
 
-    public function get_var()
-    {
+    public function get_var() {
         $ops = $this->ias_mdl->get_var();
         $ret_val = "<option disabled selected>Pilih Variable</option>";
         foreach ($ops as $op) {
-            $ret_val .= "<option value='".$op->BOBOT."'>".$op->VARIABEL."</option>";
+            $ret_val .= "<option value='" . $op->BOBOT . '-' . $op->ID_VNILAI . "'>" . $op->VARIABEL . "</option>";
         }
 
         echo $ret_val;
@@ -395,7 +518,7 @@ class ias extends CI_Controller {
                 'TGL_PR <' => date("Y-m-d", strtotime($this->input->post('sMulai'))),
                 'TGL_PR >' => date("Y-m-d", strtotime($this->input->post('sSampai')))
             );
-        }else{
+        } else {
             $iwhere = array();
         }
 

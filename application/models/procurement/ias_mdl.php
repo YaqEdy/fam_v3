@@ -79,8 +79,12 @@ Class Ias_mdl extends CI_Model {
 
     function get_var()
     {
-        $this->db->select('BOBOT, VARIABEL');
         return $this->db->get('TBL_R_VARIABEL')->result();
+    }
+
+    function get_doc()
+    {
+        return $this->db->get('TBL_R_DOC')->result();
     }
 
     function savedata($branchid) {
@@ -224,6 +228,12 @@ Class Ias_mdl extends CI_Model {
     function save_penilaian($data)
     {
         return $this->db->insert('TBL_T_PENILAIAN_VENDOR', $data);
+    }
+
+    function get_dpp($id)
+    {
+        $dpp = $this->db->query("select sum(TTL_HARGA) as total from TBL_T_PO_DETAIL where ID_PO = $id");
+        return $dpp->row();
     }
 
 }

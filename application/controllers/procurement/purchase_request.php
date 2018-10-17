@@ -358,6 +358,7 @@ class purchase_request extends CI_Controller {
 		
 		$RequestID = $this->uri->segment(4);
         
+		$data['history_approval'] = $this->Requestproc_v3_mdl->get_history_approval($RequestID)->result_array();
 		$data['approve_pr'] = $this->Requestproc_v3_mdl->get_data_request($RequestID)->row();
 		$data['item'] = $this->Requestproc_v3_mdl->get_item($RequestID)->result_array();
 		$data['list_pic'] = $this->Requestproc_v3_mdl->get_pic()->result_array();
@@ -743,6 +744,31 @@ class purchase_request extends CI_Controller {
 		}
     }
 	
+	function app_requestproc_anggaran() {
+		$data['RequestID'] = $this->input->post('RequestID');
+		$data['flow_id'] = $this->input->post('flow_id');
+		$data['status'] = $this->input->post('status');
+		$data['EntityPNM'] = $this->input->post('EntityPNM');
+		$data['MainAccount'] = $this->input->post('MainAccount');
+		$data['SubAccount'] = $this->input->post('SubAccount');
+		$data['LOB'] = $this->input->post('LOB');
+		$data['Division'] = $this->input->post('Division');
+		$data['BisnisType'] = $this->input->post('BisnisType');
+		$data['COA'] = $this->input->post('COA');
+		$data['Anggaran'] = $this->input->post('Anggaran');
+		$data['BudgetDisetujui'] = $this->input->post('BudgetDisetujui');
+		
+		// print_r($data);
+		$up_status = $this->Requestproc_v3_mdl->update_pr_action($data,$this->input->post('action'),$this->input->post('notes'));
+
+		if($up_status){
+			echo "Success.";
+		}
+        else{
+			echo "Gagal.";
+		}
+    }
+	
 	function list_request_anggaran(){
 		// echo 'A';
 		$menuId = $this->home_m->get_menu_id('procurement/purchase_request/home');
@@ -914,6 +940,65 @@ class purchase_request extends CI_Controller {
         $this->template->set('title', 'Verifikasi Vendor');
 		$this->template->load('template/template_dataTable', 'procurement/purchase_request/verifikasi_vendor', $data);
 	}
+	
+	function get_history_approval(){
+		// echo $this->input->post('RequestID');die();	
+		$history_approval = $this->Requestproc_v3_mdl->get_history_approval($this->input->post('RequestID'))->result_array();
+		
+		echo '
+		
+                    <div tabindex="-1" id="mdl_Add" class="modal fade draggable-modal" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" id="closetab" data-dismiss="modal" aria-hidden="true"></button>
+                                    <h4 class="modal-title">History Approval</h4>
+                                </div>
+                                <div class="modal-body">
+                                   <table class="table table-striped" id="table_his">
+                                        <thead>
+                                            <tr>
+                                                <th class="no-sort">Status</th>     
+                                                <th class="no-sort">Action</th>
+                                                <th class="no-sort">User</th>
+                                                <th class="no-sort">Date</th>
+                                                <th class="no-sort">Notes</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+		';
+												foreach($history_approval as $ha){
+													$date_action = '';
+													if($ha['date'] != NULL){
+														$date_action = date("d M Y",strtotime($ha['date']));
+													}
+													echo '
+														<tr>
+															<td>'.$ha['status'].'</td>
+															<td>'.$ha['action'].'</td>
+															<td>'.$ha['name'].'</td>
+															<td>'.$date_action.'</td>
+															<td>'.$ha['notes'].'</td>
+														</tr>
+													';
+												}
+		echo '
+										</tbody>
+                                        <tfoot></tfoot>
+                                    </table>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+		';
+	}
+	
 	
 	
 	

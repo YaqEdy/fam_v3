@@ -170,7 +170,8 @@
 											<!--
 											<button type="submit" class="btn btn-primary" id="appreq" name="appreq" value="Submit" >Submit</button>       
                                         	-->
-											<a class="btn btn-primary" onclick="submit_app()">Submit</a>       
+											<a class="btn btn-primary" onclick="submit_app()">Submit</a> 
+											<a class="btn" onclick="show_approval('<?=$approve_pr->RequestID?>')" style="float:right"><i class="fa fa-eye"></i> History Approval</a>       
                                         </div>
                                     </div>
                                 </div>
@@ -186,6 +187,7 @@
 
 </div>
 
+<div id="his_app"></div>
 <?php $this->load->view('app.min.inc.php'); ?>
 
 <script>
@@ -222,6 +224,28 @@
 			go_to_list();
 		})
     }
+	
+	function show_approval(RequestID) {
+		$.post('<?= base_url("/procurement/purchase_request/get_history_approval");?>', {
+			RequestID:RequestID
+		},
+		function(data){
+			$('#his_app').html(data);
+			$('#table_his').DataTable({
+				"aaSorting": [],
+				"columnDefs": [{
+					"targets": 'no-sort',
+					"orderable": false
+				}],
+				"searching": false,
+				"paging": false,
+				"info": false
+			});
+			$('#mdl_Add').modal({show: true});
+		})
+        
+    }
+	
 	
 </script>
 

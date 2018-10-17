@@ -89,7 +89,7 @@ button:hover {
                 </div>
             </div>
             <div class="portlet-body">
-                  <form role="form"  method="post" id="id_from_sec_group_user"  action="<?php echo base_url('procurement/ias/savedata'); ?>">
+                  <form role="form"  method="post" id="id_from_sec_group_user" enctype="multipart/form-data" action="<?php echo base_url('procurement/ias/savedata'); ?>">
                 <div class="form-horizontal col-md-12">
                     <div class="form-group col-md-12">
                         <label class="col-sm-4 control-label" style="text-align: left;">No PR</label>
@@ -113,14 +113,36 @@ button:hover {
                         </div>
                     </div>
                     <div class="form-group col-md-12">
-                        <div class="col-sm-4">
-                           <button type="button" class="btn blue">History</button>
-                        </div>
+                        <h5><strong>List Item</strong></h5>
+                    </div>
+                    <div class="col-md-12">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Item ID</th>
+                                    <th scope="col">Item NAME</th>
+                                    <th scope="col">QTY</th>
+                                    <th scope="col">Harga</th>
+                                    <th scope="col">Total Harga</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?php foreach($all_item as $bar){ ?>
+                                <tr>
+                                    <td><?php echo $bar->ITEM_ID?></td>
+                                    <td><?php echo $bar->NAMA_BARANG?></td>
+                                    <td><?php echo $bar->QTY?></td>
+                                    <td><?php echo $bar->HARGA?></td>
+                                    <td><?php echo $bar->TTL_HARGA?></td>
+                                </tr>
+                            <?php }?>
+                            </tbody>
+                        </table>
                     </div>
                     <div class="form-group col-md-12">
                         <label class="col-sm-3 control-label" style="text-align: left;">DPP</label>
                         <div class="col-sm-3">
-                            <input class="form-control m-input" name="dpp" id="dpp" type="number" required>
+                            <input class="form-control m-input" name="dpp" id="dpp" value="<?php echo $dpp->total;?>" type="number" required>
                         </div>
                         <div class="col-md-3">
                             <label class="mt-checkbox">
@@ -156,7 +178,13 @@ button:hover {
                             <input class="form-control m-input" name="denda" id="denda" type="number" required>
                         </div>
                         <div class="col-sm-3">
-                            <button type="button" class="btn red">Edit</button>
+                            <input class="form-control m-input" name="dendas" id="dendas" type="number" value="<?php echo $total?>" readonly>
+                        </div>
+                        <div class="col-sm-3">
+                            <label class="mt-checkbox">
+                                <input type="checkbox" id="cek">
+                                <span></span>
+                            </label>
                         </div>
                     </div>
                     <div class="form-group col-md-12">
@@ -173,7 +201,10 @@ button:hover {
                 <div class="m-portlet__body col-md-12 dokumen">
                     <div class="form-group m-form__group col-md-4">
                         <label for="exampleInputtext1">Nama Dokumen</label>
-                        <input type="text" class="form-control m-input" name="nama_dokumen[]" required>
+                        <!-- NAMA DOKUMEN NANTI DIBUAT DROPDOWN -->
+                        <select class="form-control m-input" id="dok1" name="nama_dokumen[]" required>
+                            <option value="">Pilih Dokumen</option>
+                        </select>
                     </div>
                     <div class="form-group m-form__group col-md-4">
                         <label for="exampleInputtext1">No Dokumen</label>
@@ -187,10 +218,17 @@ button:hover {
                 <div class="m-portlet__body col-md-12 text-center">
                     <button name="btnDoc" type="button" class="btn green" id="add_doc">Tambah Dokumen</button>
                 </div>
+                <div class="m-portlet__body col-md-12 text-center">
+                    <div class="form-group m-form__group col-md-4">
+                        <label for="exampleInputtext1">Dokumen</label>
+                        <input type="file" class="form-control m-input" name="dok">
+                    </div>
+                </div>
                 <div class="form-group m-form__group m--margin-top-10">
                     <h5 class="m-portlet__head-text"><strong>Penilaian Vendor</strong></h5>
                 </div>
                 <div class="m-portlet__body col-md-12 penilaian">
+                    <input type="hidden" name="vars[]" id="vars1">
                     <input type="hidden" name="variable[]" id="variable1">
                     <div class="form-group m-form__group col-md-4">
                         <label for="exampleInputtext1">Variable</label>
@@ -243,6 +281,23 @@ button:hover {
 <?php $this->load->view('app.min.inc.php'); ?>
 
 <script>
+$("#cek").change(function() {
+    if(this.checked) {
+        $('#denda').val($('#dendas').val());
+        var dpp = parseInt($("input[name='dpp']").val());
+        var ppn = parseInt($("input[name='ppn']").val());
+        var pph = parseInt($("input[name='pph']").val());
+        var denda = parseInt($("input[name='denda']").val());
+
+        $("input[name='dibayarkan']").val(dpp + ppn - pph - denda);
+    }else{
+        $('#denda').val(0);
+        var dpp = parseInt($("input[name='dpp']").val());
+        var ppn = parseInt($("input[name='ppn']").val());
+        var pph = parseInt($("input[name='pph']").val());
+        var denda = parseInt($("input[name='denda']").val());
+    }
+});
 $("input[name='dpp']").on("keyup", function(){
     var dpp = parseInt($(this).val());
     var ppn = parseInt($("input[name='ppn']").val());
@@ -280,6 +335,9 @@ $("input[name='denda']").on("keyup", function(){
 });
 
 var return_data = "<?php echo $var;?>";
+var doc_data = "<?php echo $doc;?>"
+
+$('#dok1').html(doc_data);
 $('#varia1').html(return_data);
 // $('.varia').(function() {   
 //      $.ajax({
@@ -304,12 +362,15 @@ $(document).on('click', '.datepicker', function(){
 });
 
 $("#add_doc").click(function(){
-    $('.dokumen').append('<div class="form-group m-form__group col-md-4"><label for="exampleInputtext1">Nama Dokumen</label><input type="text" class="form-control m-input" name="nama_dokumen[]" required></div><div class="form-group m-form__group col-md-4"><label for="exampleInputtext1">No Dokumen</label><input type="text" class="form-control m-input"  name="no_dokumen[]" required></div><div class="form-group m-form__group col-md-4"><label for="exampleInputtext1">Tanggal</label><input type="text" class="form-control m-input datepicker" name="tanggal[]" required></div>');
+    num++;
+    $('.dokumen').append('<div class="form-group m-form__group col-md-4"><label for="exampleInputtext1">Nama Dokumen</label><select class="form-control m-input dok" id="dok'+num+'" name="nama_dokumen[]" required><option value="">Pilih Dokumen</option></select></div><div class="form-group m-form__group col-md-4"><label for="exampleInputtext1">No Dokumen</label><input type="text" class="form-control m-input"  name="no_dokumen[]" required></div><div class="form-group m-form__group col-md-4"><label for="exampleInputtext1">Tanggal</label><input type="text" class="form-control m-input datepicker" name="tanggal[]" required></div>');
+
+    $('#dok'+num+'').html(doc_data);
 });
 
 $("#add_val").click(function(){
     num++;
-    $('.penilaian').append('<input type="hidden" name="variable[]" id="variable'+num+'"><div class="form-group m-form__group col-md-4"><label for="exampleInputtext1">Variable</label><select id="varia'+num+'" class="form-control m-input varia" name="varia[]" required><option value="">Pilih Variabel</option></select></div><div class="form-group m-form__group col-md-4"><label for="exampleInputtext1">Penilaian</label><input type="number" id="nilai'+num+'" class="form-control m-input" name="penilaian[]" required></div><div class="form-group m-form__group col-md-4"><label for="exampleInputtext1">Penilaian X Bobot</label><input type="text" class="form-control m-input pxb" id="pxb'+num+'" name="pxb[]" required></div>');
+    $('.penilaian').append('<input type="hidden" name="variable[]" id="variable'+num+'"><input type="hidden" name="vars[]" id="vars'+num+'"><div class="form-group m-form__group col-md-4"><label for="exampleInputtext1">Variable</label><select id="varia'+num+'" class="form-control m-input varia" name="varia[]" required><option value="">Pilih Variabel</option></select></div><div class="form-group m-form__group col-md-4"><label for="exampleInputtext1">Penilaian</label><input type="number" id="nilai'+num+'" class="form-control m-input" name="penilaian[]" required></div><div class="form-group m-form__group col-md-4"><label for="exampleInputtext1">Penilaian X Bobot</label><input type="text" class="form-control m-input pxb" id="pxb'+num+'" name="pxb[]" required></div>');
 
     $('#varia'+num+'').html(return_data);
 
@@ -317,7 +378,9 @@ $("#add_val").click(function(){
         var total = $(this).val();
         var id = $(this).attr('id');
         var lastid = id.substring(id.length-1, id.length);
-        var percent = $('#varia'+lastid+'').val()/100;
+        var exp = $('#varia'+lastid+'').val().split('-');
+        var percent = exp[0]/100;
+        $('#vars'+lastid+'').val(exp[0]);
         $('#pxb'+lastid+'').val(percent*total);
         var sum = 0;
         $('.pxb').each(function(){
@@ -330,8 +393,10 @@ $("#add_val").click(function(){
         var id = $(this).attr('id');
         var lastid = id.substring(id.length-1, id.length);
         var total = $('#nilai'+lastid+'').val();
-        $('#variable'+lastid+'').val($(this).find('option:selected').text());
-        var percent = $(this).val()/100;
+        var exp = $(this).val().split('-');
+        $('#variable'+lastid+'').val(exp[1]);
+        var percent = exp[0]/100;
+        $('#vars'+lastid+'').val(exp[0]);
         $('#pxb'+lastid+'').val(percent*total);
         var sum = 0;
         $('.pxb').each(function(){
@@ -347,8 +412,10 @@ $("#varia1").change(function(){
         var id = $(this).attr('id');
         var lastid = id.substring(id.length-1, id.length);
         var total = $('#nilai'+lastid+'').val();
-        $('#variable'+lastid+'').val($(this).find('option:selected').text());
-        var percent = $(this).val()/100;
+        var exp = $(this).val().split('-');
+        $('#variable'+lastid+'').val(exp[1]);
+        var percent = exp[0]/100;
+        $('#vars'+lastid+'').val(exp[0]);
         $('#pxb'+lastid+'').val(percent*total);
         var sum = 0;
         $('.pxb').each(function(){
@@ -361,7 +428,9 @@ $("#varia1").change(function(){
         var total = $(this).val();
         var id = $(this).attr('id');
         var lastid = id.substring(id.length-1, id.length);
-        var percent = $('#varia'+lastid+'').val()/100;
+        var exp = $('#varia'+lastid+'').val().split('-');
+        var percent = exp[0]/100;
+        $('#vars'+lastid+'').val(exp[0]);
         $('#pxb'+lastid+'').val(percent*total);
         var sum = 0;
         $('.pxb').each(function(){

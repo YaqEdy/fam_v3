@@ -20,38 +20,7 @@
     }
 
 
-// var ihps=0;
-//       function ajaxSubmit_() {
 
-//         dataString = $("#id_formRoom").serialize();
-//         console.log(dataString);
-//        console.log('aa'); 
-//         $.ajax({
-//             type: "POST",
-//             dataType: "json",
-//             enctype: 'multipart/form-data',
-//             url: "simpan",
-//             data: dataString,
-
-//             success: function (data) {
-//                 console.log(data);
-//                 $("#nama_barang2").val(data.itemname);
-
-//                 //  var r = confirm('Apakah anda akan membuat data HPS kembali ?');
-//                 // if (r == false && ihps==0) {
-//                 //     $("#modalku").modal();
-//                 //     $("#nama_barang2").val(data.itemname);
-
-//                 // }else if (r == true && ihps>0){
-//                 //     $("#myModalsha").modal();
-//                 //         reload_();
-//                 // }
-//                 // ihps=ihps+1;
-//                 // $('#id_btnBatal22').trigger('click');
-//             }
-
-//         });
-// }
 
      $('#id_formRoom').submit(function (event) {
         event.preventDefault();
@@ -83,30 +52,7 @@
         });       
     });
 
-    // function ajaxSubmit_hps_() {
-    //      dataString = $("#idFormUser").serialize();
-    //      console.log(dataString);
-    //      console.log('aa'); 
-    //     $.ajax({
-    //         type: "POST",
-    //         dataType: "json",
-    //         enctype: 'multipart/form-data_no',
-    //         url: "simpan_msthps",
-    //         data: dataString,
 
-    //         success: function (data) {
-    //             //console.log(data);
-    //             pageLoad(1);
-    //             $('#id_Reload').trigger('click');
-    //             $('#id_btnBatal').trigger('click');
-    //             $("#id_tiket").val(idata[8]);
-    //             UIToastr.init(data.tipePesan, data.pesan);
-    //             //$( "#event_result" ).append( data.notif );
-    //         }
-
-    //     });
-
-    // }
 
     $('#id_formRoom_no').submit(function (event) {
         var r = confirm('Do you want to save this file ?');
@@ -153,7 +99,7 @@
                 </div>\n\
             </div>\n\
         </div>');
-                dd_Zone("A");
+                // dd_Zone("A");
             }, "lengthMenu": [
                 [5, 10, 15, 20, -1],
                 [5, 10, 15, 20, "All"] // change per page values here
@@ -198,7 +144,7 @@
 
         var iclosestRow = $(this).closest('tr');
         var idata = dataTable.row(iclosestRow).data();
-        dd_Zone(idata[8]);
+        // dd_Zone(idata[8]);
         console.log(idata);
         $("#ItemName").val(idata[2]);
         $("#StartDate").val(idata[4]);
@@ -234,33 +180,33 @@
     }
 
 
-    function dd_Zone(a) {
+//     function dd_Zone(a) {
 
-        $.ajax({
-            url: "<?php echo base_url("/procurement/hps_tiket/ddZone"); ?>?sParam=" + a, // json datasource
-            dataType: "JSON", // what to expect back from the PHP script, if anything
-            type: 'post',
-            cache: false,
-//            data: {sBranchID: $("#dd_id_branch").val()},
-            success: function (e) {
-                if (a == "B") {
-                    $("#ddZone2").empty();
-                    $("#ddZone2").append(e);
-                } else if (a == "A") {
-                    $("#ddZone3").empty();
-                    $("#ddZone3").append(e);
-                } else {
-                    $("#ddZone").empty();
-                    $("#ddZone").append(e);
-                }
-            },
-            complete: function (e) {
-                if (a != "A" || a != "B") {
-                    $("#dd_id_zone").val(a);
-                }
-            }
-        });
-    }
+//         $.ajax({
+//             url: "<?php echo base_url("/procurement/hps_tiket/ddZone"); ?>?sParam=" + a, // json datasource
+//             dataType: "JSON", // what to expect back from the PHP script, if anything
+//             type: 'post',
+//             cache: false,
+// //            data: {sBranchID: $("#dd_id_branch").val()},
+//             success: function (e) {
+//                 if (a == "B") {
+//                     $("#ddZone2").empty();
+//                     $("#ddZone2").append(e);
+//                 } else if (a == "A") {
+//                     $("#ddZone3").empty();
+//                     $("#ddZone3").append(e);
+//                 } else {
+//                     $("#ddZone").empty();
+//                     $("#ddZone").append(e);
+//                 }
+//             },
+//             complete: function (e) {
+//                 if (a != "A" || a != "B") {
+//                     $("#dd_id_zone").val(a);
+//                 }
+//             }
+//         });
+//     }
 
 
        $("#id_btnSimpan").click(function () {

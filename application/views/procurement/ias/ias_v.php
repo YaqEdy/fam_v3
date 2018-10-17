@@ -39,6 +39,16 @@
                         <!--<div class="scroller" style="height:400px; ">-->
                         <div class="row">
                             <div class="col-md-12">
+                                <?php if($this->session->flashdata('success')): ?>
+                                    <div class="alert alert-success">
+                                        <strong>Success!</strong> <?php echo $this->session->flashdata('success');?> 
+                                    </div>
+                                <?php endif ?>
+                                <?php if($this->session->flashdata('error')): ?>
+                                    <div class="alert alert-danger">
+                                        <strong>Error!</strong> <?php echo $this->session->flashdata('error');?> 
+                                    </div>
+                                <?php endif ?>
                                 <button id="id_Reload" style="display: none;"></button>
                             </div>
                         </div>

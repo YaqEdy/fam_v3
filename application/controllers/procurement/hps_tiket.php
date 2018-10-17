@@ -65,6 +65,7 @@ class hps_tiket extends CI_Controller {
      $data['dd_item_type'] = $this->global_m->tampil_data("SELECT ItemTypeID, ItemTypeName FROM Mst_ItemType");
      $data['dd_Branch'] = $this->global_m->tampil_data("SELECT BranchID, BranchName FROM Mst_Branch WHERE Is_trash=0");
      $data['dd_Zona'] = $this->global_m->tampil_data("SELECT ZoneID, ZoneName FROM Mst_Zonasi");
+     // print_r($data['dd_Zona']); die();
 //            $data['karyawan'] = $this->global_m->tampil_id_desk('master_karyawan', 'id_kyw', 'nama_kyw', 'id_kyw');
 //            $data['goluser'] = $this->global_m->tampil_id_desk('sec_gol_user', 'goluser_id', 'goluser_desc', 'goluser_id');
 //            $data['statususer'] = $this->global_m->tampil_id_desk('sec_status_user', 'statususer_id', 'statususer_desc', 'statususer_id');
@@ -123,18 +124,21 @@ class hps_tiket extends CI_Controller {
         $StartDate = trim($this->input->post('StartDate'));
         $EndDate = trim($this->input->post('EndDate'));
         $Price = trim($this->input->post('Price'));
+        $ZoneID = trim($this->input->post('ZoneID'));
         $id_tiket = trim($this->input->post('id_tiket2'));
         $data = array(
 
             'StartDate' => $StartDate,
             'EndDate' => $EndDate,
+            'ZoneID' => $ZoneID,
             'ItemID' => $this->global_m->getIdMax('ItemID','Mst_ItemList'),
             'Price' => $Price,
             'CreateBy' =>  $this->session->userdata('user_id'),
            // 'status' => 0 //aktif
         );
-        $table = "Mst_HPS";
          // print_r($data); die();
+        $table = "Mst_HPS";
+        
         $model = $this->global_m->ubah('TBL_T_TIKET_HPS', array('STATUS'=>'DONE'),'ID_TIKET_HPS',$id_tiket);
         $model = $this->global_m->simpan($table, $data);
         if ($model) {
@@ -160,8 +164,7 @@ class hps_tiket extends CI_Controller {
         $nama_barang = trim($this->input->post('nama_barang'));
         $IClassID = trim($this->input->post('IClassID'));
         $ItemName = trim($this->input->post('ItemName'));
-        $AssetType = trim($this->input->post('AssetType'));
-        $ZoneID = trim($this->input->post('ZoneID'));
+        // $AssetType = trim($this->input->post('AssetType'));
         $id_tiket = trim($this->input->post('id_tiket'));
 
 
@@ -179,6 +182,11 @@ class hps_tiket extends CI_Controller {
 
         $files = $_FILES;
         $nilai = 0;
+
+        $query = $this->db->query("SELECT LEFT(ClassCode, 1) as code FROM [FAM_V3].[dbo].[Mst_ItemClass] where IClassID = '$IClassID'")->result();
+
+        $code = $query[0]->code;
+
   
         for ($i = 0; $i < count($_FILES['Image']['name']); $i++) {
             $namafile = $files['Image']['name'][$i];
@@ -201,14 +209,14 @@ class hps_tiket extends CI_Controller {
                     'IClassID' => $IClassID,
                     'ItemTypeID' => $ItemName,
                     'ID_TIKET_HPS' => $id_tiket,
-                    'ZoneID' => $ZoneID,
                     'ItemName' => $nama_barang,
-                    'AssetType' => $AssetType,
+                    'AssetType' => $code,
                     'Image' => 'uploads/hps_tiket/'.$Image,
                     'CreateDate' => date('Y-m-d h:i:s'),
                     'CreateBy' =>  $this->session->userdata('user_id'),
                     'Status' => 0
                 );
+                // echo "<pre>";
                 // print_r($data); die();
                 $table = "Mst_ItemList";
 
@@ -341,23 +349,23 @@ class hps_tiket extends CI_Controller {
         echo json_encode($output);
     }
 
-    public function ddZone() {
-        $ddZone = $this->hps->getzone3();
-        if ($this->input->get('sParam') == 'A') {
-            $options = "<select id='dd_id_zone_A' class='form-control' onclick='onZone(this)'>";
-        } else if ($this->input->get('sParam') == 'B') {
-            $options = "<select id='dd_id_zone_B' class='form-control'>";
-        } else {
-            $options = "<select id='dd_id_zone' class='form-control'>";
-        }
-        $options .= "<option value=''>-- Select --</option>";
-        foreach ($ddZone as $k) {
-            $options .= "<option  value='" . $k->ZoneID . "'>" . $k->ZoneName . "</option>";
-        }
-        $options .= "</select>";
+    // public function ddZone() {
+    //     $ddZone = $this->hps->getzone3();
+    //     if ($this->input->get('sParam') == 'A') {
+    //         $options = "<select id='dd_id_zone_A' class='form-control' onclick='onZone(this)'>";
+    //     } else if ($this->input->get('sParam') == 'B') {
+    //         $options = "<select id='dd_id_zone_B' class='form-control'>";
+    //     } else {
+    //         $options = "<select id='dd_id_zone' class='form-control'>";
+    //     }
+    //     $options .= "<option value=''>-- Select --</option>";
+    //     foreach ($ddZone as $k) {
+    //         $options .= "<option  value='" . $k->ZoneID . "'>" . $k->ZoneName . "</option>";
+    //     }
+    //     $options .= "</select>";
 
-        echo json_encode($options);
-    }
+    //     echo json_encode($options);
+    // }
 
 
     public function update_hps() {
@@ -386,135 +394,6 @@ class hps_tiket extends CI_Controller {
             $result = array('istatus' => false, 'iremarks' => 'Failed! HPS ID: ' . $id . 'Failed Delete data');
         }
         echo json_encode($result);
-    }
-
-    public function readExcel() {
-        $config['upload_path'] = "./uploads/";
-        $config['allowed_types'] = 'xlsx|xls';
-        $config['max_size'] = '0';
-        $config['file_name'] = 'BUDGET-' . date('YmdHis');
-
-        $this->load->library('upload', $config);
-
-
-        if ($this->upload->do_upload("namafile")) {
-            $data = $this->upload->data();
-            $file = './uploads/' . $data['file_name'];
-
-            //load the excel library
-            $this->load->library('excel/phpexcel');
-            //read file from path
-            $objPHPExcel = PHPExcel_IOFactory::load($file);
-            //get only the Cell Collection
-            $cell_collection = $objPHPExcel->getActiveSheet()->getCellCollection();
-            //extract to a PHP readable array format
-            foreach ($cell_collection as $cell) {
-                $column = $objPHPExcel->getActiveSheet()->getCell($cell)->getColumn();
-                $row = $objPHPExcel->getActiveSheet()->getCell($cell)->getRow();
-                $data_value = $objPHPExcel->getActiveSheet()->getCell($cell)->getValue();
-                //header will/should be in row 1 only. of course this can be modified to suit your need.
-                if ($row == 1 || $row == 2) {
-                    $header[$row][$column] = $data_value;
-                } else {
-                    $arr_data[$row][$column] = $data_value;
-                }
-//                if ($row == 1) {
-//                    $header[$row][$column] = $data_value;
-//                } else {
-//                    $arr_data[$row][$column] = $data_value;
-//                }
-            }
-            // BudgetCOA, Year, BranchID, BisUnitID, DivisionID, BudgetValue, CreateDate, CreateBy, BudgetOwnID, BudgetUsed, Status, Is_trash
-            $date = date('Y-m-d');
-            $by = $this->session->userdata('id_user');
-            $zone = $this->input->get('sZone');
-            foreach ($arr_data as $key => $value) {
-                if ($value['C'] != '-' && !empty($value['C'])) {
-//                    print_r($value['C']);die();
-                    // $this->hps->simpanData($zone, $value['A'],  $value['B'],  $value['C'],  $value['D'],  $value['E'] );
-                    if (PHPExcel_Shared_Date::ExcelToPHP($value['D']) < 0) {
-                        $this->hps->simpanData($zone, $value['A'], $value['B'], $value['C'], $value['D'], $value['E']);
-                    } else {
-                        $this->hps->simpanData($zone, $value['A'], $value['B'], $value['C'], date($format = "Y-m-d", PHPExcel_Shared_Date::ExcelToPHP($value['D'])), date($format = "Y-m-d", PHPExcel_Shared_Date::ExcelToPHP($value['E'])));
-                    }
-                }
-            }
-
-            // $this->hps->simpanData($data);	
-        } else {
-            $this->session->set_flashdata('msg', $this->upload->display_errors());
-        }
-        echo json_encode(TRUE);
-    }
-
-    public function downloadWord() {
-        $this->load->helper('download');
-
-        $this->load->library('excel/phpexcel');
-
-        //membuat objek
-        $objPHPExcel = new PHPExcel();
-        //activate worksheet number 1
-        $objPHPExcel->setActiveSheetIndex(0);
-        //name the worksheet
-        $objPHPExcel->getActiveSheet()->setTitle('hps worksheet');
-
-        // $users = (array)$users[0];
-        //set cell A1 content with some text
-        $objPHPExcel->getActiveSheet()->setCellValue('A1', 'ITEM ID');
-        $objPHPExcel->getActiveSheet()->setCellValue('B1', 'ITEM NAME');
-        $objPHPExcel->getActiveSheet()->setCellValue('C1', 'PRICE');
-        $objPHPExcel->getActiveSheet()->setCellValue('D1', 'START DATE');
-        $objPHPExcel->getActiveSheet()->setCellValue('E1', 'END DATE');
-
-        $objPHPExcel->getActiveSheet()->setCellValue('G1', 'HANYA DI PERBOLEHKAN MENGUBAH HARGA DAN MASA BERLAKU. JIKA TIDAK ADA HARGA, BIARKAN DI ISI DENGAN TANDA STRIP (-)');
-        $objPHPExcel->getActiveSheet()->setCellValue('G2', 'MENU HPS HANYA UNTUK UPDATE HARGA, TIDAK UNTUK MENAMBAH ITEM MASTER');
-        $objPHPExcel->getActiveSheet()->setCellValue('G3', 'UNTUK START & END DATE, GUNAKAN FORMAT TEXT');
-
-        //make the font become bold
-        $objPHPExcel->getActiveSheet()->getStyle('A1')->getFont()->setBold(true);
-        $objPHPExcel->getActiveSheet()->getStyle('B1')->getFont()->setBold(true);
-        $objPHPExcel->getActiveSheet()->getStyle('C1')->getFont()->setBold(true);
-        $objPHPExcel->getActiveSheet()->getStyle('D1')->getFont()->setBold(true);
-        $objPHPExcel->getActiveSheet()->getStyle('E1')->getFont()->setBold(true);
-
-        $objPHPExcel->getActiveSheet()->setCellValue('A2', 'XXXX');
-        $objPHPExcel->getActiveSheet()->setCellValue('B2', 'Example Item ');
-        $objPHPExcel->getActiveSheet()->setCellValue('C2', '100000');
-        $objPHPExcel->getActiveSheet()->setCellValue('D2', date('Y-m-d'));
-        $objPHPExcel->getActiveSheet()->setCellValue('E2', date('Y-m-d'));
-
-        $objPHPExcel->getActiveSheet()->getStyle('A2')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setRGB('FF0000');
-        $objPHPExcel->getActiveSheet()->getStyle('B2')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setRGB('FF0000');
-        $objPHPExcel->getActiveSheet()->getStyle('C2')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setRGB('FF0000');
-        $objPHPExcel->getActiveSheet()->getStyle('D2')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setRGB('FF0000');
-        $objPHPExcel->getActiveSheet()->getStyle('E2')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setRGB('FF0000');
-
-        $data = $this->hps->getAllItem();
-        $counter = 3;
-        foreach ($data as $key) {
-            $objPHPExcel->getActiveSheet()->setCellValue('A' . $counter, $key->ItemID);
-            $objPHPExcel->getActiveSheet()->setCellValue('B' . $counter, $key->ItemName);
-            $objPHPExcel->getActiveSheet()->setCellValue('C' . $counter, '-');
-            $counter++;
-        }
-        $objPHPExcel->getActiveSheet()->getStyle('C1:C' . $counter)->getNumberFormat()->setFormatCode('#,##0.00');
-        $objPHPExcel->getActiveSheet()->getStyle('D1:D' . $counter)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
-        $objPHPExcel->getActiveSheet()->getStyle('E1:E' . $counter)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
-
-        ob_end_clean();
-        //Header
-        $filename = "list_item.xlsx";
-        header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-        header("Content-type: application/vnd.ms-excel");
-        header('Content-Disposition: attachment; filename="' . $filename . '"');
-        header("Pragma: no-cache");
-        header("Expires: 0");
-
-        //Save ke .xlsx, kalau ingin .xls, ubah 'Excel2007' menjadi 'Excel5'
-        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-        //Download
-        $objWriter->save("php://output");
     }
 
 }

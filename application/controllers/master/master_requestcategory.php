@@ -54,10 +54,6 @@ function home() {
     }
 
 
-
-
-
-
     function get_server_side() {
         $iStatus=$this->input->post('sStatus');
         $iSearch=$this->input->post('sSearch');
@@ -73,16 +69,17 @@ function home() {
             5 => 'Status',
             6 => 'CreateDate',
             7 => 'CreateBy'
+
            
         );
 
         
-        $sql = "SELECT mc.*,reqcat.ReqCategoryID, reqcat.ReqCategoryName, reqcat.CreateDate, reqtype.ReqTypeName, reqcat.Is_trash, div.DivisionName, br.BranchName, reqcat.Status
+        $sql = "SELECT mc.*,reqcat.ReqCategoryID, reqcat.ReqCategoryName, reqcat.CreateDate, reqtype.ReqTypeName, reqcat.Is_trash, div.DIV_DESC, br.FLEX_VALUE, reqcat.Status
                                 FROM Mst_RequestCategory reqcat
                 INNER JOIN Mst_RequestType reqtype ON reqcat.ReqTypeID = reqtype.ReqTypeID
-                                LEFT JOIN Mst_Budget mc ON mc.BudgetCOA=reqcat.BudgetCOA
-                                LEFT JOIN Mst_Division div ON div.DivisionID=mc.DivisionID/*ON reqcat.BudgetCoa = div.DivisionCode*/
-                                LEFT JOIN Mst_Branch br ON br.BranchID=mc.BranchID /*reqcat.BudgetCoa = br.BranchCode*/
+                 LEFT JOIN Mst_Budget mc ON mc.BudgetCOA=reqcat.BudgetCOA
+                                LEFT JOIN TBL_M_DIVISION div ON div.FLEX_VALUE= mc.DivisionID/*ON reqcat.BudgetCoa = div.DivisionCode*/
+                                LEFT JOIN TBL_M_BRANCH br ON br.FLEX_VALUE=mc.BranchID /*reqcat.BudgetCoa = br.BranchCode*/
                  where  mc. YEAR = '".date('Y')."' AND reqcat.Status like '%".$iStatus."%'";            
         $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
         $totalFiltered = $totalData;        

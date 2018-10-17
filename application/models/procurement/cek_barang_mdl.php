@@ -73,8 +73,42 @@ Class Cek_barang_mdl extends CI_Model {
     }
 
     function get_ias($id){
-        $this->db->where('ID', $id);
+        $this->db->where('ID_PO', $id);
         return $this->db->get('VW_CEK_BARANG')->row();
+    }
+
+    function get_list($id)
+    {
+        $this->db->select("*, (SELECT sum(QTY) from TBL_T_TERIMA_BARANG where ID_PO = $id AND ITEM_ID = TBL_T_PO_DETAIL.ITEM_ID) as kurang");
+        $this->db->where('ID_PO', $id);
+        return $this->db->get('TBL_T_PO_DETAIL')->result();
+    }
+
+    function get_detail($id){
+        $this->db->where('ID_PO', $id);
+        return $this->db->get('TBL_T_PO_DETAIL')->row();
+    }
+
+    function get_termin($id){
+        $this->db->where('ID_PO', $id);
+        $this->db->order_by('TGL_JT_TERIMA_BRG', 'desc');
+        return $this->db->get('TBL_T_TERMIN')->row();
+    }
+
+    function get_barang($id){
+        $this->db->where('ID_PO', $id);
+        return $this->db->get('TBL_T_TERIMA_BARANG')->result();
+    }
+
+    function get_all_barang($id){
+        $this->db->where('ID_PO', $id);
+        return $this->db->get('TBL_T_PO_DETAIL')->result();
+    }
+
+    function get_one_barang($id)
+    {
+        $this->db->where('ID_PO', $id);
+        return $this->db->get('TBL_T_TERIMA_BARANG')->row();
     }
 
     function cancelpr($id)
@@ -104,10 +138,28 @@ Class Cek_barang_mdl extends CI_Model {
         return $this->db->insert('TBL_T_TERIMA_BARANG', $data);
     }
 
+    function save_sn($data)
+    {
+        return $this->db->insert('TBL_T_TB_DETAIL', $data);
+    }
+
     function get_var()
     {
         $this->db->select('BOBOT, VARIABEL');
         return $this->db->get('TBL_R_VARIABEL')->result();
+    }
+
+    function get_sn($idtb, $idpo)
+    {
+        $this->db->where('ID_PO', $idpo);
+        $this->db->where('ID_TB', $idtb);
+        return $this->db->get('TBL_T_TB_DETAIL')->result();
+    }
+
+    function update_sn($where, $data)
+    {
+        $this->db->update('TBL_T_TB_DETAIL', $data, $where);
+        return $this->db->affected_rows();
     }
 
     function savedata($branchid) {

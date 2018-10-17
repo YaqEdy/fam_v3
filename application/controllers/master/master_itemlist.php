@@ -193,7 +193,7 @@ function home() {
 
             $nestedData[] = $no++;
             $nestedData[] = $row["ItemID"];
-            $nestedData[] = "<img height='50px' src='" . base_url() . "/uploads/itemlist/" . $row["Image"] . "' >";
+            $nestedData[] = "<img height='50px' src='" . base_url() . "uploads/itemlist/" . $row["Image"] . "' >";
             $nestedData[] = $row["IClassName"];
             $nestedData[] = $row["ItemTypeName"];
             $nestedData[] = $row["ItemName"];

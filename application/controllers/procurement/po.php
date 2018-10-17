@@ -90,12 +90,81 @@ class po extends CI_Controller {
         //$data['level_user'] = $this->sec_user_m->get_level_user();
         $data['po'] = $this->master_po_m->get_po($id);
         $data['item'] = $this->master_po_m->getItemList($id);
+        $data['titem'] = count($this->master_po_m->getItemList($id));
+        $data['thps'] = 0;
+        $data['tqty'] = 0;
+        foreach ($data['item'] as $item) {
+            $data['thps'] += $item->total;
+            $data['tqty'] += $item->Qty;
+        }
+
+        $data['request'] = $this->master_po_m->getRequest($id);
         $data['hargatotal'] = 0;
         foreach ($this->master_po_m->getItemList($id) as $total) {
             $data['hargatotal'] += $total->total;
         }
-        // var_dump($data['hargatotal']);exit();
-         if (isset($_POST["idTmpAksiBtn"])) {
+
+        $data['doc_po'] = [];
+        $data['doc_spk'] = [];
+        $data['doc_kpbj'] = [];
+        $data['doc_psw'] = [];
+
+        for ($i=1; $i <= 2; $i++) { 
+            $doc_po = "PO-00000000000-0000";
+            $doc_spk = "SPK";
+            $doc_kpbj = "KPBJ";
+            $doc_psw = "PSW";
+
+            if (!empty($this->master_po_m->get_t_po())) {
+                $urut_dpo = (int) $this->master_po_m->get_t_po()->ID_PO;
+            }else{
+                $urut_dpo = (int) substr($doc_po, 15, 18);
+            }
+            $kode_dpo = substr($doc_po, 0, 15);
+            $data['doc_po'][] = $kode_dpo.sprintf("%04s", $urut_dpo+$i);
+
+            $get_spk = $this->master_po_m->no_doc($doc_spk, strlen($doc_spk));
+            if (!empty($get_spk)) {
+                $max_spk = $get_spk->NO_DOC;
+            }else{
+                $max_spk = "SPK-00000000000-0000";
+            }
+
+            $urut_spk = (int) substr($max_spk, 16, 19);
+            $kode_spk = substr($max_spk, 0, 16);
+            $data['doc_spk'][] = $kode_spk.sprintf("%04s", $urut_spk+$i);
+
+
+            $get_kpbj = $this->master_po_m->no_doc($doc_kpbj, strlen($doc_kpbj));
+            if (!empty($get_kpbj)) {
+                $max_kpbj = $get_kpbj->NO_DOC;
+            }else{
+                $max_kpbj = "KPBJ-00000000000-0000";
+            }
+
+            $urut_kpbj = (int) substr($max_kpbj, 17, 20);
+            $kode_kpbj = substr($max_kpbj, 0, 17);
+            $data['doc_kpbj'][] = $kode_kpbj.sprintf("%04s", $urut_kpbj+$i);
+
+            $get_psw = $this->master_po_m->no_doc($doc_psw, strlen($doc_psw));
+            if (!empty($get_psw)) {
+                $max_psw = $get_psw->NO_DOC;
+            }else{
+                $max_psw = "PSW-00000000000-0000";
+            }
+
+            $urut_psw = (int) substr($max_psw, 16, 19);
+            $kode_psw = substr($max_psw, 0, 16);
+            $data['doc_psw'][] = $kode_psw.sprintf("%04s", $urut_psw+$i);
+        }
+
+        $data['nama_po'] = "PO";
+        $data['nama_spk'] = "SPK";
+        $data['nama_kpbj'] = "KPBJ";
+        $data['nama_psw'] = "PSW";
+
+
+        if (isset($_POST["idTmpAksiBtn"])) {
              $act=$_POST["idTmpAksiBtn"];
         if ($act==1) {
             $this->simpan();
@@ -127,8 +196,7 @@ class po extends CI_Controller {
 
     public function getTableList() {
         $this->CI = & get_instance(); //and a.kcab_id<>'1100'
-        $rows = $this->master_po_m->getList($this->global_m->getFlow('7-2'));
-//        $rows = $this->master_po_m->getList('7-2');
+        $rows = $this->master_po_m->getList('7-2');
         $data['data'] = array();
         foreach ($rows as $row) {
             $array = array(
@@ -153,13 +221,18 @@ class po extends CI_Controller {
     public function savedata()
     {
         $flow = $this->master_po_m->getflow();
-        $id_po = $this->global_m->getIdMax('ID_PO','TBL_T_PO');
-        $head['ID_PO'] = $id_po;
-        $head['ID_PR'] = $this->input->post('id_pr');
-        $head['flow_id'] = 1;
-        $head['status'] = '7-2';
-        $this->master_po_m->save_po($head);
-
+        $cek_po = $this->master_po_m->cek_po($this->input->post('id_pr'));
+        if (!empty($cek_po)) {
+            $id_po = $cek_po->ID_PO;
+        }else{
+            $id_po = $this->global_m->getIdMax('ID_PO','TBL_T_PO');
+            $head['ID_PO'] = $id_po;
+            $head['ID_PR'] = $this->input->post('id_pr');
+            $head['flow_id'] = 1;
+            $head['status'] = '7-2';
+            $this->master_po_m->save_po($head);
+        }
+        
         //request log
         $log['RequestID'] = $this->input->post('id_pr');
         $log['status_dari'] = $flow->status_dari;
@@ -169,8 +242,12 @@ class po extends CI_Controller {
         $log['date'] = date('Y-m-d H:i:s');
         $this->master_po_m->save_log($log);
 
+        //berdasarkan vendor
+
         for ($i=0; $i < count($_POST['barang']); $i++) { 
             $data['ID_PO'] = $id_po;
+            $data['VENDOR_ID'] = $this->input->post('id_vendor');
+            $data['ID_PO_DETAIL'] = $this->input->post('id_vendor');
             $data['ITEM_ID'] = $_POST['itemid'][$i];
             $data['NAMA_BARANG'] = $_POST['barang'][$i];
             $data['QTY'] = $_POST['qty'][$i];
@@ -184,6 +261,8 @@ class po extends CI_Controller {
         for ($i=0; $i < count($_POST['persentase']); $i++) {
             $termin = array(
                             'ID_PO' => $id_po,
+                            'TERMIN' => $_POST['term'][$i],
+                            'ID_PO_DETAIL' => $this->input->post('id_vendor'),
                             'PERSENTASE' => $_POST['persentase'][$i],
                             'NILAI' => $_POST['nilai'][$i],
                             'TGL_JATUH_TEMPO' => DateTime::createFromFormat('d/m/Y', $_POST['tempo'][$i])->format('Y-m-d')
@@ -199,7 +278,24 @@ class po extends CI_Controller {
             $this->master_po_m->save_termin($termin);
         }
 
-        redirect('procurement/po/home');
+        for ($i=0; $i < count($_POST['check']); $i++) { 
+            $ex_cek = explode('-', $_POST['check'][$i]);
+            $doc['ID'] = $this->global_m->getIdMax('ID','TBL_T_PO_GENERATE_DOC');
+            $doc['ID_PO_DETAIL'] = $this->input->post('id_vendor');
+            $doc['NAMA_DOC'] = $ex_cek[0];
+            $doc['NO_DOC'] = $_POST['check'][$i];
+            $doc['CREATE_BY'] = $this->session->userdata('user_id');
+            $doc['CREATE_DATE'] = date('Y-m-d H:i:s');
+
+            $this->master_po_m->save_doc($doc);
+        }
+
+        $return['status'] = true;
+        if (!empty($this->input->post('redirect'))) {
+            $return['redirect'] = true;
+        }
+
+        echo json_encode($return);
     }
   
 }

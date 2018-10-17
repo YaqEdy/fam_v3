@@ -88,7 +88,6 @@ button:hover {
                 </div>
             </div>
             <div class="portlet-body">
-                  <form role="form"  method="post" id="id_from_sec_group_user"  action="<?php echo base_url('procurement/po/savedata'); ?>">
                 <div class="tab">
                 <div class="form-group m-form__group m--margin-top-10">
                     <h5 class="m-portlet__head-text"><strong>Detail PR</strong></h5>
@@ -97,49 +96,49 @@ button:hover {
                     <div class="form-group col-md-6">
                         <label class="col-sm-6 control-label" style="text-align: left;">No PR</label>
                         <div class="col-sm-6">
-                            <p class="form-control-static">1234</p>
+                            <p class="form-control-static"><?php echo $po->RequestID;?></p>
                         </div>
                     </div>
                     <div class="form-group col-md-6">
                         <label class="col-sm-6 control-label" style="text-align: left;">Tanggal PR</label>
                         <div class="col-sm-6">
-                            <p class="form-control-static">1234</p>
+                            <p class="form-control-static"><?php echo $po->DATE;?></p>
                         </div>
                     </div>
                     <div class="form-group col-md-6">
                         <label class="col-sm-6 control-label" style="text-align: left;">Request Type</label>
                         <div class="col-sm-6">
-                            <p class="form-control-static">1234</p>
+                            <p class="form-control-static"><?php echo $po->ReqTypeName;?></p>
                         </div>
                     </div>
                     <div class="form-group col-md-6">
                         <label class="col-sm-6 control-label" style="text-align: left;">Branch</label>
                         <div class="col-sm-6">
-                            <p class="form-control-static">1234</p>
+                            <p class="form-control-static"><?php echo $po->BRANCH_DESC;?></p>
                         </div>
                     </div>
                     <div class="form-group col-md-6">
                         <label class="col-sm-6 control-label" style="text-align: left;">Category Name</label>
                         <div class="col-sm-6">
-                            <p class="form-control-static">1234</p>
+                            <p class="form-control-static"><?php echo $po->ReqCategoryName;?></p>
                         </div>
                     </div>
                     <div class="form-group col-md-6">
                         <label class="col-sm-6 control-label" style="text-align: left;">Divisi</label>
                         <div class="col-sm-6">
-                            <p class="form-control-static">1234</p>
+                            <p class="form-control-static"><?php echo $po->DIV_DESC;?></p>
                         </div>
                     </div>
                     <div class="form-group col-md-6">
                         <label class="col-sm-6 control-label" style="text-align: left;">Nama Project</label>
                         <div class="col-sm-6">
-                            <p class="form-control-static">1234</p>
+                            <p class="form-control-static"><?php echo $po->PROJECT_NAME;?></p>
                         </div>
                     </div>
                     <div class="form-group col-md-6">
                         <label class="col-sm-6 control-label" style="text-align: left;">Periode</label>
                         <div class="col-sm-6">
-                            <p class="form-control-static">1234</p>
+                            <p class="form-control-static">1</p>
                         </div>
                     </div>
                     
@@ -148,19 +147,19 @@ button:hover {
                     <div class="form-group m-form__group col-md-4">
                         <label for="example-text-input" class="col-2 col-form-label">Total HPS</label>
                         <div class="col-2">
-                            <input class="form-control m-input" type="text" value="2.000.000" id="example-text-input" readonly>
+                            <input class="form-control m-input" type="text" value="<?php echo $thps;?>" id="example-text-input" readonly>
                         </div>
                     </div>
                     <div class="form-group m-form__group col-md-4">
                         <label for="example-text-input" class="col-2 col-form-label">Total Item</label>
                         <div class="col-2">
-                            <input class="form-control m-input" type="text" value="3" id="example-text-input" readonly>
+                            <input class="form-control m-input" type="text" value="<?php echo $titem;?>" id="example-text-input" readonly>
                         </div>
                     </div>
                     <div class="form-group m-form__group col-md-4">
-                        <label for="example-text-input" class="col-2 col-form-label">Total Item</label>
+                        <label for="example-text-input" class="col-2 col-form-label">Total QTY</label>
                         <div class="col-2">
-                            <input class="form-control m-input" type="text" value="30" id="example-text-input" readonly>
+                            <input class="form-control m-input" type="text" value="<?php echo $tqty;?>" id="example-text-input" readonly>
                         </div>
                     </div>
                 </div>
@@ -176,9 +175,15 @@ button:hover {
                             </tr>
                         </thead>
                         <tbody>
+                        <?php foreach($item as $bar){ ?>
                             <tr>
-                                <th scope="row" colspan="5">Example data</th>
+                                <td><?php echo $bar->ItemName?></td>
+                                <td><?php echo $bar->ItemTypeName?></td>
+                                <td><?php echo $bar->Qty?></td>
+                                <td><?php echo $bar->total?></td>
+                                <td><?php echo $bar->HargaHPS?></td>
                             </tr>
+                        <?php }?>
                         </tbody>
                     </table>
                 </div>
@@ -196,7 +201,7 @@ button:hover {
                         <label class="col-sm-2 col-form-label">Prioritas</label>
                         <div class="m-radio-inline col-sm-6">
                             <label class="m-radio">
-                            <input type="radio" name="example_3" value="1"> Prioritas
+                            <input type="radio" name="example_3" value="1" disabled> Prioritas
                             <span></span>
                             </label>
                         </div>
@@ -205,11 +210,11 @@ button:hover {
                         <label class="col-sm-2 col-form-label">Kelengkapan</label>
                         <div class="m-radio-inline col-sm-6">
                             <label class="m-radio">
-                            <input type="radio" name="example_3" value="1"> Lengkap
+                            <input type="radio" name="example_3" value="1" disabled> Lengkap
                             <span></span>
                             </label>
                             <label class="m-radio">
-                            <input type="radio" name="example_3" value="1"> Tidak Lengkap
+                            <input type="radio" name="example_3" value="1" disabled> Tidak Lengkap
                             <span></span>
                             </label>
 
@@ -219,32 +224,23 @@ button:hover {
                     <div class="form-group m-form__group col-md-12">
                         <label for="example-text-input" class="col-sm-2 col-form-label">Tipe Pembayaran</label>
                         <div class="col-sm-6">
-                                <select class="form-control m-input" id="example-getting-started">
+                                <select class="form-control m-input" id="example-getting-started" disabled>
                                     <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="6">6</option>
                                 </select>
                         </div>
                     </div>
                     <div class="form-group m-form__group col-md-12">
                         <label for="example-text-input" class="col-sm-2 col-form-label">Jenis Pengadaan</label>
                         <div class="col-sm-6">
-                            <select class="form-control m-input" id="exampleSelect1">
+                            <select class="form-control m-input" id="exampleSelect1" disabled>
                                 <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
                             </select>
                         </div>
                     </div>
                     <div class="form-group col-md-12">
                         <label for="exampleTextarea" class="col-sm-2 col-form-label">Catatan</label>
                         <div class="col-sm-6">
-                            <textarea class="form-control" id="exampleTextarea" rows="3"></textarea>
+                            <textarea class="form-control" id="exampleTextarea" rows="3" disabled></textarea>
                         </div>
                     </div>
                 </div>
@@ -252,24 +248,16 @@ button:hover {
                     <div class="form-group m-form__group col-md-12">
                         <label for="example-text-input" class="col-sm-2 col-form-label">Tipe Pembayaran</label>
                         <div class="col-sm-6">
-                            <select class="form-control m-input" id="exampleSelect1">
+                            <select class="form-control m-input" id="exampleSelect1" disabled>
                                 <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
                             </select>
                         </div>
                     </div>
                     <div class="form-group m-form__group col-md-12">
                         <label for="example-text-input" class="col-sm-2 col-form-label">PIC</label>
                         <div class="col-sm-6">
-                            <select class="form-control m-input" id="exampleSelect1">
+                            <select class="form-control m-input" id="exampleSelect1" disabled>
                                 <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
                             </select>
                         </div>
                     </div>
@@ -278,24 +266,16 @@ button:hover {
                     <div class="form-group m-form__group col-md-6">
                         <label for="example-text-input" class="col-sm-4 col-form-label">Jenis Pengadaan</label>
                         <div class="col-sm-8">
-                            <select class="form-control m-input" id="exampleSelect1">
+                            <select class="form-control m-input" id="exampleSelect1" disabled>
                                 <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
                             </select>
                         </div>
                     </div>
                     <div class="form-group m-form__group col-md-6">
                         <label for="example-text-input" class="col-sm-4 col-form-label">BOD</label>
                         <div class="col-sm-8">
-                            <select class="form-control m-input" id="exampleSelect1">
+                            <select class="form-control m-input" id="exampleSelect1" disabled>
                                 <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
                             </select>
                         </div>
                     </div>
@@ -309,12 +289,11 @@ button:hover {
                                 <th scope="col">Status WP</th>
                                 <th scope="col">Barang & Jasa</th>
                                 <th scope="col">Harga Penawaran</th>
-                                <th scope="col">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <th scope="row" colspan="6">Example data</th>
+                                <th scope="row" colspan="5">Example data</th>
                             </tr>
                         </tbody>
                     </table>
@@ -323,25 +302,25 @@ button:hover {
                     <div class="form-group m-form__group col-md-12">
                         <label for="example-text-input" class="col-sm-2 col-form-label">Nama Pemenang</label>
                         <div class="col-sm-4">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Nama Pemenang">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Nama Pemenang" disabled>
                         </div>
                     </div>
                     <div class="form-group m-form__group col-md-12">
                         <label for="example-text-input" class="col-sm-2 col-form-label">Harga Penawaran</label>
                         <div class="col-sm-4">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Harga Penawaran">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Harga Penawaran" disabled>
                         </div>
                     </div>
                     <div class="form-group m-form__group col-md-12">
                         <label for="example-text-input" class="col-sm-2 col-form-label">Scoring</label>
                         <div class="col-sm-4">
-                            <input type="file" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp">
+                            <input type="file" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" disabled>
                         </div>
                     </div>
                     <div class="form-group m-form__group col-md-12">
                         <label for="example-text-input" class="col-sm-2 col-form-label">Dokumen Lain-lain</label>
                         <div class="col-sm-4">
-                            <input type="file" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp">
+                            <input type="file" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" disabled>
                         </div>
                     </div>
                 </div>
@@ -354,31 +333,31 @@ button:hover {
                     <div class="form-group m-form__group col-md-12">
                         <label for="example-text-input" class="col-sm-2 col-form-label">No PA</label>
                         <div class="col-sm-4">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="123455">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="123455" disabled>
                         </div>
                     </div>
                     <div class="form-group m-form__group col-md-12">
                         <label for="example-text-input" class="col-sm-2 col-form-label">PA Approval</label>
                         <div class="col-sm-4">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="YGT">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="YGT" disabled>
                         </div>
                         <div class="col-sm-3">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="YTH">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="YTH" disabled>
                         </div>
                         <div class="col-sm-3">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="YPP">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="YPP" disabled>
                         </div>
                     </div>
                     <div class="form-group m-form__group col-md-12">
                         <label for="example-text-input" class="col-sm-2 col-form-label">Status</label>
                         <div class="col-sm-4">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Approval">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Approval" disabled>
                         </div>
                         <div class="col-sm-3">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Approval">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Approval" disabled>
                         </div>
                         <div class="col-sm-3">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Textbox">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Textbox" disabled>
                         </div>
                     </div>
                 </div>
@@ -389,13 +368,13 @@ button:hover {
                     <div class="form-group m-form__group col-md-6">
                         <label for="example-text-input" class="col-sm-4 col-form-label">Sisa Anggaran</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Sisa Anggaran">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Sisa Anggaran" disabled>
                         </div>
                     </div>
                     <div class="form-group m-form__group col-md-6">
                         <label for="example-text-input" class="col-sm-4 col-form-label">Anggaran Terpakai</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Anggaran Terpakai">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Anggaran Terpakai" disabled>
                         </div>
                     </div>
                 </div>
@@ -403,37 +382,37 @@ button:hover {
                     <div class="form-group m-form__group col-md-6">
                         <label for="example-text-input" class="col-sm-4 col-form-label">Entity PNM</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" disabled>
                         </div>
                     </div>
                     <div class="form-group m-form__group col-md-6">
                         <label for="example-text-input" class="col-sm-4 col-form-label">LOB</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" disabled>
                         </div>
                     </div>
                     <div class="form-group m-form__group col-md-6">
                         <label for="example-text-input" class="col-sm-4 col-form-label">Main Account</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" disabled>
                         </div>
                     </div>
                     <div class="form-group m-form__group col-md-6">
                         <label for="example-text-input" class="col-sm-4 col-form-label">Divisi</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" disabled>
                         </div>
                     </div>
                     <div class="form-group m-form__group col-md-6">
                         <label for="example-text-input" class="col-sm-4 col-form-label">Sub Account</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" disabled>
                         </div>
                     </div>
                     <div class="form-group m-form__group col-md-6">
                         <label for="example-text-input" class="col-sm-4 col-form-label">Business Type</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" disabled>
                         </div>
                     </div>
                 </div>
@@ -441,37 +420,33 @@ button:hover {
                     <div class="form-group m-form__group col-md-12">
                         <label for="example-text-input" class="col-sm-2 col-form-label">COA</label>
                         <div class="col-sm-6">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="COA">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="COA" disabled>
                         </div>
                     </div>
                     <div class="form-group m-form__group col-md-12">
                         <label for="example-text-input" class="col-sm-2 col-form-label">Anggaran</label>
                         <div class="col-sm-6">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Anggaran Terpakai">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Anggaran Terpakai" disabled>
                         </div>
                     </div>
                     <div class="form-group m-form__group col-md-12">
                         <label for="example-text-input" class="col-sm-2 col-form-label">PA Approval</label>
                         <div class="col-sm-6">
-                            <select class="form-control m-input" id="exampleSelect1">
+                            <select class="form-control m-input" id="exampleSelect1" disabled>
                                 <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
                             </select>
                         </div>
                     </div>
                     <div class="form-group m-form__group col-md-12">
                         <label for="example-text-input" class="col-sm-2 col-form-label">Budget Disetujui</label>
                         <div class="col-sm-6">
-                            <textarea class="form-control" id="exampleTextarea" rows="3"></textarea>
+                            <textarea class="form-control" id="exampleTextarea" rows="3" disabled></textarea>
                         </div>
                     </div>
                     <div class="form-group m-form__group col-md-12">
                         <label for="example-text-input" class="col-sm-2 col-form-label">Status</label>
                         <div class="col-sm-6">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Status">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Status" disabled>
                         </div>
                     </div>
                 </div>
@@ -482,38 +457,39 @@ button:hover {
                     <div class="form-group m-form__group col-md-12">
                         <label for="example-text-input" class="col-sm-2 col-form-label">No PA</label>
                         <div class="col-sm-4">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="123455">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="123455" disabled>
                         </div>
                     </div>
                     <div class="form-group m-form__group col-md-12">
                         <label for="example-text-input" class="col-sm-2 col-form-label">BOD Approval</label>
                         <div class="col-sm-4">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="YGT">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="YGT" disabled>
                         </div>
                         <div class="col-sm-3">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="YTH">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="YTH" disabled>
                         </div>
                         <div class="col-sm-3">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="YPP">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="YPP" disabled>
                         </div>
                     </div>
                     <div class="form-group m-form__group col-md-12">
                         <label for="example-text-input" class="col-sm-2 col-form-label">Status</label>
                         <div class="col-sm-4">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Approval">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Approval" disabled>
                         </div>
                         <div class="col-sm-3">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Approval">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Approval" disabled>
                         </div>
                         <div class="col-sm-3">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Textbox">
+                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Textbox" disabled>
                         </div>
                     </div>
                 </div>
                 </div>
                 <div class="tab">
+                <form role="form" id="form1" class="form" method="post" id="id_from_sec_group_user" action="<?php echo base_url('procurement/po/savedata'); ?>">
                 <div class="form-group m-form__group m--margin-top-10">
-                    <h5 class="m-portlet__head-text"><strong>PO</strong></h5>
+                    <h5 class="m-portlet__head-text"><strong>PO VENDOR A</strong></h5>
                 </div>
                 <div class="m-portlet__body col-md-12">
                     <table class="table table-bordered">
@@ -527,7 +503,28 @@ button:hover {
                         </thead>
                         <tbody>
                             <tr>
-                                <th scope="row" colspan="4">Example data</th>
+                                <td><?php echo $nama_po ?></td>
+                                <td><?php echo $doc_po[0] ?></td>
+                                <td><input type="checkbox" name="check[]" value="<?php echo $doc_po[0] ?>"></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><?php echo $nama_spk ?></td>
+                                <td><?php echo $doc_spk[0] ?></td>
+                                <td><input type="checkbox" name="check[]" value="<?php echo $doc_spk[0] ?>"></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><?php echo $nama_kpbj ?></td>
+                                <td><?php echo $doc_kpbj[0] ?></td>
+                                <td><input type="checkbox" name="check[]" value="<?php echo $doc_kpbj[0] ?>"></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><?php echo $nama_psw ?></td>
+                                <td><?php echo $doc_psw[0] ?></td>
+                                <td><input type="checkbox" name="check[]" value="<?php echo $doc_psw[0] ?>"></td>
+                                <td></td>
                             </tr>
                         </tbody>
                     </table>
@@ -535,35 +532,37 @@ button:hover {
                 <div class="m-portlet__body col-md-12">
                     <div class="form-group m-form__group col-md-4">
                         <label for="exampleInputtext1">Jumlah Barang</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Jumlah Barang">
+                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Jumlah Barang" disabled>
                     </div>
                     <div class="form-group m-form__group col-md-4">
                         <label for="exampleInputtext1">Jenis Barang</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Jenis Barang">
+                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Jenis Barang" disabled>
                     </div>
                     <div class="form-group m-form__group col-md-4">
                         <label for="exampleInputtext1">Sub Total</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Sub Total">
+                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Sub Total" disabled>
                     </div>
                     <div class="form-group m-form__group col-md-4">
                         <label for="exampleInputtext1">PPN</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="PPN">
+                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="PPN" disabled>
                     </div>
                     <div class="form-group m-form__group col-md-4">
                         <label for="exampleInputtext1">Disc</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Disc">
+                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Disc" disabled>
                     </div>
                     <div class="form-group m-form__group col-md-4">
                         <label for="exampleInputtext1">PPH</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="PPH">
+                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="PPH" disabled>
                     </div>
                     <div class="form-group m-form__group col-md-4">
                         <label for="exampleInputtext1">Total</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Total">
+                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Total" disabled>
                     </div>
                 </div>
                 <input type="hidden" name="id_pr" value="<?php echo $po->RequestID?>">
-                <input type="hidden" id="hargatotal" value="<?php echo $hargatotal?>">
+                <input type="hidden" id="hargatotal1" value="<?php echo $hargatotal?>">
+                <input type="hidden" name="id_vendor" value="1">
+                <input type="hidden" name="redirect" value="ada">
                 <?php if(trim($po->ReqTypeID) == '3'){ ?>
                 <div class="form-group m-form__group m--margin-top-10">
                         <h5 class="m-portlet__head-text"><strong>Sewa Barang dan Bangunan</strong></h5>
@@ -608,27 +607,30 @@ button:hover {
                         <h5 class="m-portlet__head-text"><strong>Detail Barang Dan Harga</strong></h5>
                 </div>
                 <div class="m-portlet__body col-md-12">
-                <?php $i = 1;
-                foreach ($item as $list){?>
-                    <input type="hidden" name="itemid[]" value="<?php echo $list->ItemID?>">
-                    <div class="form-group m-form__group col-md-3">
-                        <label for="exampleInputtext1">Nama Barang</label>
-                        <input type="text" class="form-control m-input" id="barang" name="barang[]" placeholder="Nama Barang" value="<?php echo $list->ItemName?>" readonly>
-                    </div>
-                    <div class="form-group m-form__group col-md-3">
-                        <label for="exampleInputtext1">Qty</label>
-                        <input type="number" min="0" class="form-control m-input" id="qty<?php echo $i?>" value="<?php echo $list->Qty?>" name="qty[]" placeholder="Qty">
-                    </div>
-                    <div class="form-group m-form__group col-md-3">
-                        <label for="exampleInputtext1">Harga Satuan</label>
-                        <input type="number" min="0" class="form-control m-input" id="satuan<?php echo $i?>" value="<?php echo $list->HargaHPS?>" name="satuan[]" placeholder="Harga Satuan">
-                    </div>
-                    <div class="form-group m-form__group col-md-3">
-                        <label for="exampleInputtext1">Harga</label>
-                        <input type="text" class="form-control m-input total" id="total<?php echo $i?>" value="<?php echo $list->total?>" name="hargatotal[]" placeholder="Harga">
-                    </div>
-                <?php $i++;
-            }?>
+                <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Nama Barang</th>
+                                <th>QTY</th>
+                                <th>Harga Satuan</th>
+                                <th>Harga</th>
+                                <th>Hapus</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php $i = 1;
+                        foreach ($item as $list){?>
+                            <tr id="row<?php echo $i;?>">
+                                <td><input type="hidden" name="itemid[]" value="<?php echo $list->ItemID?>"><input type="text" name="barang[]" value="<?php echo $list->ItemName?>"></td>
+                                <td><input type="number" name="qty[]" id="qty<?php echo $i?>" value="<?php echo $list->Qty?>"></td>
+                                <td><input type="number" name="satuan[]" class="satuan1" id="satuan<?php echo $i?>" value="<?php echo $list->HargaHPS?>"></td>
+                                <td><input type="number" name="hargatotal[]" class="total1" id="total<?php echo $i?>" value="<?php echo $list->total?>"></td>
+                                <td><button onclick="dltRow('<?php echo $i;?>', 1)">Delete</button></td>
+                            </tr>
+                        <?php $i++;
+                    }?>
+                        </tbody>
+                    </table>
                 </div>
             <?php }?>
                 <div class="form-group m-form__group m--margin-top-10 col-md-12">
@@ -645,11 +647,12 @@ button:hover {
                         <input type="text" class="form-control m-input datepicker" name="dterima" id="dterima" aria-describedby="textHelp" placeholder="dd/mm/yyyy" required>
                     </div>
                 </div>
-                <div class="termin">
+                <div class="tanda termin1">
                 <div class="m-portlet__body col-md-12">
                     <div class="form-group m-form__group col-md-3">
+                        <input type="hidden" name="term[]" value="1">
                         <label for="exampleInputtext1">Persentase</label>
-                        <input type="number" class="form-control m-input" name="persentase[]" id="presentase1" aria-describedby="textHelp" placeholder="Persentase" required>
+                        <input type="number" class="form-control m-input form1" name="persentase[]" id="presentase1" aria-describedby="textHelp" placeholder="Persentase" required>
                     </div>
                     <div class="form-group m-form__group col-md-3">
                         <label for="exampleInputtext1">Nilai</label>
@@ -666,9 +669,197 @@ button:hover {
                 </div>
                 </div>
                 <div class="m-portlet__body col-md-12 text-center">
-                    <button name="btnSimpan" type="button" class="btn green" id="add_termin">Tambah Termin</button>
+                    <button name="btnSimpan" type="button" class="btn green" id="add_termin1">Tambah Termin</button>
+                </div>
+                </form>
+                <form role="form" id="form2" class="form" method="post" id="id_from_sec_group_user" action="<?php echo base_url('procurement/po/savedata'); ?>">
+                <div class="form-group m-form__group m--margin-top-10">
+                    <h5 class="m-portlet__head-text"><strong>PO VENDOR B</strong></h5>
+                </div>
+                <div class="m-portlet__body col-md-12">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col">Nama Dokumen</th>
+                                <th scope="col">No Dokumen</th>
+                                <th scope="col">Validasi</th>
+                                <th scope="col">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <tr>
+                                <td><?php echo $nama_po ?></td>
+                                <td><?php echo $doc_po[1] ?></td>
+                                <td><input type="checkbox" name="check[]" value="<?php echo $doc_po[1] ?>"></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><?php echo $nama_spk ?></td>
+                                <td><?php echo $doc_spk[1] ?></td>
+                                <td><input type="checkbox" name="check[]" value="<?php echo $doc_spk[1] ?>"></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><?php echo $nama_kpbj ?></td>
+                                <td><?php echo $doc_kpbj[1] ?></td>
+                                <td><input type="checkbox" name="check[]" value="<?php echo $doc_kpbj[1] ?>"></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><?php echo $nama_psw ?></td>
+                                <td><?php echo $doc_psw[1] ?></td>
+                                <td><input type="checkbox" name="check[]" value="<?php echo $doc_psw[1] ?>"></td>
+                                <td></td>
+                            </tr>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="m-portlet__body col-md-12">
+                    <div class="form-group m-form__group col-md-4">
+                        <label for="exampleInputtext1">Jumlah Barang</label>
+                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Jumlah Barang" disabled>
+                    </div>
+                    <div class="form-group m-form__group col-md-4">
+                        <label for="exampleInputtext1">Jenis Barang</label>
+                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Jenis Barang" disabled>
+                    </div>
+                    <div class="form-group m-form__group col-md-4">
+                        <label for="exampleInputtext1">Sub Total</label>
+                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Sub Total" disabled>
+                    </div>
+                    <div class="form-group m-form__group col-md-4">
+                        <label for="exampleInputtext1">PPN</label>
+                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="PPN" disabled>
+                    </div>
+                    <div class="form-group m-form__group col-md-4">
+                        <label for="exampleInputtext1">Disc</label>
+                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Disc" disabled>
+                    </div>
+                    <div class="form-group m-form__group col-md-4">
+                        <label for="exampleInputtext1">PPH</label>
+                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="PPH" disabled>
+                    </div>
+                    <div class="form-group m-form__group col-md-4">
+                        <label for="exampleInputtext1">Total</label>
+                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Total" disabled>
+                    </div>
+                </div>
+                <input type="hidden" name="id_pr" value="<?php echo $po->RequestID?>">
+                <input type="hidden" id="hargatotal2" value="<?php echo $hargatotal?>">
+                <input type="hidden" name="id_vendor" value="2">
+                <?php if(trim($po->ReqTypeID) == '3'){ ?>
+                <div class="form-group m-form__group m--margin-top-10">
+                        <h5 class="m-portlet__head-text"><strong>Sewa Barang dan Bangunan</strong></h5>
+                </div>
+                <div class="m-portlet__body col-md-12">
+                <?php $i=1;
+                foreach ($item as $list){?>
+                    <input type="hidden" name="itemid[]" value="<?php echo $list->ItemID?>">
+                    <div class="form-group m-form__group col-md-2">
+                        <label for="exampleInputtext1">Barang/Bangunan</label>
+                        <input type="text" class="form-control m-input" id="exampleInputtext1" value="<?php echo $list->ItemName?>" name="barang[]" placeholder="Barang/Bangunan" readonly>
+                    </div>
+                    <div class="form-group m-form__group col-md-1">
+                        <label for="exampleInputtext1">Qty</label>
+                        <input type="number" min="0" class="form-control m-input" id="qty<?php echo $i?>" value="<?php echo $list->Qty?>" name="qty[]" placeholder="Qty">
+                    </div>
+                    <div class="form-group m-form__group col-md-2">
+                        <label for="exampleInputtext1">Periode Sewa</label>
+                        <input type="text" class="form-control m-input" id="exampleInputtext1" name="sewa" placeholder="Periode Sewa" required>
+                    </div>
+                    <div class="form-group m-form__group col-md-2">
+                        <label for="exampleInputtext1">Jenis Periode</label>
+                        <input type="text" class="form-control m-input" id="exampleInputtext1" name="jenis" placeholder="Jenis Periode" required>
+                    </div>
+                    <div class="form-group m-form__group col-md-1">
+                        <label for="exampleInputtext1">Notifikasi</label>
+                        <input type="text" class="form-control m-input" id="exampleInputtext1" name="notif" placeholder="Notifikasi" required>
+                    </div>
+                    <div class="form-group m-form__group col-md-2">
+                        <label for="exampleInputtext1">Harga Satuan</label>
+                        <input type="number" min="0" class="form-control m-input" id="satuan<?php echo $i?>" value="<?php echo $list->HargaHPS?>" name="satuan[]" placeholder="Harga Satuan">
+                    </div>
+                    <div class="form-group m-form__group col-md-2">
+                        <label for="exampleInputtext1">Harga</label>
+                        <input type="text" class="form-control m-input total" id="total<?php echo $i?>" value="<?php echo $list->total?>" name="hargatotal[]" placeholder="Harga">
+                    </div>
+                <?php $i++;
+            }?>
+                </div>
+            <?php }else{ ?>
+                <div class="form-group m-form__group m--margin-top-10">
+                        <h5 class="m-portlet__head-text"><strong>Detail Barang Dan Harga</strong></h5>
+                </div>
+                <div class="m-portlet__body col-md-12">
+                <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Nama Barang</th>
+                                <th>QTY</th>
+                                <th>Harga Satuan</th>
+                                <th>Harga</th>
+                                <th>Hapus</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                        foreach ($item as $list){?>
+                            <tr id="row<?php echo $i;?>">
+                                <td><input type="hidden" name="itemid[]" value="<?php echo $list->ItemID?>"><input type="text" name="barang[]" value="<?php echo $list->ItemName?>"></td>
+                                <td><input type="number" name="qty[]" id="qty<?php echo $i?>" value="<?php echo $list->Qty?>"></td>
+                                <td><input type="number" name="satuan[]" class="satuan2" id="satuan<?php echo $i?>" value="<?php echo $list->HargaHPS?>"></td>
+                                <td><input type="number" name="hargatotal[]" class="total2" id="total<?php echo $i?>" value="<?php echo $list->total?>"></td>
+                                <td><button onclick="dltRow('<?php echo $i;?>', 2)">Delete</button></td>
+                            </tr>
+                        <?php $i++;
+                    }?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php }?>
+                <div class="form-group m-form__group m--margin-top-10 col-md-12">
+                    <div class="col-md-4">
+                        <h5 class="m-portlet__head-text"><strong>Termin</strong></h5>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="mt-checkbox">
+                            <input type="checkbox" id="detail"> Detail Terima
+                            <span></span>
+                        </label>
+                    </div>
+                    <div class="form-group m-form__group col-md-3" id="notdetail">
+                        <input type="text" class="form-control m-input datepicker" name="dterima" id="dterima" aria-describedby="textHelp" placeholder="dd/mm/yyyy" required>
+                    </div>
+                </div>
+                <div class="tanda termin2">
+                <div class="m-portlet__body col-md-12">
+                    <div class="form-group m-form__group col-md-3">
+                        <input type="hidden" name="term[]" value="1">
+                        <label for="exampleInputtext1">Persentase</label>
+                        <input type="number" class="form-control m-input form2" name="persentase[]" id="presentase2" aria-describedby="textHelp" placeholder="Persentase" required>
+                    </div>
+                    <div class="form-group m-form__group col-md-3">
+                        <label for="exampleInputtext1">Nilai</label>
+                        <input type="text" class="form-control m-input" id="nilai2" name="nilai[]" aria-describedby="textHelp" placeholder="Nilai" readonly required>
+                    </div>
+                    <div class="form-group m-form__group col-md-3">
+                        <label for="exampleInputtext1">Tanggal Jatuh Tempo</label>
+                        <input type="text" class="form-control m-input datepicker" name="tempo[]" aria-describedby="textHelp" placeholder="Tanggal Jatuh Tempo" required>
+                    </div>
+                    <div class="form-group m-form__group col-md-3 terima" hidden>
+                        <label for="exampleInputtext1">Tgl Akhir Penerimaan Barang</label>
+                        <input type="text" class="form-control m-input datepicker" name="akhir[]" aria-describedby="textHelp" placeholder="Tgl Akhir Penerimaan Barang">
+                    </div>
                 </div>
                 </div>
+                <div class="m-portlet__body col-md-12 text-center">
+                    <button name="btnSimpan" type="button" class="btn green" id="add_termin2">Tambah Termin</button>
+                </div>
+                </form>
+                </div>
+
                 <!-- <div style="overflow:auto;"> -->
                     <!-- <div style="float:right;"> -->
                             <button type="button" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
@@ -680,7 +871,6 @@ button:hover {
                     <span class="step"></span>
                     <span class="step"> </span>
                   </div>
-                </form>
 
                 </div>
 
@@ -703,7 +893,17 @@ button:hover {
 var $ = jQuery.noConflict();
 var currentTab = 0; // Current tab is set to be the first tab (0)
 showTab(currentTab); // Display the crurrent tab
+var seluruh = $('.tanda').length;
 
+function dltRow(row, form){
+    var sum = 0;
+    $('#row'+row).remove();
+    console.log('.total'+form);
+    $('.total'+form).each(function(){
+        sum += parseInt(this.value);
+    });
+    $('#hargatotal'+form).val(sum);
+}
 function showTab(n) {
   // This function will display the specified tab of the form...
   var x = document.getElementsByClassName("tab");
@@ -716,8 +916,7 @@ function showTab(n) {
   }
   if (n == (x.length - 1)) {
     document.getElementById("nextBtn").innerHTML = "Submit";
-    $('#nextBtn').prop('type','submit');
-    $("#nextBtn").removeAttr('onclick');
+    $("#nextBtn").attr('onclick', 'submit()');
   } else {
     document.getElementById("nextBtn").innerHTML = "Next";
     $("#nextBtn").attr('onclick', 'nextPrev(1)');
@@ -785,59 +984,70 @@ $(document).on('click', '.datepicker', function(){
    $(this).removeClass('datepicker');
 });
 
-var num = 1;
+var num = $(".tanda").length;
 var n = 1;
-    $("#add_termin").click(function(){
-        num++;
+
+for (var l = 1; l <= $(".tanda").length; l++){
+    $("#add_termin"+l).click({param: l}, add_termin);
+}
+
+function add_termin(e){
+    num++;
         
-        if($('#detail').is(":checked")){
-            $('.termin').append('<div class="m-portlet__body col-md-12"><div class="form-group m-form__group m--margin-top-10 col-md-12"><div class="form-group m-form__group col-md-3"><label for="exampleInputtext1">Persentase</label><input type="number" class="form-control m-input" name="persentase[]" id="presentase'+num+'" aria-describedby="textHelp" placeholder="Persentase"></div><div class="form-group m-form__group col-md-3"><label for="exampleInputtext1">Nilai</label><input type="text" class="form-control m-input" id="nilai'+num+'" name="nilai[]" aria-describedby="textHelp" placeholder="Nilai" readonly></div><div class="form-group m-form__group col-md-3"><label for="exampleInputtext1">Tanggal Jatuh Tempo</label><input type="text" class="form-control m-input datepicker" id="exampleInputtext1" name="tempo[]" aria-describedby="textHelp" placeholder="Tanggal Jatuh Tempo"></div><div class="form-group m-form__group col-md-3 terima"><label for="exampleInputtext1">Tgl Akhir Penerimaan Barang</label><input type="text" class="form-control m-input datepicker" name="akhir[]" aria-describedby="textHelp" placeholder="Tgl Akhir Penerimaan Barang"></div></div></div>');
-        }else{
-            $('.termin').append('<div class="m-portlet__body col-md-12"><div class="form-group m-form__group col-md-3"><label for="exampleInputtext1">Persentase</label><input type="number" class="form-control m-input" name="persentase[]" id="presentase'+num+'" aria-describedby="textHelp" placeholder="Persentase"></div><div class="form-group m-form__group col-md-3"><label for="exampleInputtext1">Nilai</label><input type="text" class="form-control m-input" id="nilai'+num+'" name="nilai[]" aria-describedby="textHelp" placeholder="Nilai" readonly></div><div class="form-group m-form__group col-md-3"><label for="exampleInputtext1">Tanggal Jatuh Tempo</label><input type="text" class="form-control m-input datepicker" id="exampleInputtext1" name="tempo[]" aria-describedby="textHelp" placeholder="Tanggal Jatuh Tempo"></div><div class="form-group m-form__group col-md-3 terima" hidden><label for="exampleInputtext1">Tgl Akhir Penerimaan Barang</label><input type="text" class="form-control m-input datepicker" name="akhir[]" aria-describedby="textHelp" placeholder="Tgl Akhir Penerimaan Barang"></div></div>');
-        }
-        // n = $("input[name='persentase[]']").size();
-        // $("#presentase"+num+"").on("keyup", function() {
-        //         var total = $('#hargatotal').val();
-        //         var percent = ($(this).val())/100;
-        //            $('#nilai'+num+'').val(percent*total);
-        //     });
-        $("input[name='persentase[]']").on("keyup", function(){
-            var total = $('#hargatotal').val();
-            var percent = ($(this).val())/100;
-            var id = $(this).attr('id');
-            var lastid = id.substring(id.length-1, id.length);
-            $('#nilai'+lastid+'').val(percent*total);
-        });
+    if($('#detail').is(":checked")){
+        $('.termin'+e.data.param).append('<div class="m-portlet__body col-md-12"><div class="form-group m-form__group m--margin-top-10 col-md-12"><div class="form-group m-form__group col-md-3"><label for="exampleInputtext1">Persentase</label><input type="number" class="form-control m-input form'+e.data.param+'" name="persentase[]" id="presentase'+num+'" aria-describedby="textHelp" placeholder="Persentase"></div><div class="form-group m-form__group col-md-3"><label for="exampleInputtext1">Nilai</label><input type="text" class="form-control m-input" id="nilai'+num+'" name="nilai[]" aria-describedby="textHelp" placeholder="Nilai" readonly></div><div class="form-group m-form__group col-md-3"><label for="exampleInputtext1">Tanggal Jatuh Tempo</label><input type="text" class="form-control m-input datepicker" id="exampleInputtext1" name="tempo[]" aria-describedby="textHelp" placeholder="Tanggal Jatuh Tempo"></div><div class="form-group m-form__group col-md-3 terima"><label for="exampleInputtext1">Tgl Akhir Penerimaan Barang</label><input type="text" class="form-control m-input datepicker" name="akhir[]" aria-describedby="textHelp" placeholder="Tgl Akhir Penerimaan Barang"></div></div></div>');
+    }else{
+        $('.termin'+e.data.param).append('<input type="hidden" name="term[]" value="'+num+'"><div class="m-portlet__body col-md-12"><div class="form-group m-form__group col-md-3"><label for="exampleInputtext1">Persentase</label><input type="number" class="form-control m-input form'+e.data.param+'" name="persentase[]" id="presentase'+num+'" aria-describedby="textHelp" placeholder="Persentase"></div><div class="form-group m-form__group col-md-3"><label for="exampleInputtext1">Nilai</label><input type="text" class="form-control m-input" id="nilai'+num+'" name="nilai[]" aria-describedby="textHelp" placeholder="Nilai" readonly></div><div class="form-group m-form__group col-md-3"><label for="exampleInputtext1">Tanggal Jatuh Tempo</label><input type="text" class="form-control m-input datepicker" id="exampleInputtext1" name="tempo[]" aria-describedby="textHelp" placeholder="Tanggal Jatuh Tempo"></div><div class="form-group m-form__group col-md-3 terima" hidden><label for="exampleInputtext1">Tgl Akhir Penerimaan Barang</label><input type="text" class="form-control m-input datepicker" name="akhir[]" aria-describedby="textHelp" placeholder="Tgl Akhir Penerimaan Barang"></div></div>');
+    }
 
+    $("input[name='persentase[]']").on("keyup", function(){
+        var kelas = $(this).attr('class');
+        var form = kelas.substring(kelas.length-1, kelas.length);
+        var total = $('#hargatotal'+form).val();
+        var percent = ($(this).val())/100;
+        var id = $(this).attr('id');
+        var lastid = id.substring(id.length-1, id.length);
+        $('#nilai'+lastid+'').val(percent*total);
     });
+}
 
-    <?php for ($j=1; $j < $i; $j++) { ?>
-        $("#qty<?php echo $j;?>").on("keyup", function(){
-            var sum = 0;
-            var satuan = $("#satuan<?php echo $j;?>").val();
-            var total = ($(this).val())*satuan;
-            $("#total<?php echo $j;?>").val(total);
-            $('.total').each(function(){
-                sum += parseInt(this.value);
-            });
-
-            $('#hargatotal').val(sum);
+function submit(){
+    for(var m = 1; m <= $(".form").length; m++){
+        $.ajax({
+            type: "POST",
+            url: $("#form"+m).attr('action'),
+            data: $("#form"+m).serialize(),
+            success: function( response ) {
+                if(JSON.parse(response).redirect == true){
+                    location.href = "<?php echo base_url('procurement/po/home')?>";
+                }
+            }
         });
-    <?php } ?>
+    }
+}
 
-    <?php for ($j=1; $j < $i; $j++) { ?>
-        $("#satuan<?php echo $j;?>").on("keyup", function(){
-            var sum = 0;
-            var satuan = $("#qty<?php echo $j;?>").val();
-            var total = ($(this).val())*satuan;
-            $("#total<?php echo $j;?>").val(total);
-            $('.total').each(function(){
-                sum += parseInt(this.value);
-            });
 
-            $('#hargatotal').val(sum);
+    for (var j = 1; j <= $("input[name='barang[]']").length; j++) {
+        $("#qty"+j).on("keyup", {obj: j}, counter);
+    }
+
+    function counter(e){
+        var obj = e.data.obj;
+        var sum = 0;
+        var satuan = $("#satuan"+obj).val();
+        var kelas = $("#satuan"+obj).attr('class');
+        var form = kelas.substring(kelas.length-1, kelas.length);
+        var total = ($("#qty"+obj).val())*satuan;
+        $("#total"+obj).val(total);
+        $('.total'+form).each(function(){
+            sum += parseInt(this.value);
         });
-    <?php } ?>
+        $('#hargatotal'+form).val(sum);
+    }
+
+    for (var k = 1; k <= $("input[name='qty[]']").length; k++) {
+        $("#satuan"+k).on("keyup", {obj: k}, counter);
+    }
 
     
 
@@ -853,10 +1063,14 @@ var n = 1;
         }
     });
 
-    $("#presentase1").on("change paste keyup", function() {
-        var total = $('#hargatotal').val();
+    $("input[name='persentase[]']").on("keyup", function() {
+        var kelas = $(this).attr('class');
+        var form = kelas.substring(kelas.length-1, kelas.length);
+        var total = $('#hargatotal'+form).val();
         var percent = ($(this).val())/100;
-        $('#nilai1').val(percent*total);
+        var id = $(this).attr('id');
+        var lastid = id.substring(id.length-1, id.length);
+        $('#nilai'+lastid+'').val(percent*total);
     });
 
 

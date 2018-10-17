@@ -301,18 +301,6 @@
                                     echo form_dropdown('IClassID', $data, '', 'id="IClassID" class="form-control  input-sm select2me" required="required"');
                                     ?>
                                 </div>
-                                 <div class="form-group">
-                                    <label>Zona </label>
-                                    <?php
-                                    $data = array();
-                                    $data[''] = '';
-                                    foreach ($dd_Zona as $row) :
-                                        $data[$row->ZoneID] = $row->ZoneName;
-                                    endforeach;
-                                    echo form_dropdown('ZoneID', $data, '', 'id="ZoneID" class="form-control  input-sm select2me" required="required"');
-                                    ?>
-                                </div>
-                        
                                 <div class="form-group">
                                     <label>Item Type Nama </label> <span class="">*</span>
                                       <?php
@@ -324,7 +312,7 @@
                                     echo form_dropdown('ItemTypeID', $data, '', 'id="ItemTypeID" class="form-control  input-sm select2me" required="required"');
                                     ?>
                                 </div>
-                                <div class="form-group">
+                          <!--       <div class="form-group">
                                          <label>Asset Type </label>
                                     <?php
                                     $data = array();
@@ -334,7 +322,7 @@
                                     endforeach;
                                     echo form_dropdown('AssetType', $data, '', 'id="id_AssetType" class="form-control  input-sm select2me" required=""');
                                     ?>
-                            </div>
+                            </div> -->
 
                         </div>  
                   <div class="row">
@@ -415,7 +403,7 @@
 <div class="row" id="hps_modal_tiket" >
     <div class="row" id="itemmodal">
     <div class="col-md-12">
-         <form role="form" method="post" class="cls_from_sec_room" id="id_formRoom_no"  enctype="multipart/form-data_no" >
+         <form role="form" method="post" class="cls_from_sec_room" id="id_formRoom_no" >
            <!-- <form role="form" method="post" class="cls_from_sec_user" id="idFormUseri" > -->
         <div class="portlet light bordered">
 <div id="modalku" class="modal fade" role="dialog">
@@ -428,7 +416,7 @@
                     <h4 class="modal-title">HPS</h4>
                 <div class="modal-body">
                       <div class="row">
-                        <input class="form-control hidden" type="text" id="id_data" name="id_data"/>
+                        <input class="form-control hidden" enctype="multipart/form-data"  type="text" id="id_data" name="id_data"/>
                         <div class="form-body">
                             <div class="col-md-8">
                                 <input type="hidden" name="id_tiket2" id="id_tiket2">
@@ -438,7 +426,20 @@
                                     <input required="required" class="form-control"
                                            type="readonly" id="nama_barang2" name="nama_barang2"  />
                                 </div>
-                      
+                                  <div class="form-group">
+                                    <label>Zona </label>
+                                    <?php
+                                    // echo($dd_Zona)
+                                    $data = array();
+                                    $data[''] = '';
+                                    // print_r($dd_Zona); die();
+                                    foreach ($dd_Zona as $row) :
+                                        $data[$row->ZoneID] = $row->ZoneName;
+                                    endforeach;
+                                    echo form_dropdown('ZoneID', $data, '', 'id="ZoneID" class="form-control  input-sm select" required="required"');
+                                    ?>
+                                </div>
+                            
                                 <div class="form-group">
                                     <label>Tanggal Mulai </label> <span class="required">*</span>
                                     <input required="required" class="form-control"

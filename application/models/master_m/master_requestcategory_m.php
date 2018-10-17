@@ -77,11 +77,11 @@ class master_requestcategory_m extends CI_Model {
 
 
     function  getCOA(){
-        $qdata = $this->db->query('SELECT bud.BudgetID, bud.BudgetCOA, div.DivisionName, br.BranchCode, br.BranchName 
-                                    FROM Mst_Budget bud
-                                    INNER JOIN Mst_Branch br ON br.BranchID = bud.BranchID                                  
-                                    LEFT JOIN Mst_Division div ON div.DivisionID = bud.DivisionID
-                                    WHERE bud.Is_trash=0 AND Year='.date('Y'));
+        $qdata = $this->db->query('SELECT bud.BudgetID,bud.BudgetCOA,div.DIV_DESC,br.FLEX_VALUE,br.BRANCH_DESC
+        FROM Mst_Budget bud
+        INNER JOIN TBL_M_BRANCH br ON br.FLEX_VALUE = bud.BranchID
+        LEFT JOIN TBL_M_DIVISION div ON div.FLEX_VALUE = bud.DivisionID
+         WHERE bud.Is_trash=0 AND Year='.date('Y'));
         return $qdata->result();
     }
 

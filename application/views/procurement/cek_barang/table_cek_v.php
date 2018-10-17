@@ -49,14 +49,12 @@
                                     <table class="table table-striped table-bordered table-hover text_kanan" id="table_cek_barang">
                                         <thead>
                                             <tr>
+                                                <th>NO PO</th>     
                                                 <th>NO PR</th>     
                                                 <th>Tanggal Request</th>
-                                                <th>Request Name</th>
-                                                <th>Project Name</th>
                                                 <th>Branch</th>
                                                 <th>Status Akhir</th>
                                                 <th>Status Cek</th>
-                                                <th>No PO</th>
                                                 <th>Aksi</th>
                                             </tr>
                                         </thead>

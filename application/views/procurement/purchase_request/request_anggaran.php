@@ -79,40 +79,44 @@
                                     </div>
 								</div>
                             </div>
-							
-							<table class="table table-striped table-bordered table-hover" id="item_table">
-							  <thead>
-								<tr align="center">
-									<th>Item Name</th>
-									<th>Quantity</th>
-									<th>HPS</th>
-									<th>Sub Total</th>
-								</tr>
-							  </thead>
-							  <tbody>
-								<?php
-								foreach($item as $itm){
-									echo '
-								<tr>
-									<td>'.$itm['ItemName'].'</td>
-									<td>'.$itm['Qty'].'</td>
-									<td align="right">Rp. '.number_format($itm['HargaHPS'],2,',','.').'</td>
-									<td align="right">Rp. '.number_format($itm['harga_sub_total'],2,',','.').'</td>
-								</tr>
-									';
-								}
-								?>
-								<tr>
-									<td></td>
-									<td></td>
-									<td><b>Total</b></td>
-									<td align="right"><b>Rp. <?=number_format($approve_pr->BudgetUsed,2,',','.')?></b></td>
-								</tr>
-							  </tbody>
-							</table>
-							
+						</div>
+						<div class="panel panel-inverse">
+							<div class="col-md-12">
+								<table class="table table-striped table-bordered table-hover" id="item_table">
+								<thead>
+									<tr align="center">
+										<th>Item Name</th>
+										<th>Quantity</th>
+										<th>HPS</th>
+										<th>Sub Total</th>
+									</tr>
+								</thead>
+								<tbody>
+									<?php
+									foreach($item as $itm){
+										echo '
+									<tr>
+										<td>'.$itm['ItemName'].'</td>
+										<td>'.$itm['Qty'].'</td>
+										<td align="right">Rp. '.number_format($itm['HargaHPS'],2,',','.').'</td>
+										<td align="right">Rp. '.number_format($itm['harga_sub_total'],2,',','.').'</td>
+									</tr>
+										';
+									}
+									?>
+									<tr>
+										<td></td>
+										<td></td>
+										<td><b>Total</b></td>
+										<td align="right"><b>Rp. <?=number_format($approve_pr->BudgetUsed,2,',','.')?></b></td>
+									</tr>
+								</tbody>
+								</table>
+							</div>	
+						</div>
+						<div class="panel panel-inverse">
 							<hr class="dotted">
-                            
+                            <div class="col-md-12">
                                             <table class="table table-striped table-bordered table-hover text_kanan" id="table_gridItemProcess">
                                                 <thead>
                                                     <tr>
@@ -133,6 +137,9 @@
 
                                                 </tfoot>
                                             </table>
+							</div>
+						</div>
+						<div class="panel panel-inverse">
 							<hr class="dotted">
 							
 							<div class="col-md-12" style="margin-bottom:2em">
@@ -165,11 +172,114 @@
                                     </div>
 								</div>
                             </div>
-							
+						</div>	
+						<div class="panel panel-inverse">
 							<hr class="dotted">
                             <hr class="dotted">
-							<form class="validator-form form-horizontal" id="fm_apppr" enctype="multipart/form-data" method="POST">
+							
+                        </div>
+
+                    
+					
+                </div>
+            </div>
+			
+			<hr class="dotted">
+			<hr class="dotted">
+			<hr class="dotted">
+			<hr class="dotted">
+			<i style="margin:2em;"></i>
+			
+			<div class="portlet-body">
+                <div class="tab-content">
+					<h5 class="sbold uppercase">Check Anggaran</h5>
+                        <div class="panel panel-inverse">
+                            <hr class="dotted">
+                            <div class="col-md-12">
+								<div class="col-md-6">
+									<div class="col-sm-12">
+                                        <label class="control-label col-sm-4">Sisa Anggaran </label>
+                                        <div class="col-sm-7">
+                                            <?=$approve_pr->RequestID?>
+                                        </div>
+                                    </div>
+								</div>
+								<div class="col-md-6">
+									<div class="col-sm-12">
+                                        <label class="control-label col-sm-4">Anggaran Terpakai </label>
+                                        <div class="col-sm-7">
+                                            <?=date("d-m-Y", strtotime($approve_pr->CreateDate))?>
+                                        </div>
+                                    </div>
+								</div>
+                            </div>
+						</div>
+						<div class="panel panel-inverse">
+							<form class="" id="fm_apppr" enctype="multipart/form-data" method="POST">
                             	<div class="validator-form form-horizontal" style="margin-top:2em">
+                                    <div class="form-group">
+                                        <div class="col-md-6">
+											<div class="form-group">
+												<label class="control-label col-sm-3">Entity PNM </label>
+												<div class="col-md-9">
+													<input type="text" class="form-control" id="EntityPNM" name="EntityPNM">
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="control-label col-sm-3">Main Account </label>
+												<div class="col-md-9">
+													<input type="text" class="form-control" id="MainAccount" name="MainAccount">
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="control-label col-sm-3">Sub Account </label>
+												<div class="col-md-9">
+													<input type="text" class="form-control" id="SubAccount" name="SubAccount">
+												</div>
+											</div>
+										</div>
+                                        <div class="col-md-6">
+											<div class="form-group">
+												<label class="control-label col-sm-3">LOB </label>
+												<div class="col-md-9">
+													<input type="text" class="form-control" id="LOB" name="LOB">
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="control-label col-sm-3">Division </label>
+												<div class="col-md-9">
+													<input type="text" class="form-control" id="Division_form" name="Division_form">
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="control-label col-sm-3">Bisnis Type </label>
+												<div class="col-md-9">
+													<input type="text" class="form-control" id="BisnisType" name="BisnisType">
+												</div>
+											</div>
+										</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3">COA </label>
+                                        <div class="col-md-7">
+                                            <input type="text" class="form-control" id="COA" name="COA">
+										</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3">Anggaran </label>
+                                        <div class="col-md-7">
+                                            <select id="Anggaran" name="Anggaran" class="form-control">
+												<option value="Dalam Anggaran">Dalam Anggaran</option>
+												<option value="Diluar Anggaran">Diluar Anggaran</option>
+											</select>
+										</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3">Budget Disetujui </label>
+                                        <div class="col-md-7">
+                                            <input type="text" class="form-control" id="BudgetDisetujui" name="BudgetDisetujui">
+										</div>
+                                    </div>
                                     <div class="form-group">
                                         <label class="control-label col-sm-3">Notes </label>
                                         <div class="col-md-7">
@@ -234,41 +344,41 @@
 	} );
 
 	function go_to_list(){
-		$(location).attr("href","<?php echo base_url("/procurement/purchase_request/list_verifikasi_vendor")?>");
+		$(location).attr("href","<?php echo base_url("/procurement/purchase_request/list_request_anggaran")?>");
 	}
 
     function submit_app() { 
-		// var action = document.getElementById('action').value;
-		// var RequestID = document.getElementById('RequestID').value;
-		// var flow_id = document.getElementById('flow_id').value;
-		// var status = document.getElementById('status').value;
-		// var notes = document.getElementById('notes').value;
-		// var pic_po = document.getElementById('pic_po').value;
-        // $.post('<?= base_url("/procurement/purchase_request/app_requestproc");?>', {
-			// action:action,
-			// RequestID:RequestID,
-			// flow_id:flow_id,
-			// status:status,
-			// pic_po:pic_po
-		// },
-		// function(data){
-			// alert(data);
-			// go_to_list();
-		// })
-		
 		var action = document.getElementById('action').value;
 		var RequestID = document.getElementById('RequestID').value;
 		var flow_id = document.getElementById('flow_id').value;
 		var status = document.getElementById('status').value;
 		var notes = document.getElementById('notes').value;
 		var pic_po = document.getElementById('pic_po').value;
-        $.post('<?= base_url("/procurement/purchase_request/app_requestproc");?>', {
+		var EntityPNM = document.getElementById('EntityPNM').value;
+		var MainAccount = document.getElementById('MainAccount').value;
+		var SubAccount = document.getElementById('SubAccount').value;
+		var LOB = document.getElementById('LOB').value;
+		var Division_form = document.getElementById('Division_form').value;
+		var BisnisType = document.getElementById('BisnisType').value;
+		var COA = document.getElementById('COA').value;
+		var Anggaran = document.getElementById('Anggaran').value;
+		var BudgetDisetujui = document.getElementById('BudgetDisetujui').value;
+        $.post('<?= base_url("/procurement/purchase_request/app_requestproc_anggaran");?>', {
 			action:action,
 			RequestID:RequestID,
 			flow_id:flow_id,
 			status:status,
 			notes:notes,
-			pic_po:pic_po
+			pic_po:pic_po,
+			EntityPNM:EntityPNM,
+			MainAccount:MainAccount,
+			SubAccount:SubAccount,
+			LOB:LOB,
+			Division:Division_form,
+			BisnisType:BisnisType,
+			COA:COA,
+			Anggaran:Anggaran,
+			BudgetDisetujui:BudgetDisetujui
 		},
 		function(data){
 			alert(data);

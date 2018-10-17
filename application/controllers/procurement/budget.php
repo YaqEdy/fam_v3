@@ -8,7 +8,7 @@ class Budget extends CI_Controller {
 
     function __construct() {
         parent::__construct();
-         
+
         if ($this->session->userdata("is_login") === FALSE) {
             $this->sso->log_sso();
         } else {
@@ -33,16 +33,6 @@ class Budget extends CI_Controller {
     }
 
     function home() {
-//        print_r($this->global_m->getFlow('7-2'));die();
-//        $db1 = $this->load->database('config1', true);
-//        $this->load->database();
-//        $querydata1 = $this->db->query("SELECT ID_JNS_BUDGET,BUDGET_DESC FROM TBL_R_JNS_BUDGET");
-//        print_r($querydata1->result());
-//
-//        $db2 = $this->load->database('oracle', true);
-//        $querydata2 = $db2->query("select VENDOR_NAME,CITY from PNM_FAM_SUPPLIERS_STG");
-//        print_r($querydata2->result());die();
-        
         $menuId = $this->home_m->get_menu_id('procurement/budget/home');
         $data['menu_id'] = $menuId[0]->menu_id;
         $data['menu_parent'] = $menuId[0]->parent;
@@ -63,6 +53,7 @@ class Budget extends CI_Controller {
 //            $data['karyawan'] = $this->global_m->tampil_id_desk('master_karyawan', 'id_kyw', 'nama_kyw', 'id_kyw');
 //            $data['goluser'] = $this->global_m->tampil_id_desk('sec_gol_user', 'goluser_id', 'goluser_desc', 'goluser_id');
 //            $data['statususer'] = $this->global_m->tampil_id_desk('sec_status_user', 'statususer_id', 'statususer_desc', 'statususer_id');
+
 
         $this->template->set('title', 'Budget Capex');
         $this->template->load('template/template_dataTable', 'procurement/budget/budget_v', $data);
@@ -251,7 +242,6 @@ class Budget extends CI_Controller {
 //            $options .= "<option  value='" . $k->DivisionID . "'>" . $k->DivisionName . "</option>";
 //        }
 //        $options .= "</select>";
-
 //        echo json_encode($options);
     }
 
@@ -321,11 +311,11 @@ class Budget extends CI_Controller {
     }
 
     public function ajax_GridSetting() {
-        $icolumn = array('ID_SETTTING_BUDGET','TAHUN', 'ID_JNS_BUDGET', 'BUDGET_DESC', 'STATUS', 'IS_TRASH');
+        $icolumn = array('ID_SETTTING_BUDGET', 'TAHUN', 'ID_JNS_BUDGET', 'BUDGET_DESC', 'STATUS', 'IS_TRASH');
         $ilike = array(
             $this->input->post('sSearch') => $_POST['search']['value']
         );
-        $iwhere = array('IS_TRASH'=>0);
+        $iwhere = array('IS_TRASH' => 0);
         $iorder = array('BudgetID' => 'asc');
         $list = $this->datatables_custom->get_datatables('VW_BUDGET_SETTING', $icolumn, $iorder, $iwhere, $ilike);
 
@@ -400,6 +390,24 @@ class Budget extends CI_Controller {
             $result = array('istatus' => false, 'type' => 'error', 'iremarks' => 'Gagal.!'); //, 'body'=>'Data Berhasil Disimpan');
         }
         echo json_encode($result);
+    }
+
+    function getfam() {
+        $jsonarr = [
+            'table' => 'PNM_FA_LOCATIONS_V'
+        ];
+        $curlurl = "http://192.168.10.241/OCI/index.php/api/v1/fam/get_all";
+
+        $ch = curl_init($curlurl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($jsonarr));
+        $responsejson = curl_exec($ch);
+        curl_close($ch);
+
+        $response = json_decode($responsejson, true);
+
+        print_r($response['data']);
+        // $this->response($result, 200);
     }
 
 }

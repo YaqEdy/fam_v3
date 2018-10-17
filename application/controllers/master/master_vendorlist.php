@@ -66,7 +66,7 @@ class master_vendorlist extends CI_Controller {
         }
     }
 
-function home() {
+    function home() {
         $menuId = $this->home_m->get_menu_id('master/master_vendorlist/home');
         $data['menu_id'] = $menuId[0]->menu_id;
         $data['menu_parent'] = $menuId[0]->parent;
@@ -116,7 +116,7 @@ function home() {
 //     }
 
 
-     function get_server_side() {
+    function get_server_side() {
         $requestData = $_REQUEST;
         //  echo "<pre>";
         //  print_r($requestData);
@@ -126,59 +126,78 @@ function home() {
         $iSearch=$this->input->post('sSearch');
         $columns = array(
             // datatable column index  => database column name
-             0 => 'Raw_ID',   
-             1 => 'VendorID',   
-             2 => 'VendorName',
-             3 => 'VendorAlias',
-             4 => 'VendorTypeID',
-             5 => 'NPWP',
-             6 => 'AccountLiability',
-             7 => 'AccountPrepayment',
-             8 => 'Terms',
-             9 => 'Currency',
-             10 => 'NoRekening',
-             11 => 'NamaBank',
-             12 => 'MasaBerlakuTDP',
-             13 => 'Image',
-             14 => 'AlamatNPWP',
-             15 => 'AlamatSupplier',
-             16 => 'VendorAddress',
-             17 => 'Status',
-             18 => 'CreateDate',
-             19 => 'CreateBy',
-             20 => 'Is_trash',
-             21 => 'IdProvinsi',
-             22 => 'CreateDate',
-             23 => 'ID_Branch',
-             23 => 'ID_Country',
-             24 => 'ID_Branch',
-             25 => 'IdKabupaten'
+         0 => 'Raw_ID',   
+         1 => 'VendorID',   
+         2 => 'VendorName',
+         3 => 'VendorAlias',
+         4 => 'AFILIASI',
+         5 => 'NPWP',
+         6 => 'AccountLiability',
+         7 => 'AccountPrepayment',
+         8 => 'Terms',
+         9 => 'Currency',
+         10 => 'NomorRekening',
+         11 => 'NamaBank',
+         12 => 'MasaBerlakuTDP',
+         13 => 'Image',
+         14 => 'AlamatNPWP',
+         15 => 'AlamatSupplier',
+         16 => 'VendorAddress',
+         17 => 'Status',
+         18 => 'CreateDate',
+         19 => 'CreateBy',
+         20 => 'Is_trash',
+         21 => 'IdProvinsi',
+         22 => 'CreateDate',
+         23 => 'ID_Branch',
+         23 => 'ID_Country',
+         24 => 'ID_Branch',
+         25 => 'IdKabupaten',
+         26 => 'PKP',
+         27 => 'NamaRekening',
+         28 => 'NamaRekening2',
+         29 => 'NamaBank2',
+         30 => 'NomorRekening2',
+         31 => 'NamaRekening3',
+         32 => 'NamaBank3',
+         33 => 'NomorRekening3',
+         34 => 'NamaProvinsi',
+         35 => 'NamaKabupaten',
+         36 => 'CountryName',
+         37 => 'BRANCH_DESC'
+         
 
-             
-        );
 
-        $sql = "select a.Raw_ID, a.VendorID, a.VendorName, a.ID_Country, a.ID_Branch, b.ID, b.BRANCH_DESC, a.VendorTypeID, a.NPWP, c.NamaProvinsi, 
-                d.NamaKabupaten, a.Terms, a.Currency, a.NoRekening, a.NamaBank, a.Image,
-                a.Performance, a.VendorAlias, a.AlamatNPWP, a.AlamatSupplier,a.VendorAddress,a.IdProvinsi, a.IdKabupaten, 
-                a.ID_Country,a.MasaBerlakuTDP, e.CountryName,  a.Status, a.AccountLiability, a.AccountPrepayment, a.CreateDate
-                from Mst_Vendor a 
-                left join TBL_M_BRANCH b on a.ID_Branch = b.ID  
-                left join Mst_Provinsi c on a.IdProvinsi = c.IdProvinsi
-                left join Mst_Kabupaten d on a.IdKabupaten = d.IdKabupaten
-                left join TBL_CountryNew e on a.ID_Country = e.ID_Country where Status like '%".$iStatus."%'";            
+
+
+         // 34 => 'allRek'
+
+
+
+     );
+
+        $sql = "select a.Raw_ID, a.VendorID, a.VendorName, a.NamaRekening2, a.NamaBank2, a.NomorRekening2, a.NamaRekening3,  a.NamaBank3, a.NomorRekening3, a.ID_Country, a.ID_Branch, a.PKP, b.ID, b.BRANCH_DESC, a.AFILIASI, a.NPWP, c.NamaProvinsi, 
+        d.NamaKabupaten, a.Terms, a.Currency, a.NomorRekening, a.NamaRekening, a.NamaBank, a.Image,
+        a.Performance, a.VendorAlias, a.AlamatNPWP, a.AlamatSupplier,a.VendorAddress,a.IdProvinsi, a.IdKabupaten, 
+        a.ID_Country,a.MasaBerlakuTDP, e.CountryName,  a.Status, a.AccountLiability, a.AccountPrepayment, a.CreateDate
+        from Mst_Vendor a 
+        left join TBL_M_BRANCH b on a.ID_Branch = b.ID  
+        left join Mst_Provinsi c on a.IdProvinsi = c.IdProvinsi
+        left join Mst_Kabupaten d on a.IdKabupaten = d.IdKabupaten
+        left join TBL_CountryNew e on a.ID_Country = e.ID_Country where Status like '%".$iStatus."%'";            
         $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
         $totalFiltered = $totalData;
 
         if (!empty($requestData['search']['value'])) { 
             if ($iSearch=='1'){
-                $sql = "SELECT * from Mst_Vendor where Status like '%".$iStatus."%'and VendorTypeID like '%".$requestData['search']['value']."%'";
+                $sql = "SELECT * from Mst_Vendor where Status like '%".$iStatus."%'and AFILIASI like '%".$requestData['search']['value']."%'";
             }else if ($iSearch=='2'){
                 $sql = "SELECT * from Mst_Vendor where Status like '%".$iStatus."%'and VendorID  like '%".$requestData['search']['value']."%'";
             }else if ($iSearch=='3'){
                 $sql = "SELECT * from Mst_Vendor where Status like '%".$iStatus."%'and VendorName like '%".$requestData['search']['value']."%'";
             }else{
                 $sql = "SELECT * from Mst_Vendor where Status like '%".$iStatus."%'"; 
-                $sql .= "and VendorTypeID like '%".$requestData['search']['value']."%'"; 
+                $sql .= "and AFILIASI like '%".$requestData['search']['value']."%'"; 
                 $sql .= "or VendorID like '%".$requestData['search']['value']."%'";
                 $sql .= "or VendorName like '%".$requestData['search']['value']."%'";
                 $sql .= "or VendorAddress like '%".$requestData['search']['value']."%'";
@@ -190,265 +209,281 @@ function home() {
                 $sql .= "or CreateBy like '%".$requestData['search']['value']."%'";
                 $sql .= "or Is_trash like '%".$requestData['search']['value']."%'";
                 $sql .= "or bank like '%".$requestData['search']['value']."%'";  
-               
+
             }
-           
+
             $sql.=" ORDER BY " . $columns[$requestData['order'][1]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
-             
+
             $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
             $totalFiltered = $totalData;
         } else {
             // , " . $columns[$requestData['order'][0]['column']] . " ROW_ID
-             $sql.=" ORDER BY " . $columns[$requestData['order'][1]['column']] . "   " . $requestData['order'][1]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";   
-        }
+         $sql.=" ORDER BY " . $columns[$requestData['order'][1]['column']] . "   " . $requestData['order'][1]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";   
+     }
 
-        $row = $this->global_m->tampil_semua_array($sql)->result_array(); 
-        
-        $data = array();
-        $no=$_POST['start']+1;
-        foreach ($row as $row) {
+     $row = $this->global_m->tampil_semua_array($sql)->result_array(); 
+
+     $data = array();
+     $no=$_POST['start']+1;
+     foreach ($row as $row) {
             # code...
             // preparing an array
 
 
 
-            $nestedData = array();
-            $nestedData[] = $no++;
-            $nestedData[] = $row["Raw_ID"];
-            $nestedData[] = $row["VendorID"];        
-            $nestedData[] = $row["VendorName"];
-            $nestedData[] = $row["VendorAlias"];
-            $nestedData[] = $row["VendorTypeID"];
-            $nestedData[] = $row["NPWP"]; 
-            $nestedData[] = $row["IdProvinsi"]; 
-            $nestedData[] = $row["IdKabupaten"];
-            $nestedData[] = $row["ID_Country"];
-            $nestedData[] = $row["ID"];
-            $nestedData[] = $row["AccountLiability"];
-            $nestedData[] = $row["AccountPrepayment"];
-            $nestedData[] = $row["Terms"];
-            $nestedData[] = $row["Currency"];
-            $nestedData[] = $row["NoRekening"];
-            $nestedData[] = $row["NamaBank"]; 
-            $nestedData[] = $row["MasaBerlakuTDP"]; 
-            $nestedData[] = '<a href="' . base_url() . 'uploads/vendorlist/' . $row["Image"] . '" >Download '.$row["Image"].'</a>';
-            $nestedData[] = $row["AlamatNPWP"]; 
-            $nestedData[] = $row["AlamatSupplier"];
-            $nestedData[] = $row["VendorAddress"]; 
-            $nestedData[] = $row["Performance"];  
- 
+        $nestedData = array();
+        $nestedData[] = $no++;
+        $nestedData[] = $row["Raw_ID"];
+        $nestedData[] = $row["VendorID"];        
+        $nestedData[] = $row["VendorName"];
+        $nestedData[] = $row["VendorAlias"];
+        $nestedData[] = $row["AFILIASI"];
+        $nestedData[] = $row["NPWP"]; 
+        $nestedData[] = $row["NamaProvinsi"];
+        $nestedData[] = $row["NamaKabupaten"];
+        $nestedData[] = $row["CountryName"];
+        $nestedData[] = $row["BRANCH_DESC"];
+
+
+        $nestedData[] = $row["AccountLiability"];
+        $nestedData[] = $row["AccountPrepayment"];
+        $nestedData[] = $row["Terms"];
+        $nestedData[] = $row["Currency"];
+        $nestedData[] = $row["NomorRekening"];
+        $nestedData[] = $row["NamaBank"]; 
+        $nestedData[] = $row["MasaBerlakuTDP"]; 
+        $nestedData[] = '<a href="' . base_url() . 'uploads/vendorlist/' . $row["Image"] . '" >Download '.$row["Image"].'</a>';
+        $nestedData[] = $row["AlamatNPWP"]; 
+        $nestedData[] = $row["AlamatSupplier"];
+        $nestedData[] = $row["VendorAddress"]; 
+        $nestedData[] = $row["Performance"];
+        $nestedData[] = $row["PKP"];
+        $nestedData[] = $row["NamaRekening"];
+        $nestedData[] = $row["NamaRekening2"]; 
+        $nestedData[] = $row["NamaBank2"];
+        $nestedData[] = $row["NomorRekening2"]; 
+        $nestedData[] = $row["NamaRekening3"];
+        $nestedData[] = $row["NamaBank3"];
+        $nestedData[] = $row["NomorRekening3"];    
+
             // $nestedData[] = $row["Status"];
 
-            if($row["Status"]==0)
-            {
-                $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate" data-toggle="modal" data-target="#mdl_Update">Update</a><a class="btn  btn-sm btn-danger" id="btnAktiv" href="#">Aktivate</a>';
-            }
-            else
-            {
-                $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate" data-toggle="modal" data-target="#mdl_Update">Update<a class="btn btn-sm green-meadow" id="btnDeactivate" href="#">Deactivate</a>';
-            }
-
-            $nestedData[] = $row["IdProvinsi"];
-            
-
-            $data[] = $nestedData;
+        if($row["Status"]==0)
+        {
+            $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate" data-toggle="modal" data-target="#mdl_Update">Update</a><a class="btn  btn-sm btn-danger" id="btnAktiv" href="#">Aktivate</a>';
+        }
+        else
+        {
+            $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate" data-toggle="modal" data-target="#mdl_Update">Update<a class="btn btn-sm green-meadow" id="btnDeactivate" href="#">Deactivate</a>';
         }
 
-        $json_data = array(
+        $nestedData[] = $row["IdProvinsi"]; 
+        $nestedData[] = $row["IdKabupaten"];
+        $nestedData[] = $row["ID_Country"];
+        $nestedData[] = $row["ID"];
+        
+        // $nestedData[] = $this->master_vendorlist_m->getRek($row["VendorID"]);
+
+
+
+        $data[] = $nestedData;
+    }
+
+    $json_data = array(
             "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
             "recordsTotal" => intval($totalData), // total number of records
             "recordsFiltered" => intval($totalFiltered), // total number of records after searching, if there is no searching then totalFiltered = totalData
             "data" => $data   // total data array
         );
 
-        echo json_encode($json_data);  
+    echo json_encode($json_data);  
+}
+
+public function seloptiontypekab($reqtypeid = null) {
+    $reqtypeid = substr($reqtypeid, 0, 2);
+    $sel_optiontype = $this->master_vendorlist_m->selitem_typekab($reqtypeid);
+    echo "<select class='form-control' name='IdKabupaten' id='id_IdKabupaten' >";
+    echo "<option value='' disabled' selected=''>--Select--</option>";
+    foreach ($sel_optiontype as $row) {
+        echo "<option value='$row->IdKabupaten'>$row->NamaKabupaten</option>";
     }
+    echo "</select>";
+}
 
-        public function seloptiontypekab($reqtypeid = null) {
-        $reqtypeid = substr($reqtypeid, 0, 2);
-        $sel_optiontype = $this->master_vendorlist_m->selitem_typekab($reqtypeid);
-        echo "<select class='form-control' name='IdKabupaten' id='id_IdKabupaten' >";
-        echo "<option value='' disabled' selected=''>--Select--</option>";
-        foreach ($sel_optiontype as $row) {
-            echo "<option value='$row->IdKabupaten'>$row->NamaKabupaten</option>";
-        }
-        echo "</select>";
-    }
+public function ajax_UpdateStatusCategory(){
+    $this->load->helper('array');
+    $i_list = $this->input->post('sTbl');
 
-    public function ajax_UpdateStatusCategory(){
-        $this->load->helper('array');
-        $i_list = $this->input->post('sTbl');
-
-        $id_Raw = trim(element('Raw_ID',$i_list));
-        $name = trim(element('name',$i_list));
+    $id_Raw = trim(element('Raw_ID',$i_list));
+    $name = trim(element('name',$i_list));
         // $id = trim(element('VendorTypeID',$i_list));
-        $id_kyw=(int)$this->session->userdata('id_kyw');
-        $Status = trim(element('Status',$i_list));
-        
-        $data = array(
-           
-            'Status' => $Status,
-            'UpdateBy' => $id_kyw,
-            'UpdateDate' => date('Y-m-d H:i:s'),
-            
-        );
-        $model = $this->global_m->ubah('Mst_Vendor', $data,'Raw_ID',$id_Raw);
-        if ($model) {
-            if ($Status == 1) {
-                $message = 'Data ' . $name . ' Berhasil Di Aktifkan';
-            } else {
-                $message = 'Data ' . $name . ' Berhasil Di Non Aktifkan';
-            }
-            $notifikasi = Array(
-                'msgType' => true,
-                'msgTitle' => 'Success',
-                'msg' => $message
-            );
+    $id_kyw=(int)$this->session->userdata('id_kyw');
+    $Status = trim(element('Status',$i_list));
+
+    $data = array(
+
+        'Status' => $Status,
+        'UpdateBy' => $id_kyw,
+        'UpdateDate' => date('Y-m-d H:i:s'),
+
+    );
+    $model = $this->global_m->ubah('Mst_Vendor', $data,'Raw_ID',$id_Raw);
+    if ($model) {
+        if ($Status == 1) {
+            $message = 'Data ' . $name . ' Berhasil Di Aktifkan';
         } else {
-            $notifikasi = Array(
-                'msgType' => false,
-                'msgTitle' => 'Error',
-                'msg' => 'Data Vendor Type ' . $name . ' Tidak Berhasil Di Non Aktifkan'
-            );
+            $message = 'Data ' . $name . ' Berhasil Di Non Aktifkan';
         }
-        echo json_encode($notifikasi);
-    }
-
-
-
-    public function ajax_UpdateCategory(){
-
-        $this->load->helper('array');
-        $i_list = $this->input->post('sTbl');
-
-        $id_kyw=(int)$this->session->userdata('id_kyw');
-        // $Raw_ID = trim(element('Raw_ID',$i_list));
-        $VendorID = trim(element('VendorID',$i_list));
-        $VendorName = trim(element('VendorName',$i_list));
-        $VendorAlias = trim(element('VendorAlias',$i_list));
-        $VendorTypeID = trim(element('VendorTypeID',$i_list));
-        $NPWP = trim(element('NPWP',$i_list));
-        $NamaProvinsi = trim (element('IdProvinsi',$i_list)); 
-        $NamaKabupaten = trim(element('IdKabupaten',$i_list));
-        $IdCountry = trim (element('IdCountry',$i_list)); 
-        $ID_Branch = trim (element('ID_Branch',$i_list));
-        $AccountLiability = trim (element('AccountLiability',$i_list));
-        $AccountPrepayment = trim (element('AccountPrepayment',$i_list)); 
-        $Terms = trim (element('Terms',$i_list));
-        $Currency = trim (element('Currency',$i_list));
-        $NoRekening = trim (element('NoRekening',$i_list));
-        $NamaBank = trim (element('NamaBank',$i_list)); 
-        $MasaBerlakuTDP = date('Y-m-d', strtotime (trim (element('MasaBerlakuTDP',$i_list))));
-        $Image = trim (element('Image',$i_list));
-        $AlamatNPWP = trim (element('AlamatNPWP',$i_list));
-        $AlamatSupplier = trim (element('AlamatSupplier',$i_list)); 
-        $VendorAddress = trim (element('VendorAddress',$i_list));
-        $Performance = trim (element('Performance',$i_list));
-        $iStatus = trim(element('Status',$i_list));
-
-
-         
-         $id_Raw = $this->master_vendorlist_m->getIdMax();
-         // $id = $this->master_vendorlist_m->getIdMax_typeid();
-        if(element('Raw_ID',$i_list)=="Generate"){
-       // echo $VendorName;
-             $data = array(
-            // 'Raw_ID' => $Raw_ID,
-            'VendorID' => $id_Raw,
-            'VendorName' => $VendorName,
-            'VendorAlias' => $VendorAlias,
-            'VendorTypeID' => $VendorTypeID,
-            'NPWP' => $NPWP,
-            'JoinDate' => date('Y-m-d'),
-            'IdProvinsi' => $NamaProvinsi,
-            'IdKabupaten' => $NamaKabupaten,
-            'ID_Country' => $IdCountry,
-            'ID_Branch' => $ID_Branch,
-            'AccountLiability' => $AccountLiability,
-            'AccountPrepayment' => $AccountPrepayment,
-            'Terms' => $Terms,
-            'Currency' => $Currency,
-            'NoRekening' => $NoRekening,
-            'NamaBank' => $NamaBank,
-            'MasaBerlakuTDP' => $MasaBerlakuTDP,
-            'Image' => $Image,
-            'AlamatNPWP' => $AlamatNPWP,
-            'AlamatSupplier' => $AlamatSupplier,
-            'VendorAddress' => $VendorAddress,
-            'Performance' => $Performance,
-            'Status' => $iStatus,
-            'CreateBy' => $id_kyw,
-            'CreateDate' => date('Y-m-d H:i:s'),
-            
+        $notifikasi = Array(
+            'msgType' => true,
+            'msgTitle' => 'Success',
+            'msg' => $message
         );
+    } else {
+        $notifikasi = Array(
+            'msgType' => false,
+            'msgTitle' => 'Error',
+            'msg' => 'Data Vendor Type ' . $name . ' Tidak Berhasil Di Non Aktifkan'
+        );
+    }
+    echo json_encode($notifikasi);
+}
+
+
+
+public function ajax_UpdateCategory(){
+
+    $this->load->helper('array');
+    $i_list = $this->input->post('sTbl');
+
+    $id_kyw=(int)$this->session->userdata('id_kyw');
+        // $Raw_ID = trim(element('Raw_ID',$i_list));
+    $VendorID = trim(element('VendorID',$i_list));
+    $VendorName = trim(element('VendorName',$i_list));
+    $VendorAlias = trim(element('VendorAlias',$i_list));
+    $AFILIASI = trim(element('AFILIASI',$i_list));
+    $NPWP = trim(element('NPWP',$i_list));
+    $NamaProvinsi = trim (element('IdProvinsi',$i_list)); 
+    $NamaKabupaten = trim(element('IdKabupaten',$i_list));
+    $IdCountry = trim (element('IdCountry',$i_list)); 
+    $ID_Branch = trim (element('ID_Branch',$i_list));
+    $AccountLiability = trim (element('AccountLiability',$i_list));
+    $AccountPrepayment = trim (element('AccountPrepayment',$i_list)); 
+    $Terms = trim (element('Terms',$i_list));
+    $Currency = trim (element('Currency',$i_list));
+    $NoRekening = trim (element('NoRekening',$i_list));
+    $NamaBank = trim (element('NamaBank',$i_list)); 
+    $MasaBerlakuTDP = date('Y-m-d', strtotime (trim (element('MasaBerlakuTDP',$i_list))));
+    $Image = trim (element('Image',$i_list));
+    $AlamatNPWP = trim (element('AlamatNPWP',$i_list));
+    $AlamatSupplier = trim (element('AlamatSupplier',$i_list)); 
+    $VendorAddress = trim (element('VendorAddress',$i_list));
+    $Performance = trim (element('Performance',$i_list));
+    $iStatus = trim(element('Status',$i_list));
+
+
+
+    $id_Raw = $this->master_vendorlist_m->getIdMax();
+         // $id = $this->master_vendorlist_m->getIdMax_typeid();
+    if(element('Raw_ID',$i_list)=="Generate"){
+       // echo $VendorName;
+     $data = array(
+            // 'Raw_ID' => $Raw_ID,
+        'VendorID' => $id_Raw,
+        'VendorName' => $VendorName,
+        'VendorAlias' => $VendorAlias,
+        'AFILIASI' => $AFILIASI,
+        'NPWP' => $NPWP,
+        'JoinDate' => date('Y-m-d'),
+        'IdProvinsi' => $NamaProvinsi,
+        'IdKabupaten' => $NamaKabupaten,
+        'ID_Country' => $IdCountry,
+        'ID_Branch' => $ID_Branch,
+        'AccountLiability' => $AccountLiability,
+        'AccountPrepayment' => $AccountPrepayment,
+        'Terms' => $Terms,
+        'Currency' => $Currency,
+        'NoRekening' => $NoRekening,
+        'NamaBank' => $NamaBank,
+        'MasaBerlakuTDP' => $MasaBerlakuTDP,
+        'Image' => $Image,
+        'AlamatNPWP' => $AlamatNPWP,
+        'AlamatSupplier' => $AlamatSupplier,
+        'VendorAddress' => $VendorAddress,
+        'Performance' => $Performance,
+        'Status' => $iStatus,
+        'CreateBy' => $id_kyw,
+        'CreateDate' => date('Y-m-d H:i:s'),
+
+    );
 
       // print_r($data); die();
 
-       }else{
+ }else{
         // echo "2";
-            $id = trim(element('Raw_ID',$i_list));
-         $data = array(
-            
-            
-            'VendorName' => $VendorName,
-            'VendorAlias' => $VendorAlias,
-            'VendorTypeID' => $VendorTypeID,
-            'NPWP' => $NPWP,
-            'IdProvinsi' => $NamaProvinsi,
-            'IdKabupaten' => $NamaKabupaten,
-            'ID_Country' => $CountryName,
-            'ID_Branch' => $BRANCH_DESC,
-            'AccountLiability' => $AccountLiability,
-            'AccountPrepayment' => $AccountPrepayment,
-            'Terms' => $Terms,
-            'Currency' => $Currency,
-            'NoRekening' => $NoRekening,
-            'NamaBank' => $NamaBank,
-            'MasaBerlakuTDP' => $MasaBerlakuTDP,
-            'Image' => $Image,
-            'AlamatNPWP' => $AlamatNPWP,
-            'AlamatSupplier' => $AlamatSupplier,
-            'VendorAddress' => $VendorAddress,
-            'Performance' => $Performance,
-            'UpdateBy' => $id_kyw,
-            'UpdateDate' => date('Y-m-d H:i:s'),
-            
-        );
-        
-       }
-      
+    $id = trim(element('Raw_ID',$i_list));
+    $data = array(
+
+
+        'VendorName' => $VendorName,
+        'VendorAlias' => $VendorAlias,
+        'AFILIASI' => $AFILIASI,
+        'NPWP' => $NPWP,
+        'IdProvinsi' => $NamaProvinsi,
+        'IdKabupaten' => $NamaKabupaten,
+        'ID_Country' => $CountryName,
+        'ID_Branch' => $BRANCH_DESC,
+        'AccountLiability' => $AccountLiability,
+        'AccountPrepayment' => $AccountPrepayment,
+        'Terms' => $Terms,
+        'Currency' => $Currency,
+        'NoRekening' => $NoRekening,
+        'NamaBank' => $NamaBank,
+        'MasaBerlakuTDP' => $MasaBerlakuTDP,
+        'Image' => $Image,
+        'AlamatNPWP' => $AlamatNPWP,
+        'AlamatSupplier' => $AlamatSupplier,
+        'VendorAddress' => $VendorAddress,
+        'Performance' => $Performance,
+        'UpdateBy' => $id_kyw,
+        'UpdateDate' => date('Y-m-d H:i:s'),
+
+    );
+
+}
+
        // print_r($data); die();
-        if(element('Raw_ID',$i_list)=="Generate"){
-            $model = $this->global_m->simpan('Mst_Vendor', $data);
-            if ($model) {
-                $msg = 'Data Berhasil Disimpan';
-            } else {
-                $msg = 'Data gagal Disimpan';
-            }
-       }else{
-        $model = $this->global_m->ubah('Mst_Vendor', $data,'Raw_ID',$id);
-        if ($model) {
-                $msg = 'Data Berhasil Diubah';
-            } else {
-                $msg = 'Data gagal Diubah';
-            }
-       }
-
-        if ($model) {
-            $notifikasi = Array(
-                'msgType' => true,
-                'msgTitle' => 'Success',
-                'msg' => $msg
-            );
-        } else {
-            $notifikasi = Array(
-                'msgType' => false,
-                'msgTitle' => 'Error',
-                'msg' => $msg
-            );
-        }
-        echo json_encode($notifikasi);
+if(element('Raw_ID',$i_list)=="Generate"){
+    $model = $this->global_m->simpan('Mst_Vendor', $data);
+    if ($model) {
+        $msg = 'Data Berhasil Disimpan';
+    } else {
+        $msg = 'Data gagal Disimpan';
     }
+}else{
+    $model = $this->global_m->ubah('Mst_Vendor', $data,'Raw_ID',$id);
+    if ($model) {
+        $msg = 'Data Berhasil Diubah';
+    } else {
+        $msg = 'Data gagal Diubah';
+    }
+}
+
+if ($model) {
+    $notifikasi = Array(
+        'msgType' => true,
+        'msgTitle' => 'Success',
+        'msg' => $msg
+    );
+} else {
+    $notifikasi = Array(
+        'msgType' => false,
+        'msgTitle' => 'Error',
+        'msg' => $msg
+    );
+}
+echo json_encode($notifikasi);
+}
 
 
 
@@ -456,61 +491,69 @@ function home() {
 
 
 
-    public function ajax_UpdateImage(){
-        $config['upload_path']="./uploads/vendorlist/";
-        $config['allowed_types']='zip|rar';
-        $config['max_size'] = '5048';
-        $this->load->library('upload',$config);
+public function ajax_UpdateImage(){
+    $config['upload_path']="./uploads/vendorlist/";
+    $config['allowed_types']='zip|rar';
+    $config['max_size'] = '5048';
+    $this->load->library('upload',$config);
 
-         $id_kyw=(int)$this->session->userdata('id_kyw');
+    $id_kyw=(int)$this->session->userdata('id_kyw');
 
-         $Raw_ID = trim($this->input->post('Raw_ID'));
+    $Raw_ID = trim($this->input->post('Raw_ID'));
 
-         $VendorID = trim($this->input->post('VendorID'));
-         $VendorName = trim($this->input->post('VendorName'));
-         $VendorAlias = trim($this->input->post('VendorAlias'));
-         $VendorTypeID = trim($this->input->post('VendorTypeID'));
-         $NPWP = trim($this->input->post('NPWP'));
-         $NamaProvinsi = trim($this->input->post('IdProvinsi'));
-         $NamaKabupaten = trim($this->input->post('IdKabupaten'));
-         $CountryName = trim($this->input->post('ID_Country'));
-         $ID_Branch = trim($this->input->post('ID_Branch'));
-         $AccountLiability = trim($this->input->post('AccountLiability'));
-         $AccountPrepayment = trim($this->input->post('AccountPrepayment')); 
-         $Terms = trim($this->input->post('Terms'));
-         $Currency = trim($this->input->post('Currency'));
-         $NoRekening = trim($this->input->post('NoRekening')); 
-         $NamaBank = trim($this->input->post('NamaBank'));
-         $MasaBerlakuTDP =date('Y-m-d', strtotime(trim($this->input->post('MasaBerlakuTDP'))));
-         $Image = trim($this->input->post('Image'));
-         $AlamatNPWP = trim($this->input->post('AlamatNPWP'));
-         $AlamatSupplier = trim($this->input->post('AlamatSupplier')); 
-         $VendorAddress = trim($this->input->post('VendorAddress'));
-         $Performance = trim($this->input->post('Performance'));
-         $iStatus = trim($this->input->post('iStatus'));
+    $VendorID = trim($this->input->post('VendorID'));
+    $VendorName = trim($this->input->post('VendorName'));
+    $VendorAlias = trim($this->input->post('VendorAlias'));
+    $AFILIASI = trim($this->input->post('AFILIASI'));
+    $NPWP = trim($this->input->post('NPWP'));
+    $NamaProvinsi = trim($this->input->post('IdProvinsi'));
+    $NamaKabupaten = trim($this->input->post('IdKabupaten'));
+    $CountryName = trim($this->input->post('ID_Country'));
+    $ID_Branch = trim($this->input->post('ID_Branch'));
+    $AccountLiability = trim($this->input->post('AccountLiability'));
+    $AccountPrepayment = trim($this->input->post('AccountPrepayment')); 
+    $Terms = trim($this->input->post('Terms'));
+    $Currency = trim($this->input->post('Currency'));
+    $NomorRekening = trim($this->input->post('NomorRekening')); 
+    $NamaBank = trim($this->input->post('NamaBank'));
+    $MasaBerlakuTDP =date('Y-m-d', strtotime(trim($this->input->post('MasaBerlakuTDP'))));
+    $Image = trim($this->input->post('Image'));
+    $AlamatNPWP = trim($this->input->post('AlamatNPWP'));
+    $AlamatSupplier = trim($this->input->post('AlamatSupplier')); 
+    $VendorAddress = trim($this->input->post('VendorAddress'));
+    $Performance = trim($this->input->post('Performance'));
+    $PKP = trim($this->input->post('PKP'));
+    $NamaRekening = trim($this->input->post('NamaRekening'));
+    $NamaRekening2 = trim($this->input->post('NamaRekening2'));
+    $NamaBank2 = trim($this->input->post('NamaBank2'));
+    $NomorRekening2 = trim($this->input->post('NomorRekening2'));
+    $NamaRekening3 = trim($this->input->post('NamaRekening3'));
+    $NamaBank3 = trim($this->input->post('NamaBank3'));
+    $NomorRekening3 = trim($this->input->post('NomorRekening3'));
+    $iStatus = trim($this->input->post('iStatus'));
 
 
-        $id_Raw = $this->master_vendorlist_m->getIdMax();
+    $id_Raw = $this->master_vendorlist_m->getIdMax();
 
-        if($Raw_ID =="Generate"){
+    if($Raw_ID =="Generate"){
        // echo $VendorName;
 
-            if(!$this->upload->do_upload("Image")){
-                $error = array('error' => $this->upload->display_errors());
+        if(!$this->upload->do_upload("Image")){
+            $error = array('error' => $this->upload->display_errors());
 
-                $notifikasi = Array(
-                    'msgType' => "error_upload",
-                    'msgTitle' => $error['error'],
-                    'msg' => $error['error']
-                );
-            } else {
+            $notifikasi = Array(
+                'msgType' => "error_upload",
+                'msgTitle' => $error['error'],
+                'msg' => $error['error']
+            );
+        } else {
             $data_img = array('upload_data' => $this->upload->data());
-             $data = array(
+            $data = array(
                 // 'Raw_ID' => $Raw_ID,
                 'VendorID' => $id_Raw,
                 'VendorName' => $VendorName,
                 'VendorAlias' => $VendorAlias,
-                'VendorTypeID' => $VendorTypeID,
+                'AFILIASI' => $AFILIASI,
                 'NPWP' => $NPWP,
                 'JoinDate' => date('Y-m-d'),
                 'IdProvinsi' => $NamaProvinsi,
@@ -521,7 +564,7 @@ function home() {
                 'AccountPrepayment' => $AccountPrepayment,
                 'Terms' => $Terms,
                 'Currency' => $Currency,
-                'NoRekening' => $NoRekening,
+                'NomorRekening' => $NomorRekening,
                 'NamaBank' => $NamaBank,
                 'MasaBerlakuTDP' => $MasaBerlakuTDP,
                 'Image' => $data_img['upload_data']['file_name'],
@@ -529,6 +572,14 @@ function home() {
                 'AlamatSupplier' => $AlamatSupplier,
                 'VendorAddress' => $VendorAddress,
                 'Performance' => $Performance,
+                'PKP' => $PKP,
+                'NamaRekening' => $NamaRekening,
+                'NamaRekening2' => $NamaRekening2,
+                'NamaBank2' => $NamaBank2,
+                'NomorRekening2' => $NomorRekening2,
+                'NamaRekening3' => $NamaRekening3,
+                'NamaBank3' => $NamaBank3,
+                'NomorRekening3' => $NomorRekening3,
                 'Status' => $iStatus,
                 'CreateBy' => $id_kyw,
                 'CreateDate' => date('Y-m-d H:i:s'),
@@ -536,9 +587,9 @@ function home() {
             );
 
               // print_r($data); die();  
-             
 
-             $model = $this->global_m->simpan('Mst_Vendor', $data);
+
+            $model = $this->global_m->simpan('Mst_Vendor', $data);
 
             if ($model) {
                 $msg = 'Data Berhasil Disimpan';
@@ -559,111 +610,127 @@ function home() {
 
       // print_r($data); die();
 
-       }else{
+    }else{
         // echo "2";
-            if ($_FILES AND $_FILES['Image']['name']) {
+        if ($_FILES AND $_FILES['Image']['name']) {
 
-                $config = array(
-                    'upload_path' => './uploads/vendorlist/',
-                    'allowed_types' => 'zip|rar',
-                    'max_size' => '2048',
-                    'max_width' => '2000',
-                    'max_height' => '2000'
-                );
-                $this->load->library('upload', $config);
-               
-                if (!$this->upload->do_upload('Image')) {
-                     $error = array('error' => $this->upload->display_errors());
+            $config = array(
+                'upload_path' => './uploads/vendorlist/',
+                'allowed_types' => 'zip|rar',
+                'max_size' => '2048',
+                'max_width' => '2000',
+                'max_height' => '2000'
+            );
+            $this->load->library('upload', $config);
 
-                    $notifikasi = Array(
-                        'msgType' => "error_upload",
-                        'msgTitle' => $error['error'],
-                        'msg' => $error['error']
-                    );
-                } else {
-                   $file = $this->upload->data();  
+            if (!$this->upload->do_upload('Image')) {
+             $error = array('error' => $this->upload->display_errors());
+
+             $notifikasi = Array(
+                'msgType' => "error_upload",
+                'msgTitle' => $error['error'],
+                'msg' => $error['error']
+            );
+         } else {
+           $file = $this->upload->data();  
                     // print_r($file);
                 // exit();
-                  $data = array(
+           $data = array(
                     // 'Raw_ID' => $Raw_ID,
-                    'VendorID' => $id_Raw,
-                    'VendorName' => $VendorName,
-                    'VendorAlias' => $VendorAlias,
-                    'VendorTypeID' => $VendorTypeID,
-                    'NPWP' => $NPWP,
-                    'JoinDate' => date('Y-m-d'),
-                    'IdProvinsi' => $NamaProvinsi,
-                    'IdKabupaten' => $NamaKabupaten,
-                    'ID_Country' => $CountryName,
-                    'ID_Branch' => $ID_Branch,
-                    'AccountLiability' => $AccountLiability,
-                    'AccountPrepayment' => $AccountPrepayment,
-                    'Terms' => $Terms,
-                    'Currency' => $Currency,
-                    'NoRekening' => $NoRekening,
-                    'NamaBank' => $NamaBank,
-                    'MasaBerlakuTDP' => $MasaBerlakuTDP,
-                    'Image' => $file['file_name'],
-                    'AlamatNPWP' => $AlamatNPWP,
-                    'AlamatSupplier' => $AlamatSupplier,
-                    'VendorAddress' => $VendorAddress,
-                    'Performance' => $Performance,
-                    'Status' => $iStatus,
-                    'CreateBy' => $id_kyw,
-                    'CreateDate' => date('Y-m-d H:i:s'),
-                  );
-              }
-            } else {
-                $data = array(
-                    // 'Raw_ID' => $Raw_ID,
-                    'VendorID' => $id_Raw,
-                    'VendorName' => $VendorName,
-                    'VendorAlias' => $VendorAlias,
-                    'VendorTypeID' => $VendorTypeID,
-                    'NPWP' => $NPWP,
-                    'JoinDate' => date('Y-m-d'),
-                    'IdProvinsi' => $NamaProvinsi,
-                    'IdKabupaten' => $NamaKabupaten,
-                    'ID_Country' => $CountryName,
-                    'ID_Branch' => $ID_Branch,
-                    'AccountLiability' => $AccountLiability,
-                    'AccountPrepayment' => $AccountPrepayment,
-                    'Terms' => $Terms,
-                    'Currency' => $Currency,
-                    'NoRekening' => $NoRekening,
-                    'NamaBank' => $NamaBank,
-                    'MasaBerlakuTDP' => $MasaBerlakuTDP,
-                    'AlamatNPWP' => $AlamatNPWP,
-                    'AlamatSupplier' => $AlamatSupplier,
-                    'VendorAddress' => $VendorAddress,
-                    'Performance' => $Performance,
-                    'Status' => $iStatus,
-                    'CreateBy' => $id_kyw,
-                    'CreateDate' => date('Y-m-d H:i:s'),
-                  );
-            }
-
-            $model = $this->global_m->ubah('Mst_Vendor', $data,'Raw_ID',$Raw_ID);
-            if ($model) {
-                $msg = 'Data Berhasil DiUpdate';
-                $notifikasi = Array(
-                    'msgType' => true,
-                    'msgTitle' => 'Success',
-                    'msg' => $msg
-                );
-            } else {
-                $msg = 'Data gagal DiUpdate';
-                $notifikasi = Array(
-                    'msgType' => false,
-                    'msgTitle' => 'Error',
-                    'msg' => $msg
-                );
-            }
-        
+            'VendorID' => $id_Raw,
+            'VendorName' => $VendorName,
+            'VendorAlias' => $VendorAlias,
+            'AFILIASI' => $AFILIASI,
+            'NPWP' => $NPWP,
+            'JoinDate' => date('Y-m-d'),
+            'IdProvinsi' => $NamaProvinsi,
+            'IdKabupaten' => $NamaKabupaten,
+            'ID_Country' => $CountryName,
+            'ID_Branch' => $ID_Branch,
+            'AccountLiability' => $AccountLiability,
+            'AccountPrepayment' => $AccountPrepayment,
+            'Terms' => $Terms,
+            'Currency' => $Currency,
+            'NomorRekening' => $NomorRekening,
+            'NamaBank' => $NamaBank,
+            'MasaBerlakuTDP' => $MasaBerlakuTDP,
+            'Image' => $file['file_name'],
+            'AlamatNPWP' => $AlamatNPWP,
+            'AlamatSupplier' => $AlamatSupplier,
+            'VendorAddress' => $VendorAddress,
+            'Performance' => $Performance,
+            'PKP' => $PKP,
+            'NamaRekening' => $NamaRekening,
+            'NamaRekening2' => $NamaRekening2,
+            'NamaBank2' => $NamaBank2,
+            'NomorRekening2' => $NomorRekening2,
+            'NamaRekening3' => $NamaRekening3,
+            'NamaBank3' => $NamaBank3,
+            'NomorRekening3' => $NomorRekening3,
+            'Status' => $iStatus,
+            'CreateBy' => $id_kyw,
+            'CreateDate' => date('Y-m-d H:i:s'),
+        );
        }
+   } else {
+    $data = array(
+                    // 'Raw_ID' => $Raw_ID,
+        'VendorID' => $id_Raw,
+        'VendorName' => $VendorName,
+        'VendorAlias' => $VendorAlias,
+        'AFILIASI' => $AFILIASI,
+        'NPWP' => $NPWP,
+        'JoinDate' => date('Y-m-d'),
+        'IdProvinsi' => $NamaProvinsi,
+        'IdKabupaten' => $NamaKabupaten,
+        'ID_Country' => $CountryName,
+        'ID_Branch' => $ID_Branch,
+        'AccountLiability' => $AccountLiability,
+        'AccountPrepayment' => $AccountPrepayment,
+        'Terms' => $Terms,
+        'Currency' => $Currency,
+        'NomorRekening' => $NomorRekening,
+        'NamaBank' => $NamaBank,
+        'MasaBerlakuTDP' => $MasaBerlakuTDP,
+        'AlamatNPWP' => $AlamatNPWP,
+        'AlamatSupplier' => $AlamatSupplier,
+        'VendorAddress' => $VendorAddress,
+        'Performance' => $Performance,
+        'PKP' => $PKP,
+        'NamaRekening' => $NamaRekening,
+        'NamaRekening2' => $NamaRekening2,
+        'NamaBank2' => $NamaBank2,
+        'NomorRekening2' => $NomorRekening2,
+        'NamaRekening3' => $NamaRekening3,
+        'NamaBank3' => $NamaBank3,
+        'NomorRekening3' => $NomorRekening3,
+        'Status' => $iStatus,
+        'CreateBy' => $id_kyw,
+        'CreateDate' => date('Y-m-d H:i:s'),
+    );
+}
 
-        echo json_encode($notifikasi);
-    }
+$model = $this->global_m->ubah('Mst_Vendor', $data,'Raw_ID',$Raw_ID);
+if ($model) {
+    $msg = 'Data Berhasil DiUpdate';
+    $notifikasi = Array(
+        'msgType' => true,
+        'msgTitle' => 'Success',
+        'msg' => $msg
+    );
+} else {
+    $msg = 'Data gagal DiUpdate';
+    $notifikasi = Array(
+        'msgType' => false,
+        'msgTitle' => 'Error',
+        'msg' => $msg
+    );
+}
+
+}
+
+echo json_encode($notifikasi);
+}
 
 
 
@@ -673,7 +740,7 @@ function home() {
 
 
 
-   public function getUserInfo() {
+public function getUserInfo() {
         $this->CI = & get_instance(); //and a.kcab_id<>'1100'
         $rows = $this->master_vendorlist_m->getUserInfo();
         $data['data'] = array();
@@ -681,11 +748,11 @@ function home() {
 
             $array = array(
 
-                  
+
                'Raw_ID' => trim($roq->Raw_ID),    
                'VendorName' => trim($row->VendorName),
                'VendorAlias' => trim($row->VendorAlias),
-               'VendorTypeID' => trim($row->VendorTypeID),
+               'AFILIASI' => trim($row->AFILIASI),
                'NPWP' => trim($row->NPWP),
                'NamaProvinsi' => trim($row->NamaProvinsi),
                'NamaKabupaten' => trim($row->NamaKabupaten),
@@ -695,16 +762,23 @@ function home() {
                'AccountPrepayment' => trim($row->AccountPrepayment),
                'Terms' => trim($row->Terms),
                'Currency' => trim($roq->Currency),    
-               'NoRekening' => trim($row->NoRekening),
+               'NomorRekening' => trim($row->NomorRekening),
                'NamaBank' => trim($row->NamaBank),
                'MasaBerlakuTDP' => trim($roq->MasaBerlakuTDP),    
                'Image' => trim($row->Image),
                'AlamatNPWP' => trim($row->AlamatNPWP),
                'AlamatSupplier' => trim($row->AlamatSupplier),
                'VendorAddress' => trim($row->VendorAddress),
-               'Performance' => trim($row->Performance) 
-               
-            );
+               'Performance' => trim($row->Performance),
+               'PKP' => trim($row->PKP),
+               'NamaRekening' => trim($row->NamaRekening),
+               'NamaRekening2' => trim($row->NamaRekening2),
+               'NamaBank2' => trim($row->NamaBank2),
+               'NomorRekening2' => trim($row->NomorRekening2),
+               'NamaRekening3' => trim($row->NamaRekening3),
+               'NamaBank3' => trim($row->NamaBank3),
+               'NomorRekening3' => trim($row->NamaRekening3)
+           );
 
             array_push($data['data'], $array);
         }
@@ -712,7 +786,7 @@ function home() {
         $this->output->set_output(json_encode($data));
     }
 
-  
+
 
 }
 

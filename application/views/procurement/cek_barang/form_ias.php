@@ -92,7 +92,6 @@ button:hover {
                   <form role="form"  method="post" id="id_from_sec_group_user"  action="<?php echo base_url('procurement/cek_barang/savedata'); ?>">
                 <div class="form-horizontal col-md-12">
                     <input type="hidden" name="id_po" value="<?php echo $ias->ID_PO?>">
-                    <input type="hidden" name="id_item" value="<?php echo $ias->ITEM_ID?>">
                     <div class="form-group col-md-6">
                         <label class="col-sm-4 control-label" style="text-align: left;">No PR</label>
                         <div class="col-sm-4">
@@ -110,8 +109,8 @@ button:hover {
                     <div class="form-group col-md-6">
                         <label class="col-sm-4 control-label" style="text-align: left;">Request Type</label>
                         <div class="col-sm-4">
-                            <input type="hidden" value="<?php echo $ias->ReqCategoryID?>">
-                            <p class="form-control-static"><?php echo $ias->ReqCategoryID?></p>
+                            <input type="hidden" value="<?php echo $ias->REQ_NAME?>">
+                            <p class="form-control-static"><?php echo $ias->ReqTypeName?></p>
                         </div>
                     </div>
                     <div class="form-group col-md-6">
@@ -125,28 +124,14 @@ button:hover {
                         <label class="col-sm-4 control-label" style="text-align: left;">Category Name</label>
                         <div class="col-sm-4">
                             <input type="hidden" value="<?php echo $ias->ReqCategoryID?>">
-                            <p class="form-control-static"><?php echo $ias->ReqCategoryID?></p>
+                            <p class="form-control-static"><?php echo $ias->REQ_NAME?></p>
                         </div>
                     </div>
                     <div class="form-group col-md-6">
                         <label class="col-sm-4 control-label" style="text-align: left;">Divisi</label>
                         <div class="col-sm-4">
                             <input type="hidden" value="<?php echo $ias->ID_PO?>">
-                            <p class="form-control-static"><?php echo $ias->ID_PO?></p>
-                        </div>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label class="col-sm-4 control-label" style="text-align: left;">Nama Project</label>
-                        <div class="col-sm-4">
-                            <input type="hidden" value="<?php echo $ias->NAMA_BARANG?>">
-                            <p class="form-control-static"><?php echo $ias->NAMA_BARANG?></p>
-                        </div>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label class="col-sm-4 control-label" style="text-align: left;">Periode</label>
-                        <div class="col-sm-4">
-                            <input type="hidden" value="<?php echo $ias->ID_PO?>">
-                            <p class="form-control-static"><?php echo $ias->ID_PO?></p>
+                            <p class="form-control-static"><?php echo $ias->DIV_DESC?></p>
                         </div>
                     </div>
                 </div>
@@ -155,51 +140,32 @@ button:hover {
                     <h5 class="m-portlet__head-text"><strong>PO</strong></h5>
                 </div>
                 <div class="m-portlet__body col-md-12">
-                    <div class="form-group m-form__group col-md-6">
-                        <label class="col-md-6 control-label" for="exampleInputtext1">Jumlah Barang</label>
-                        <div class="col-md-6">
-                            <input type="number" class="form-control m-input" name="jumlah_barang">
-                        </div>
-                    </div>
-                    <div class="form-group m-form__group col-md-6">
-                        <label class="col-md-6 control-label" for="exampleInputtext1">Jenis Barang</label>
-                        <div class="col-md-6">
-                            <input type="text" class="form-control m-input" name="jenis_barang">
-                        </div>
-                    </div>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Jumlah Barang</th>
+                                <th>Belum Terima</th>
+                                <th>Nama Barang</th>
+                                <th>QTY</th>
+                                <th>Tanggal Terima</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                        foreach ($lists as $list){?>
+                            <tr>
+                                <td><?php echo $list->QTY?></td>
+                                <td><?php echo ($list->QTY) - ($list->kurang);?></td>
+                                <td><input type="hidden" name="itemid[]" value="<?php echo $list->ITEM_ID?>"><input type="text" name="nama_barang[]" value="<?php echo $list->NAMA_BARANG?>" readonly></td>
+                                <td><input type="number" name="qty[]" value=""></td>
+                                <td><input type="text" name="tgl_terima[]" class="datepicker"></td>
+                            </tr>
+                        <?php
+                    }?>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="m-portlet__body col-md-12">
-                    <div class="form-group m-form__group col-md-6">
-                        <label class="col-md-6 control-label" for="exampleInputtext1">Belum Terima</label>
-                        <div class="col-md-6">
-                            <input type="number" class="form-control m-input" name="belum_terima">
-                        </div>
-                    </div>
-                </div>
-                <div class="m-portlet__body col-md-12">
-                    <div class="form-group m-form__group col-md-12">
-                        <label class="col-md-3 control-label" for="exampleInputtext1">Nama Barang</label>
-                        <div class="col-md-6">
-                            <input type="text" class="form-control m-input" name="nama_barang" value="<?php echo $ias->NAMA_BARANG?>" readonly>
-                        </div>
-                    </div>
-                </div>
-                <div class="m-portlet__body col-md-12">
-                    <div class="form-group m-form__group col-md-12">
-                        <label class="col-md-3 control-label" for="exampleInputtext1">QTY</label>
-                        <div class="col-md-6">
-                            <input type="number" class="form-control m-input" name="qty">
-                        </div>
-                    </div>
-                </div>
-                <div class="m-portlet__body col-md-12">
-                    <div class="form-group m-form__group col-md-12">
-                        <label class="col-md-3 control-label" for="exampleInputtext1">Tanggal Terima</label>
-                        <div class="col-md-6">
-                            <input type="text" class="form-control m-input datepicker" name="tgl_terima">
-                        </div>
-                    </div>
-                </div>
+                
                 <div class="m-portlet__body col-md-12">
                     <table class="table table-bordered">
                         <thead>
@@ -211,9 +177,14 @@ button:hover {
                             </tr>
                         </thead>
                         <tbody>
+                        <?php foreach($barang as $item){?>
                             <tr>
-                                <th scope="row" colspan="4">Example data</th>
+                                <td><?php echo $item->NAMA_BARANG?></td>
+                                <td><?php echo $item->QTY?></td>
+                                <td><?php echo $item->TGL_TERIMA?></td>
+                                <td><?php echo $item->PENERIMA?></td>
                             </tr>
+                        <?php }?>
                         </tbody>
                     </table>
                 </div>
@@ -336,7 +307,7 @@ $("#add_val").click(function(){
         $('#pxb'+lastid+'').val(percent*total);
         var sum = 0;
         $('.pxb').each(function(){
-            sum += parseInt(this.value);
+            sum += parseInt(exp[0]);
             $('#akhir').val(sum);
         });
     });
@@ -353,7 +324,7 @@ $("#varia1").change(function(){
         $('#pxb'+lastid+'').val(percent*total);
         var sum = 0;
         $('.pxb').each(function(){
-            sum += parseInt(this.value);
+            sum += parseInt(exp[0]);
             $('#akhir').val(sum);
         });
     });

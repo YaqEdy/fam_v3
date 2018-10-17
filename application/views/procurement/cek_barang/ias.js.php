@@ -2,7 +2,7 @@
     var dataTable;
     var iSampai = '';
     var iMulai = '';
-    var iSearch = 'NAMA_BARANG';
+    var iSearch = 'ID_PO';
 
     jQuery(document).ready(function () {
         ComponentsDateTimePickers.init();
@@ -22,7 +22,7 @@
     }
 
     function onLihat() {
-        $('#table_jatuh_tempo').DataTable().ajax.reload();
+        $('#table_cek_barang').DataTable().ajax.reload();
     }
     $('.date-picker').datepicker({
         orientation: "left",
@@ -32,7 +32,7 @@
 
 
     function loadGridBudgetCapex() {
-        dataTable = $('#table_jatuh_tempo').DataTable({
+        dataTable = $('#table_cek_barang').DataTable({
             dom: 'C<"clear">l<"toolbar">frtip',
             "lengthMenu": [
                 [5, 10, 15, 20, -1],
@@ -51,10 +51,10 @@
                     z.sSampai = iSampai;
                 },
                 error: function () {  // error handling
-                    $(".table_jatuh_tempo-error").html("");
+                    $(".table_cek_barang-error").html("");
                     // $("#lookup").append('<tbody class="employee-grid-error"><tr><th colspan="3">No data found in the server</th></tr></tbody>');
-                    $('#table_jatuh_tempo tbody').html('<tbody class="employee-grid-error"><tr><th colspan="4">No data found in the server</th></tr></tbody>');
-                    $("#table_jatuh_tempo_processing").css("display", "none");
+                    $('#table_cek_barang tbody').html('<tbody class="employee-grid-error"><tr><th colspan="4">No data found in the server</th></tr></tbody>');
+                    $("#table_cek_barang_processing").css("display", "none");
 
                 }
             },
@@ -79,7 +79,7 @@
             contentType: false,
             processData: false,
             success: function (e) {
-                $('#table_jatuh_tempo').DataTable().ajax.reload();
+                $('#table_cek_barang').DataTable().ajax.reload();
                 $('#closeupload').trigger('click');
             },
             complete: function () {
@@ -165,7 +165,7 @@
                 if (e.istatus == true) {
                     alert(e.iremarks);
                     $('#mdl_Update').modal('hide');
-                    $('#table_jatuh_tempo').DataTable().ajax.reload();
+                    $('#table_cek_barang').DataTable().ajax.reload();
                 } else {
                     alert(e.iremarks);
                 }
@@ -174,7 +174,7 @@
 
     }
 
-    $('#table_jatuh_tempo').on('click', '#btnUpdate', function () {
+    $('#table_cek_barang').on('click', '#btnUpdate', function () {
         $('#mdl_Update').find('.modal-title').text('Update');
 
         var iclosestRow = $(this).closest('tr');
@@ -195,7 +195,7 @@
 
     });
 
-    $('#table_jatuh_tempo').on('click', '#btnTransfer', function () {
+    $('#table_cek_barang').on('click', '#btnTransfer', function () {
         $('#mdl_Transfer').find('.modal-title').text('TRANSFER BUDGET');
 
         var iclosestRow = $(this).closest('tr');
@@ -253,7 +253,7 @@
             success: function (e) {
                 console.log(e);
                 if (e.istatus) {
-                    $('#table_jatuh_tempo').DataTable().ajax.reload();
+                    $('#table_cek_barang').DataTable().ajax.reload();
                     UIToastr.init(e.type, e.iremarks);
                     $('.close_tf').trigger('click');
                 }
@@ -264,42 +264,6 @@
         });
 //        return false;
     });
-
-
-    function loadGridSetting() {
-        dataTable_set = $('#table_cek_barang').DataTable({
-            "lengthMenu": [
-                [10, 15, 20, -1],
-                [10, 15, 20, "All"] // change per page values here
-            ],
-//                // set the initial value
-            "pageLength": 10,
-            "processing": true,
-            "serverSide": true,
-            "ajax": {
-                url: "<?php echo base_url("/procurement/cek_barang/ajax_GridSetting"); ?>", // json datasource
-                type: "post", // method  , by default get
-//                data: function (z) {
-//                    z.sSearch = iSearch;
-//                    z.sBranch = iBranch;
-//                    z.sJnsBudget = iJnsBudget;iTahun
-//                    z.sTahun = iTahun;
-//                },
-                error: function () {  // error handling
-                    $(".table_cek_barang-error").html("");
-                    // $("#lookup").append('<tbody class="employee-grid-error"><tr><th colspan="3">No data found in the server</th></tr></tbody>');
-                    $('#table_cek_barang tbody').html('<tbody class="employee-grid-error"><tr><th colspan="4">No data found in the server</th></tr></tbody>');
-                    $("#table_cek_barang").css("display", "none");
-
-                }
-            },
-            "columnDefs": [
-                {"targets": [-1], "orderable": false, "searchable": false},
-//                {"targets": [4], "visible": false, "searchable": false},
-//                {"targets": [5], "visible": false, "searchable": false},
-            ],
-        });
-    }
 
     $('#id_st_Tahun').datepicker({
         orientation: "left",

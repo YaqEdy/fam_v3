@@ -239,7 +239,7 @@
                     <div class="btnSC">
                         <button type="button" class="btn btn-success save" onclick="clickUpdate('add')">Save</button>
                         <button type="button" class="btn btn-success update" onclick="clickUpdate('status')">Update</button>
-                        <button type="button" class="btn btn-warning close_" data-dismiss="modal">Close</button>                
+                        <button type="button" id="id_keluar" class="btn btn-warning close_" data-dismiss="modal">Close</button>                
                     </div>
 
                 </div>
@@ -426,6 +426,7 @@
                                 var c = $("#pratama").is(":checked");
                                 var d = $("#mekaar").is(":checked");
 
+
                                 var i_clsUpdate = {
                                     ItemID: $("#txtItemID").val(),
                                     // Image: $("#txtImage").val(),
@@ -462,9 +463,9 @@
                                     });
                                 } else {
                                     if (status == "add") {
-                                        var message = 'Apakah anda yakin ingin menambahkan data division?';
+                                        var message = 'Apakah anda yakin ingin menambahkan data Item list?';
                                     } else {
-                                        var message = 'Apakah anda yakin ingin mengubah data division?';
+                                        var message = 'Apakah anda yakin ingin mengubah data Item List?';
                                     }
                                     bootbox.confirm(message, function (o) {
                                         if (o == true) {
@@ -475,6 +476,7 @@
                                                 url: "<?php echo base_url("/master/master_itemlist/ajax_UpdateCategory"); ?>", // json datasource
                                                 data: {sTbl: i_clsUpdate},
                                                 success: function (e) {
+                                                    $('#id_keluar').trigger('click');
 
                                                     if (e.msgType == true) {
                                                         uploadDoc();
