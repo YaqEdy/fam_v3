@@ -165,7 +165,7 @@
                             if (data.Jumlah == 0) {
                                 return '<a href="<?php echo base_url('procurement/po/po_form');?>/'+data.RequestID+'" class="btn btn-primary">Edit</a>';
                             }else{
-                                return '';
+                                return '<a href="<?php echo base_url('procurement/po/po_dokumen');?>/'+data.RequestID+'" class="btn btn-primary">Upload</a>';
                             }
                         }
                     }

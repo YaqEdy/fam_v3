@@ -18,6 +18,7 @@ class ias extends CI_Controller {
             $this->load->model('procurement/ias_mdl');
             $this->load->model('procurement/cek_barang_mdl');
             $this->load->model('datatables_custom');
+            $this->load->model('api/api_m');
         }
     }
 
@@ -138,6 +139,7 @@ class ias extends CI_Controller {
                 redirect('procurement/ias/home');
             }
         }
+
         $this->ias_mdl->save_ias($head);
 
         for ($i = 0; $i < count($_POST['nama_dokumen']); $i++) {
@@ -165,98 +167,14 @@ class ias extends CI_Controller {
             $this->ias_mdl->save_penilaian($nilai);
         }
 
-        $this->insert_ias_orc($this->input->post('id_po'));
+        $this->api_m->insert_ias_orc($this->input->post('id_po'), $id_ias);
         $this->session->set_flashdata('success', 'Data Berhasil Disimpan');
         redirect('procurement/ias/home');
     }
 
-    function insert_ias_orc($ID_PO) {
-        $this->load->database();
-        $query2 = $this->db->query("SELECT * FROM VW_IAS_TO_ORC_HEADER WHERE ID_PO=" . $ID_PO);
-        $dataH = $query2->result();
-
-        $query = $this->db->query("SELECT LINK FROM TBL_API_LINK WHERE API_NAME='CRUD ORACLE'");
-        $result = $query->result()[0];
-
-//        $arrData = [];
-        foreach ($dataH as $hdr) {
-//            $query3 = $this->db->query("SELECT *,A.QTY AS QTY_ FROM TBL_T_TERIMA_BARANG AS A
-//                                    INNER JOIN TBL_T_PO_DETAIL AS B ON A.ID_PO=B.ID_PO_DETAIL
-//                                    INNER JOIN TBL_T_PO AS C ON B.ID_PO=C.ID_PO
-//                                    WHERE C.ID_PO=" . $ID_PO . " AND B.VENDOR_ID=" . $hdr->VendorID);
-              $query3 = $this->db->query("SELECT * FROM VW_IAS_TO_ORC_DETAIL
-                                    WHERE ID_PO_=" . $ID_PO . " AND VENDOR_ID=" . $hdr->VendorID);
-            $dataD = $query3->result();
-            foreach ($dataD as $dtl) {
-//                $iLine = 0;
-                for ($i = 0; $i < $dtl->QTY_; $i++) {
-                    $iLine = $i + 1;
-//                    $arrData[] = array(array(
-                    $data['data'] = array(array(
-                            'OPERATING_UNIT' => 'PNM Kantor Pusat G',
-                            'INVOICE_NUM' => $hdr->ID_PO,
-                            'INVOICE_TYPE' => 'STANDARD',
-                            'VENDOR_NAME' => $hdr->VendorName,
-                            'VENDOR_SITE_CODE' => $hdr->City,
-                            'INVOICE_DATE' => date('Y-m-d h:i:s'),
-                            'INVOICE_CURRENCY_CODE' => $hdr->Currency,
-                            'INVOICE_AMOUNT' => $hdr->HargaVendor,
-                            'TERMS_NAME' => 'Immediate',
-                            'LIABILITY_ACCOUNT' => $dtl->AccountLiability,//VENDOR 
-                            'INVOICE_DESCRIPTION' => $hdr->ProjectName,//NAMA PROJECT PR
-                            'FAKTUR_PAJAK' => '',
-                            'NOMORPO' => 'PO/' . $hdr->ID_PO,
-                            'LINE_NUMBER' => $iLine,
-                            'LINE_TYPE_LOOKUP_CODE' => 'ITEM ',//ASER 'AWT' BARANG 'ITEM'
-                            'AMOUNT' => $dtl->HARGA,//HARGA+PPN
-                            'AKUN_DISTRIBUSI' => '',//AMBIL DARI COA PER ITEM(tunggu design table)
-                            'LINE_DESCRIPTION' => $dtl->NAMA_BARANG,//NAMA ITEM
-                            'ITEM_DESCRIPTION' => '',
-                            'ASSET_BOOK_NAME' => 'PNM COM BOOK',//PAREN COM BOOK
-                            'ASSET_CATEGORY' => '',//ITEM CATEGORY
-                            'JENIS_BARANG' => '',//ITEM TYPE
-                            'UMUR_FISKAL' => '',//ITEM CATEGORY
-                            'AMORTIZATION' => '',
-                            'FAM_ASSET_ID' => '',
-                            'DEFERRED_ACCTG_FLAG' => '',
-                            'DEF_ACCTG_START_DATE' => '',
-                            'DEF_ACCTG_END_DATE' => '',
-                            'SOURCE' => 'INTEGRATION',//DEFAULT
-                            'PAYMENT_METHOD_CODE' => '',
-                            'FAM_INVOICE_ID' => '',
-                            'TGL_PENGAKUAN_BRG' => '',
-                            'STATUS' => '',
-                            'ERROR_CODE' => '',
-                            'ERROR_MESSAGE' => '',
-                            'PROCESS_ID' => ''
-                        )
-                    );
-//print_r($data);
-                    $curlurl = $result->LINK . "/insert_invoice";
-
-                    $ch = curl_init($curlurl);
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-                    $responsejson = curl_exec($ch);
-                    curl_close($ch);
-                }
-            }
-        }
-//        $data['data'] = $arrData;
-//        print_r($data);
-//        die();
-//        $curlurl = $result->LINK . "/insert_invoice";
-//
-//        $ch = curl_init($curlurl);
-//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-//        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-//        $responsejson = curl_exec($ch);
-//        print_r($responsejson);die();
-//        curl_close($ch);
-////
-//        $response = json_decode($responsejson, true);
-//
-//        print_r($response);
+    function insert_ias_orc($ID_PO, $ID_IAS) {
+        $response=$this->api_m->insert_ias_orc($ID_PO, $ID_IAS);
+        print_r($response);
     }
 
     public function ajax_GridBudgetCapex() {
@@ -599,6 +517,133 @@ class ias extends CI_Controller {
         echo json_encode($result);
     }
 
+    //
+//    function insert_ias_orc($ID_PO, $ID_IAS) {
+//        $this->load->database();
+////Link Api
+//        $query = $this->db->query("SELECT LINK FROM TBL_API_LINK WHERE API_NAME='CRUD ORACLE'");
+//        $result = $query->result()[0];
+////header insert orc
+//        $query2 = $this->db->query("SELECT * FROM VW_IAS_TO_ORC_HEADER WHERE ID_PO=" . $ID_PO);
+//        $dataH = $query2->result();
+////Parent dari Branch/Division
+//        $query3 = $this->db->query("SELECT *,LEFT(BRANCH_DESC,3) AS PARENT FROM TBL_M_DIVISION AS A INNER JOIN TBL_M_BRANCH AS B ON A.PARENT_FLEX = B.FLEX_VALUE WHERE A.FLEX_VALUE='" . $this->session->userdata('DivisionID') . "'"); //
+//        $result3 = $query3->result()[0];
+////AMOUNT
+//        $query4 = $this->db->query("SELECT PPN,NILAI_DIBAYARKAN FROM  TBL_T_IAS WHERE ID_IAS=" . $ID_IAS);
+//        $result4 = $query4->result()[0];
+////Faktur pajak
+//        $query5 = $this->db->query("SELECT NO_DOC FROM TBL_T_IAS_DOC WHERE NAMA_DOC=3 AND ID_IAS=" . $ID_IAS);
+//        $result5 = $query5->result()[0];
+////        die();
+//        $arrData = [];
+//        foreach ($dataH as $hdr) {
+////detail data insert to orc
+////            $query3 = $this->db->query("SELECT * FROM VW_IAS_TO_ORC_DETAIL WHERE ID_PO_=" . $ID_PO . " AND VENDOR_ID=" . $hdr->VendorID);
+//            $query3 = $this->db->query("SELECT A.ID AS FAM_ASSET_ID,B.*
+//                                        FROM TBL_T_TB_DETAIL as A LEFT JOIN VW_IAS_TO_ORC_DETAIL AS B ON A.ID_PO=B.ID_PO_ AND A.ID_TB=B.ID
+//                                        WHERE B.ID_PO_=" . $ID_PO . " AND VENDOR_ID=" . $hdr->VendorID . " order by A.ID"); //
+//            $dtl = $query3->result();
+//            $PPN = $result4->PPN;
+//            $i = 0;
+//            $arrDataPPH[] = array(
+//                'OPERATING_UNIT' => $result3->BRANCH_DESC,
+//                'INVOICE_NUM' => $hdr->ID_PO,
+//                'INVOICE_TYPE' => 'STANDARD B',
+//                'VENDOR_NAME' => $hdr->VendorName,
+//                'VENDOR_SITE_CODE' => $hdr->City,
+//                'INVOICE_DATE' => date('Y-m-d h:i:s'),
+//                'INVOICE_CURRENCY_CODE' => $hdr->Currency,
+//                'INVOICE_AMOUNT' => $result4->NILAI_DIBAYARKAN,
+//                'TERMS_NAME' => 'Immediate',
+//                'LIABILITY_ACCOUNT' => $dtl[$i]->AccountLiability, //VENDOR 
+//                'INVOICE_DESCRIPTION' => $hdr->ProjectName, //NAMA PROJECT PR
+//                'FAKTUR_PAJAK' => $result5->NO_DOC, //
+//                'NOMORPO' => 'PO/' . $hdr->ID_PO,
+//                'LINE_NUMBER' => COUNT($dtl) + 1,
+//                'LINE_TYPE_LOOKUP_CODE' => 'ITEM ', //ASER 'AWT' BARANG 'ITEM'
+//                'AMOUNT' => $PPN, //$dtl->HARGA, //TAMBAH 1 ROW PPN
+//                'AKUN_DISTRIBUSI' => $hdr->COA, //AMBIL DARI COA PER ITEM(tunggu design table)=>SEMENTARA
+//                'LINE_DESCRIPTION' => 'PPN', //NAMA ITEM PPN
+//                'ITEM_DESCRIPTION' => '',
+//                'ASSET_BOOK_NAME' => 'PNM COMMERCIAL BOOK', //$result3->PARENT . ' COM BOOK', //PAREN COM BOOK
+//                'ASSET_CATEGORY' => $dtl[$i]->ClassCode, //ITEM CATEGORY ->ID
+//                'JENIS_BARANG' => $dtl[$i]->ItemTypeID, //ITEM TYPE ->ID
+//                'UMUR_FISKAL' => $dtl[$i]->umurfiskal, //ITEM CATEGORY 
+//                'AMORTIZATION' => '',
+//                'FAM_ASSET_ID' => '', // SN
+//                'DEFERRED_ACCTG_FLAG' => '',
+//                'DEF_ACCTG_START_DATE' => '',
+//                'DEF_ACCTG_END_DATE' => '',
+//                'SOURCE' => 'INTEGRATION', //DEFAULT
+//                'PAYMENT_METHOD_CODE' => 'PNM PAYMENT METHOD', //PNM PAYMENT METHOD
+//                'FAM_INVOICE_ID' => '',
+//                'TGL_PENGAKUAN_BRG' => '',
+//                'STATUS' => '',
+//                'ERROR_CODE' => '',
+//                'ERROR_MESSAGE' => '',
+//                'PROCESS_ID' => ''
+//            );
+////            print_r($iCountDtl);die();
+//            for ($i = 0; $i < COUNT($dtl); $i++) {
+////                
+//                $iLine = $i + 1;
+//                $arrData[] = array(
+//                    'OPERATING_UNIT' => $result3->BRANCH_DESC,
+//                    'INVOICE_NUM' => $hdr->ID_PO,
+//                    'INVOICE_TYPE' => 'STANDARD B',
+//                    'VENDOR_NAME' => $hdr->VendorName,
+//                    'VENDOR_SITE_CODE' => $hdr->City,
+//                    'INVOICE_DATE' => date('Y-m-d h:i:s'),
+//                    'INVOICE_CURRENCY_CODE' => $hdr->Currency,
+//                    'INVOICE_AMOUNT' => $result4->NILAI_DIBAYARKAN,
+//                    'TERMS_NAME' => 'Immediate',
+//                    'LIABILITY_ACCOUNT' => $dtl[$i]->AccountLiability, //VENDOR 
+//                    'INVOICE_DESCRIPTION' => $hdr->ProjectName, //NAMA PROJECT PR
+//                    'FAKTUR_PAJAK' => $result5->NO_DOC, //
+//                    'NOMORPO' => 'PO/' . $hdr->ID_PO,
+//                    'LINE_NUMBER' => $iLine,
+//                    'LINE_TYPE_LOOKUP_CODE' => 'ITEM ', //ASER 'AWT' BARANG 'ITEM'
+//                    'AMOUNT' => $dtl[$i]->HARGA, //$dtl->HARGA, //TAMBAH 1 ROW PPN
+//                    'AKUN_DISTRIBUSI' => $hdr->COA, //AMBIL DARI COA PER ITEM(tunggu design table)=>SEMENTARA
+//                    'LINE_DESCRIPTION' => $dtl[$i]->NAMA_BARANG, //NAMA ITEM
+//                    'ITEM_DESCRIPTION' => '',
+//                    'ASSET_BOOK_NAME' => 'PNM COMMERCIAL BOOK', //$result3->PARENT . ' COM BOOK', //PAREN COM BOOK
+//                    'ASSET_CATEGORY' => $dtl[$i]->ClassCode, //ITEM CATEGORY ->ID
+//                    'JENIS_BARANG' => $dtl[$i]->ItemTypeID, //ITEM TYPE ->ID
+//                    'UMUR_FISKAL' => $dtl[$i]->umurfiskal, //ITEM CATEGORY 
+//                    'AMORTIZATION' => '',
+//                    'FAM_ASSET_ID' => $dtl[$i]->FAM_ASSET_ID, // SN
+//                    'DEFERRED_ACCTG_FLAG' => '',
+//                    'DEF_ACCTG_START_DATE' => '',
+//                    'DEF_ACCTG_END_DATE' => '',
+//                    'SOURCE' => 'INTEGRATION', //DEFAULT
+//                    'PAYMENT_METHOD_CODE' => 'PNM PAYMENT METHOD', //PNM PAYMENT METHOD
+//                    'FAM_INVOICE_ID' => '',
+//                    'TGL_PENGAKUAN_BRG' => '',
+//                    'STATUS' => '',
+//                    'ERROR_CODE' => '',
+//                    'ERROR_MESSAGE' => '',
+//                    'PROCESS_ID' => ''
+//                );
+//            }
+//        }
+//         array_push($arrData, $arrDataPPH[0]);
+////        print_r($arrData);
+////        die();
+//
+//        $data['data'] = $arrData;
+//        $curlurl = $result->LINK . "/insert_invoice";
+//
+//        $ch = curl_init($curlurl);
+//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+//        $responsejson = curl_exec($ch);
+//        curl_close($ch);
+//
+//        $response = json_decode($responsejson, true);
+//        print_r($response);
+//    }
 }
 
 /* End of file sec_user.php */

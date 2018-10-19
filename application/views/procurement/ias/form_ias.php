@@ -160,10 +160,13 @@ button:hover {
                     <div class="form-group col-md-12">
                         <label class="col-sm-3 control-label" style="text-align: left;">PPN</label>
                         <div class="col-sm-3">
-                            <input class="form-control m-input" name="ppn" id="ppn" type="number" required>
+                            <input class="form-control m-input" value="<?php echo $dpp->total*0.1;?>" name="ppn" id="ppn" type="number" required>
                         </div>
                         <div class="col-sm-3">
-                            <button type="button" class="btn red">Edit</button>
+                            <input class="form-control m-input" value="10" name="presentase" id="presentase" type="number" readonly>
+                        </div>
+                        <div class="col-sm-3">
+                            <button type="button" class="btn red" id="edit_presentase">Edit</button>
                         </div>
                     </div>
                     <div class="form-group col-md-12">
@@ -332,6 +335,21 @@ $("input[name='denda']").on("keyup", function(){
     var denda = parseInt($(this).val());
 
     $("input[name='dibayarkan']").val(dpp + ppn - pph - denda);
+});
+
+$('#edit_presentase').click(function(){
+    $('#presentase').attr('readonly', false);
+});
+
+$("#presentase").on("keyup", function(){
+    var dpp = parseInt($("input[name='dpp']").val());
+    var presentase = parseInt(dpp*($(this).val()/100));
+    var ppn = $("input[name='ppn']").val(presentase);
+    var pph = parseInt($("input[name='pph']").val());
+    var denda = parseInt($("input[name='denda']").val());
+    console.log(dpp + presentase + pph + denda);
+
+    $("input[name='dibayarkan']").val(dpp + presentase - pph - denda);
 });
 
 var return_data = "<?php echo $var;?>";

@@ -156,7 +156,7 @@ button:hover {
                             <tr>
                                 <td><?php echo $list->QTY?></td>
                                 <td><?php echo ($list->QTY) - ($list->kurang);?></td>
-                                <td><input type="hidden" name="itemid[]" value="<?php echo $list->ITEM_ID?>"><input type="text" name="nama_barang[]" value="<?php echo $list->NAMA_BARANG?>" readonly></td>
+                                <td><input type="hidden" name="podetail[]" value="<?php echo $list->ID_PO_DETAIL?>"><input type="hidden" name="itemid[]" value="<?php echo $list->ITEM_ID?>"><input type="text" name="nama_barang[]" value="<?php echo $list->NAMA_BARANG?>" readonly></td>
                                 <td><input type="number" name="qty[]" max="<?php echo ($list->QTY) - ($list->kurang);?>" value=""></td>
                                 <td><input type="text" name="tgl_terima[]" class="datepicker"></td>
                             </tr>
@@ -185,7 +185,7 @@ button:hover {
                                 <td><?php echo $item->TGL_TERIMA?></td>
                                 <td><?php echo $item->CREATE_BY?></td>
                                 <?php foreach($lists as $list){
-                                if ($list->ID_PO == $item->ID_PO) {
+                                if ($list->ID_PO_DETAIL == $item->ID_PO) {
                                     if($list->ITEM_ID == $item->ITEM_ID){
                                         if((($list->QTY) - ($list->kurang)) == 0){?>
                                 <td><a class="btn blue" href="javascript:void(0)" title="Edit" onclick="edit_sn(<?php echo $item->ID?>, <?php echo $item->ID_PO?>)">Edit SN</a></td>

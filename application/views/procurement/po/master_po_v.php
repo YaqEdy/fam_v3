@@ -280,6 +280,12 @@ button:hover {
                         </div>
                     </div>
                 </div>
+                <div class="portlet-title">
+                    <div class="caption">
+                        <i class="icon-settings font-red"></i>
+                        <span class="caption-subject font-red sbold uppercase">List Vendor</span>
+                    </div>
+                </div>
                 <div class="m-portlet__body col-md-12">
                     <table class="table table-bordered">
                         <thead>
@@ -292,37 +298,49 @@ button:hover {
                             </tr>
                         </thead>
                         <tbody>
+                            <?php foreach ($listvendor as $vl) {?>
                             <tr>
-                                <th scope="row" colspan="5">Example data</th>
+                                <td><?php echo $vl->VendorName; ?></td>
+                                <td><?php echo $vl->City; ?></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                             </tr>
+                            <?php } ?>
+                            
                         </tbody>
                     </table>
                 </div>
-                <div class="m-portlet__body">
-                    <div class="form-group m-form__group col-md-12">
-                        <label for="example-text-input" class="col-sm-2 col-form-label">Nama Pemenang</label>
-                        <div class="col-sm-4">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Nama Pemenang" disabled>
-                        </div>
+                <div class="portlet-title">
+                    <div class="caption">
+                        <i class="icon-settings font-red"></i>
+                        <span class="caption-subject font-red sbold uppercase">Vendor Pemenang</span>
                     </div>
-                    <div class="form-group m-form__group col-md-12">
-                        <label for="example-text-input" class="col-sm-2 col-form-label">Harga Penawaran</label>
-                        <div class="col-sm-4">
-                            <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Harga Penawaran" disabled>
-                        </div>
-                    </div>
-                    <div class="form-group m-form__group col-md-12">
-                        <label for="example-text-input" class="col-sm-2 col-form-label">Scoring</label>
-                        <div class="col-sm-4">
-                            <input type="file" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" disabled>
-                        </div>
-                    </div>
-                    <div class="form-group m-form__group col-md-12">
-                        <label for="example-text-input" class="col-sm-2 col-form-label">Dokumen Lain-lain</label>
-                        <div class="col-sm-4">
-                            <input type="file" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" disabled>
-                        </div>
-                    </div>
+                </div>
+                <div class="m-portlet__body col-md-12">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col">Nama Vendor</th>
+                                <th scope="col">Wilayah</th>
+                                <th scope="col">Status WP</th>
+                                <th scope="col">Barang & Jasa</th>
+                                <th scope="col">Harga Penawaran</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($listvendors as $vl) {?>
+                            <tr>
+                                <td><?php echo $vl->VendorName; ?></td>
+                                <td><?php echo $vl->City; ?></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <?php } ?>
+                            
+                        </tbody>
+                    </table>
                 </div>
                 </div>
                 <div class="tab">
@@ -487,16 +505,18 @@ button:hover {
                 </div>
                 </div>
                 <div class="tab">
-                <form role="form" id="form1" class="form" method="post" id="id_from_sec_group_user" action="<?php echo base_url('procurement/po/savedata'); ?>">
+                
+                <?php $l = 1;
+                foreach ($listvendors as $vendor) {?>
+                <form role="form" id="form<?php echo $l;?>" class="form" method="post" id="id_from_sec_group_user" action="<?php echo base_url('procurement/po/savedata'); ?>">
                 <div class="form-group m-form__group m--margin-top-10">
-                    <h5 class="m-portlet__head-text"><strong>PO VENDOR A</strong></h5>
+                    <h5 class="m-portlet__head-text"><strong>PO VENDOR <?php echo $vendor->VendorName; ?></strong></h5>
                 </div>
                 <div class="m-portlet__body col-md-12">
                     <table class="table table-bordered">
                         <thead>
                             <tr>
                                 <th scope="col">Nama Dokumen</th>
-                                <th scope="col">No Dokumen</th>
                                 <th scope="col">Validasi</th>
                                 <th scope="col">Aksi</th>
                             </tr>
@@ -504,26 +524,22 @@ button:hover {
                         <tbody>
                             <tr>
                                 <td><?php echo $nama_po ?></td>
-                                <td><?php echo $doc_po[0] ?></td>
-                                <td><input type="checkbox" name="check[]" value="<?php echo $doc_po[0] ?>"></td>
+                                <td><input type="checkbox" name="check[]" value="<?php echo $nama_po ?>"></td>
                                 <td></td>
                             </tr>
                             <tr>
                                 <td><?php echo $nama_spk ?></td>
-                                <td><?php echo $doc_spk[0] ?></td>
-                                <td><input type="checkbox" name="check[]" value="<?php echo $doc_spk[0] ?>"></td>
+                                <td><input type="checkbox" name="check[]" value="<?php echo $nama_spk ?>"></td>
                                 <td></td>
                             </tr>
                             <tr>
                                 <td><?php echo $nama_kpbj ?></td>
-                                <td><?php echo $doc_kpbj[0] ?></td>
-                                <td><input type="checkbox" name="check[]" value="<?php echo $doc_kpbj[0] ?>"></td>
+                                <td><input type="checkbox" name="check[]" value="<?php echo $nama_kpbj ?>"></td>
                                 <td></td>
                             </tr>
                             <tr>
                                 <td><?php echo $nama_psw ?></td>
-                                <td><?php echo $doc_psw[0] ?></td>
-                                <td><input type="checkbox" name="check[]" value="<?php echo $doc_psw[0] ?>"></td>
+                                <td><input type="checkbox" name="check[]" value="<?php echo $nama_psw ?>"></td>
                                 <td></td>
                             </tr>
                         </tbody>
@@ -560,8 +576,8 @@ button:hover {
                     </div>
                 </div>
                 <input type="hidden" name="id_pr" value="<?php echo $po->RequestID?>">
-                <input type="hidden" id="hargatotal1" value="<?php echo $hargatotal?>">
-                <input type="hidden" name="id_vendor" value="1">
+                <input type="hidden" id="hargatotal<?php echo $l?>" value="">
+                <input type="hidden" name="id_vendor" value="<?php echo trim($vendor->VendorID)?>">
                 <input type="hidden" name="redirect" value="ada">
                 <?php if(trim($po->ReqTypeID) == '3'){ ?>
                 <div class="form-group m-form__group m--margin-top-10">
@@ -620,12 +636,12 @@ button:hover {
                         <tbody>
                         <?php $i = 1;
                         foreach ($item as $list){?>
-                            <tr id="row<?php echo $i;?>">
+                            <tr id="row<?php echo $i.$l;?>">
                                 <td><input type="hidden" name="itemid[]" value="<?php echo $list->ItemID?>"><input type="text" name="barang[]" value="<?php echo $list->ItemName?>"></td>
                                 <td><input type="number" name="qty[]" id="qty<?php echo $i?>" value="<?php echo $list->Qty?>"></td>
-                                <td><input type="number" name="satuan[]" class="satuan1" id="satuan<?php echo $i?>" value="<?php echo $list->HargaHPS?>"></td>
-                                <td><input type="number" name="hargatotal[]" class="total1" id="total<?php echo $i?>" value="<?php echo $list->total?>"></td>
-                                <td><button onclick="dltRow('<?php echo $i;?>', 1)">Delete</button></td>
+                                <td><input type="number" name="satuan[]" class="satuan<?php echo $l;?>" id="satuan<?php echo $i?>" value="<?php echo $list->HargaHPS?>"></td>
+                                <td><input type="number" name="hargatotal[]" class="total<?php echo $l;?>" id="total<?php echo $i?>" value="<?php echo $list->total?>"></td>
+                                <td><button onclick="dltRow('<?php echo $i;?>', '<?php echo $l;?>')">Delete</button></td>
                             </tr>
                         <?php $i++;
                     }?>
@@ -639,225 +655,42 @@ button:hover {
                     </div>
                     <div class="col-md-3">
                         <label class="mt-checkbox">
-                            <input type="checkbox" id="detail"> Detail Terima
+                            <input type="checkbox" id="detail<?php echo $l;?>"> Detail Terima
                             <span></span>
                         </label>
                     </div>
-                    <div class="form-group m-form__group col-md-3" id="notdetail">
-                        <input type="text" class="form-control m-input datepicker" name="dterima" id="dterima" aria-describedby="textHelp" placeholder="dd/mm/yyyy" required>
+                    <div class="form-group m-form__group col-md-3" id="notdetail<?php echo $l;?>">
+                        <input type="text" class="form-control m-input datepicker" name="dterima" id="dterima<?php echo $l;?>" aria-describedby="textHelp" placeholder="dd/mm/yyyy" required>
                     </div>
                 </div>
-                <div class="tanda termin1">
+                <div class="tanda termin<?php echo $l;?>">
                 <div class="m-portlet__body col-md-12">
                     <div class="form-group m-form__group col-md-3">
                         <input type="hidden" name="term[]" value="1">
                         <label for="exampleInputtext1">Persentase</label>
-                        <input type="number" class="form-control m-input form1" name="persentase[]" id="presentase1" aria-describedby="textHelp" placeholder="Persentase" required>
+                        <input type="number" class="form-control m-input form<?php echo $l;?>" name="persentase[]" id="presentase<?php echo $l; ?>" aria-describedby="textHelp" placeholder="Persentase" required>
                     </div>
                     <div class="form-group m-form__group col-md-3">
                         <label for="exampleInputtext1">Nilai</label>
-                        <input type="text" class="form-control m-input" id="nilai1" name="nilai[]" aria-describedby="textHelp" placeholder="Nilai" readonly required>
+                        <input type="text" class="form-control m-input" id="nilai<?php echo $l;?>" name="nilai[]" aria-describedby="textHelp" placeholder="Nilai" readonly required>
                     </div>
                     <div class="form-group m-form__group col-md-3">
                         <label for="exampleInputtext1">Tanggal Jatuh Tempo</label>
                         <input type="text" class="form-control m-input datepicker" name="tempo[]" aria-describedby="textHelp" placeholder="Tanggal Jatuh Tempo" required>
                     </div>
-                    <div class="form-group m-form__group col-md-3 terima" hidden>
+                    <div class="form-group m-form__group col-md-3 terima<?php echo $l;?>" hidden>
                         <label for="exampleInputtext1">Tgl Akhir Penerimaan Barang</label>
                         <input type="text" class="form-control m-input datepicker" name="akhir[]" aria-describedby="textHelp" placeholder="Tgl Akhir Penerimaan Barang">
                     </div>
                 </div>
                 </div>
                 <div class="m-portlet__body col-md-12 text-center">
-                    <button name="btnSimpan" type="button" class="btn green" id="add_termin1">Tambah Termin</button>
+                    <button name="btnSimpan" type="button" class="btn green" id="add_termin<?php echo $l;?>">Tambah Termin</button>
                 </div>
                 </form>
-                <form role="form" id="form2" class="form" method="post" id="id_from_sec_group_user" action="<?php echo base_url('procurement/po/savedata'); ?>">
-                <div class="form-group m-form__group m--margin-top-10">
-                    <h5 class="m-portlet__head-text"><strong>PO VENDOR B</strong></h5>
-                </div>
-                <div class="m-portlet__body col-md-12">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th scope="col">Nama Dokumen</th>
-                                <th scope="col">No Dokumen</th>
-                                <th scope="col">Validasi</th>
-                                <th scope="col">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <tr>
-                                <td><?php echo $nama_po ?></td>
-                                <td><?php echo $doc_po[1] ?></td>
-                                <td><input type="checkbox" name="check[]" value="<?php echo $doc_po[1] ?>"></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td><?php echo $nama_spk ?></td>
-                                <td><?php echo $doc_spk[1] ?></td>
-                                <td><input type="checkbox" name="check[]" value="<?php echo $doc_spk[1] ?>"></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td><?php echo $nama_kpbj ?></td>
-                                <td><?php echo $doc_kpbj[1] ?></td>
-                                <td><input type="checkbox" name="check[]" value="<?php echo $doc_kpbj[1] ?>"></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td><?php echo $nama_psw ?></td>
-                                <td><?php echo $doc_psw[1] ?></td>
-                                <td><input type="checkbox" name="check[]" value="<?php echo $doc_psw[1] ?>"></td>
-                                <td></td>
-                            </tr>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="m-portlet__body col-md-12">
-                    <div class="form-group m-form__group col-md-4">
-                        <label for="exampleInputtext1">Jumlah Barang</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Jumlah Barang" disabled>
-                    </div>
-                    <div class="form-group m-form__group col-md-4">
-                        <label for="exampleInputtext1">Jenis Barang</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Jenis Barang" disabled>
-                    </div>
-                    <div class="form-group m-form__group col-md-4">
-                        <label for="exampleInputtext1">Sub Total</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Sub Total" disabled>
-                    </div>
-                    <div class="form-group m-form__group col-md-4">
-                        <label for="exampleInputtext1">PPN</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="PPN" disabled>
-                    </div>
-                    <div class="form-group m-form__group col-md-4">
-                        <label for="exampleInputtext1">Disc</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Disc" disabled>
-                    </div>
-                    <div class="form-group m-form__group col-md-4">
-                        <label for="exampleInputtext1">PPH</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="PPH" disabled>
-                    </div>
-                    <div class="form-group m-form__group col-md-4">
-                        <label for="exampleInputtext1">Total</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Total" disabled>
-                    </div>
-                </div>
-                <input type="hidden" name="id_pr" value="<?php echo $po->RequestID?>">
-                <input type="hidden" id="hargatotal2" value="<?php echo $hargatotal?>">
-                <input type="hidden" name="id_vendor" value="2">
-                <?php if(trim($po->ReqTypeID) == '3'){ ?>
-                <div class="form-group m-form__group m--margin-top-10">
-                        <h5 class="m-portlet__head-text"><strong>Sewa Barang dan Bangunan</strong></h5>
-                </div>
-                <div class="m-portlet__body col-md-12">
-                <?php $i=1;
-                foreach ($item as $list){?>
-                    <input type="hidden" name="itemid[]" value="<?php echo $list->ItemID?>">
-                    <div class="form-group m-form__group col-md-2">
-                        <label for="exampleInputtext1">Barang/Bangunan</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" value="<?php echo $list->ItemName?>" name="barang[]" placeholder="Barang/Bangunan" readonly>
-                    </div>
-                    <div class="form-group m-form__group col-md-1">
-                        <label for="exampleInputtext1">Qty</label>
-                        <input type="number" min="0" class="form-control m-input" id="qty<?php echo $i?>" value="<?php echo $list->Qty?>" name="qty[]" placeholder="Qty">
-                    </div>
-                    <div class="form-group m-form__group col-md-2">
-                        <label for="exampleInputtext1">Periode Sewa</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" name="sewa" placeholder="Periode Sewa" required>
-                    </div>
-                    <div class="form-group m-form__group col-md-2">
-                        <label for="exampleInputtext1">Jenis Periode</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" name="jenis" placeholder="Jenis Periode" required>
-                    </div>
-                    <div class="form-group m-form__group col-md-1">
-                        <label for="exampleInputtext1">Notifikasi</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" name="notif" placeholder="Notifikasi" required>
-                    </div>
-                    <div class="form-group m-form__group col-md-2">
-                        <label for="exampleInputtext1">Harga Satuan</label>
-                        <input type="number" min="0" class="form-control m-input" id="satuan<?php echo $i?>" value="<?php echo $list->HargaHPS?>" name="satuan[]" placeholder="Harga Satuan">
-                    </div>
-                    <div class="form-group m-form__group col-md-2">
-                        <label for="exampleInputtext1">Harga</label>
-                        <input type="text" class="form-control m-input total" id="total<?php echo $i?>" value="<?php echo $list->total?>" name="hargatotal[]" placeholder="Harga">
-                    </div>
-                <?php $i++;
-            }?>
-                </div>
-            <?php }else{ ?>
-                <div class="form-group m-form__group m--margin-top-10">
-                        <h5 class="m-portlet__head-text"><strong>Detail Barang Dan Harga</strong></h5>
-                </div>
-                <div class="m-portlet__body col-md-12">
-                <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Nama Barang</th>
-                                <th>QTY</th>
-                                <th>Harga Satuan</th>
-                                <th>Harga</th>
-                                <th>Hapus</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        <?php
-                        foreach ($item as $list){?>
-                            <tr id="row<?php echo $i;?>">
-                                <td><input type="hidden" name="itemid[]" value="<?php echo $list->ItemID?>"><input type="text" name="barang[]" value="<?php echo $list->ItemName?>"></td>
-                                <td><input type="number" name="qty[]" id="qty<?php echo $i?>" value="<?php echo $list->Qty?>"></td>
-                                <td><input type="number" name="satuan[]" class="satuan2" id="satuan<?php echo $i?>" value="<?php echo $list->HargaHPS?>"></td>
-                                <td><input type="number" name="hargatotal[]" class="total2" id="total<?php echo $i?>" value="<?php echo $list->total?>"></td>
-                                <td><button onclick="dltRow('<?php echo $i;?>', 2)">Delete</button></td>
-                            </tr>
-                        <?php $i++;
-                    }?>
-                        </tbody>
-                    </table>
-                </div>
-            <?php }?>
-                <div class="form-group m-form__group m--margin-top-10 col-md-12">
-                    <div class="col-md-4">
-                        <h5 class="m-portlet__head-text"><strong>Termin</strong></h5>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="mt-checkbox">
-                            <input type="checkbox" id="detail"> Detail Terima
-                            <span></span>
-                        </label>
-                    </div>
-                    <div class="form-group m-form__group col-md-3" id="notdetail">
-                        <input type="text" class="form-control m-input datepicker" name="dterima" id="dterima" aria-describedby="textHelp" placeholder="dd/mm/yyyy" required>
-                    </div>
-                </div>
-                <div class="tanda termin2">
-                <div class="m-portlet__body col-md-12">
-                    <div class="form-group m-form__group col-md-3">
-                        <input type="hidden" name="term[]" value="1">
-                        <label for="exampleInputtext1">Persentase</label>
-                        <input type="number" class="form-control m-input form2" name="persentase[]" id="presentase2" aria-describedby="textHelp" placeholder="Persentase" required>
-                    </div>
-                    <div class="form-group m-form__group col-md-3">
-                        <label for="exampleInputtext1">Nilai</label>
-                        <input type="text" class="form-control m-input" id="nilai2" name="nilai[]" aria-describedby="textHelp" placeholder="Nilai" readonly required>
-                    </div>
-                    <div class="form-group m-form__group col-md-3">
-                        <label for="exampleInputtext1">Tanggal Jatuh Tempo</label>
-                        <input type="text" class="form-control m-input datepicker" name="tempo[]" aria-describedby="textHelp" placeholder="Tanggal Jatuh Tempo" required>
-                    </div>
-                    <div class="form-group m-form__group col-md-3 terima" hidden>
-                        <label for="exampleInputtext1">Tgl Akhir Penerimaan Barang</label>
-                        <input type="text" class="form-control m-input datepicker" name="akhir[]" aria-describedby="textHelp" placeholder="Tgl Akhir Penerimaan Barang">
-                    </div>
-                </div>
-                </div>
-                <div class="m-portlet__body col-md-12 text-center">
-                    <button name="btnSimpan" type="button" class="btn green" id="add_termin2">Tambah Termin</button>
-                </div>
-                </form>
+                <?php $l++;
+                } ?>
+                
                 </div>
 
                 <!-- <div style="overflow:auto;"> -->
@@ -891,13 +724,37 @@ button:hover {
 
 <script>
 var $ = jQuery.noConflict();
+$( document ).ready(function() {
+
+    for (var l = 1; l <= $(".tanda").length; l++){
+        $("#detail"+l).change(function() {
+            var kelas = $(this).attr('id');
+            var form = kelas.substring(kelas.length-1, kelas.length);
+            if(this.checked) {
+                $('.terima'+form).show();
+                $('#notdetail'+form).hide();
+                $('#dterima'+form).removeAttr('required');
+            }else{
+                $('.terima'+form).hide();
+                $('#notdetail'+form).show();
+                $('#dterima'+form).attr('required');
+            }
+        });
+
+        var sum = 0;
+        $('.total'+l).each(function(){
+            sum += parseInt(this.value);
+        });
+        $('#hargatotal'+l).val(sum);
+    }
+});
 var currentTab = 0; // Current tab is set to be the first tab (0)
 showTab(currentTab); // Display the crurrent tab
 var seluruh = $('.tanda').length;
 
 function dltRow(row, form){
     var sum = 0;
-    $('#row'+row).remove();
+    $('#row'+row+form).remove();
     console.log('.total'+form);
     $('.total'+form).each(function(){
         sum += parseInt(this.value);
@@ -1048,20 +905,6 @@ function submit(){
     for (var k = 1; k <= $("input[name='qty[]']").length; k++) {
         $("#satuan"+k).on("keyup", {obj: k}, counter);
     }
-
-    
-
-    $("#detail").change(function() {
-        if(this.checked) {
-            $('.terima').show();
-            $('#notdetail').hide();
-            $('#dterima').removeAttr('required');
-        }else{
-            $('.terima').hide();
-            $('#notdetail').show();
-            $('#dterima').attr('required');
-        }
-    });
 
     $("input[name='persentase[]']").on("keyup", function() {
         var kelas = $(this).attr('class');

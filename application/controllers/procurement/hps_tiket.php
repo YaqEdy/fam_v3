@@ -131,12 +131,14 @@ class hps_tiket extends CI_Controller {
             'StartDate' => $StartDate,
             'EndDate' => $EndDate,
             'ZoneID' => $ZoneID,
-            'ItemID' => $this->global_m->getIdMax('ItemID','Mst_ItemList'),
+            'CreateDate' => date('Y-m-d h:i:s'),
+            // 'ItemID' => $id_tiket,
+            'ItemID' => $this->global_m->tampil_data("  SELECT ItemID FROM Mst_ItemList WHERE ID_TIKET_HPS = $id_tiket"),
             'Price' => $Price,
             'CreateBy' =>  $this->session->userdata('user_id'),
            // 'status' => 0 //aktif
         );
-         // print_r($data); die();
+         print_r($data); die();
         $table = "Mst_HPS";
         
         $model = $this->global_m->ubah('TBL_T_TIKET_HPS', array('STATUS'=>'DONE'),'ID_TIKET_HPS',$id_tiket);
@@ -164,6 +166,7 @@ class hps_tiket extends CI_Controller {
         $nama_barang = trim($this->input->post('nama_barang'));
         $IClassID = trim($this->input->post('IClassID'));
         $ItemName = trim($this->input->post('ItemName'));
+        $ItemTypeID = trim($this->input->post('ItemTypeID'));
         // $AssetType = trim($this->input->post('AssetType'));
         $id_tiket = trim($this->input->post('id_tiket'));
 
@@ -207,7 +210,7 @@ class hps_tiket extends CI_Controller {
                 $Image = $data['file_name'];
                 $data = array(
                     'IClassID' => $IClassID,
-                    'ItemTypeID' => $ItemName,
+                    'ItemTypeID' => $ItemTypeID,
                     'ID_TIKET_HPS' => $id_tiket,
                     'ItemName' => $nama_barang,
                     'AssetType' => $code,
@@ -376,6 +379,11 @@ class hps_tiket extends CI_Controller {
         $iZone = $this->input->get('nama_barang2');
         $result = $this->hps->updatedata($idhps, $iZone);
 
+        $data = array(
+
+            'UpdateDate' => date('Y-m-d h:i:s'),
+        );
+
         if ($result == true) {
             $result = array('istatus' => true, 'iremarks' => 'Update! HPS ID: ' . $idhps . ' Success Update data');
         } else {
@@ -387,6 +395,11 @@ class hps_tiket extends CI_Controller {
     public function ajax_Delete() {
         $id = $this->input->post('sID');
         $result = $this->hps->deletedata($id);
+
+        $data = array(
+
+            'UpdateDate' => date('Y-m-d h:i:s'),
+        );
 //        $this->session->set_flashdata('msg', 'Success! HPS ID: ' . $id . ' Success Delete data');
         if ($result == true) {
             $result = array('istatus' => true, 'iremarks' => 'Success! HPS ID: ' . $id . ' Success Delete data');

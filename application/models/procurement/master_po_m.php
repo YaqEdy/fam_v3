@@ -30,6 +30,24 @@ class master_po_m extends CI_Model {
 		return $this->db->get('VW_T_PR')->row();
 	}
 
+	public function get_doc($id)
+	{
+		$query = $this->db->query("SELECT * FROM TBL_T_PO WHERE ID_PR = $id")->row();
+		$query2 = $this->db->query("select ID_PO_DETAIL from TBL_T_PO_DETAIL where ID_PO = $query->ID_PO GROUP BY ID_PO_DETAIL")->result_array();
+		$id_pos = [];
+		foreach ($query2 as $val) {
+			$id_pos[] = $val['ID_PO_DETAIL'];
+		}
+		$this->db->where_in('ID_PO_DETAIL', $id_pos);
+        return $this->db->get('TBL_T_PO_GENERATE_DOC')->result();
+	}
+
+	public function get_detail_po($id)
+	{
+		$query = $this->db->query("SELECT * FROM TBL_T_PO WHERE ID_PR = $id")->row();
+		return $query2 = $this->db->query("select ID_PO_DETAIL from TBL_T_PO_DETAIL where ID_PO = $query->ID_PO GROUP BY ID_PO_DETAIL")->result();
+	}
+
 	public function cek_po($id)
 	{
 		$this->db->where('ID_PR', $id);
@@ -40,6 +58,25 @@ class master_po_m extends CI_Model {
 	{
 		$this->db->where('RequestID', $id);
 		return $this->db->get('TBL_REQUEST')->row();
+	}
+
+	public function get_all_vendor($id)
+	{
+		$this->db->select("a.RequestID, b.*");
+		$this->db->from("TBL_REQUEST_VENDOR a");
+		$this->db->join("Mst_Vendor b", "a.VendorID = b.VendorID");
+		$this->db->where('a.RequestID', $id);
+		return $this->db->get()->result();
+	}
+
+	public function get_win_vendor($id)
+	{
+		$this->db->select("a.RequestID, a.Pemenang, b.*");
+		$this->db->from("TBL_REQUEST_VENDOR a");
+		$this->db->join("Mst_Vendor b", "a.VendorID = b.VendorID");
+		$this->db->where('a.RequestID', $id);
+		$this->db->where('a.Pemenang', 1);
+		return $this->db->get()->result();
 	}
 
 	public function save_po($data)

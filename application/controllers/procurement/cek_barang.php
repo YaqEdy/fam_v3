@@ -79,7 +79,7 @@ class cek_barang extends CI_Controller {
         $data['ias'] = $this->cek_barang_mdl->get_ias($id);
         $data['barang'] = $this->cek_barang_mdl->get_barang($id);
         $data['lists'] = $this->cek_barang_mdl->get_list($id);
-        // var_dump($data['lists']);exit();
+        // var_dump($data['barang']);exit();
         $barang = $this->cek_barang_mdl->get_barang($id);
 
         // var_dump($data['ias']);exit();
@@ -149,7 +149,7 @@ class cek_barang extends CI_Controller {
                 if (!empty($_POST['qty'][$i])) {
                     $id_barang = $this->global_m->getIdMax('ID','TBL_T_TERIMA_BARANG');
                     $barang['ID'] = $id_barang;
-                    $barang['ID_PO'] = $this->input->post('id_po');
+                    $barang['ID_PO'] =  $_POST['podetail'][$i];
                     $barang['ITEM_ID'] = $_POST['itemid'][$i];
                     $barang['NAMA_BARANG'] = $_POST['nama_barang'][$i];
                     $barang['QTY'] = $_POST['qty'][$i];
@@ -157,10 +157,10 @@ class cek_barang extends CI_Controller {
                     $barang['CREATE_BY'] = $this->session->userdata("user_id");
                     $this->cek_barang_mdl->save_barang($barang);
 
-                    for ($j=0; $j < $_POST['qty'][$i]; $j++) { 
+                    for ($j=1; $j <= $_POST['qty'][$i]; $j++) { 
                         $id_sn = $this->global_m->getIdMax('ID','TBL_T_TB_DETAIL');
                         $sn['ID'] = $id_sn;
-                        $sn['ID_PO'] = $this->input->post('id_po');
+                        $sn['ID_PO'] = $_POST['podetail'][$i];
                         $sn['ID_TB'] = $id_barang;
                         $sn['ITEM_ID'] = $_POST['itemid'][$i];
                         $sn['QTY'] = 1;
