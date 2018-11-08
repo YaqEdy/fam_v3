@@ -18,6 +18,20 @@ class Global_m extends CI_Model {
         }
     }
 
+    public function simpan_v2($tabel, $data) {
+       $this->db->query("SET IDENTITY_INSERT [dbo].[$tabel] ON");
+        $this->db->trans_begin();
+        $this->db->insert($tabel, $data);
+       $this->db->query("SET IDENTITY_INSERT [dbo].[$tabel] OFF");
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            return false;
+        } else {
+            $this->db->trans_commit();
+            return true;
+        }
+    }
+    
     public function simpan2table($tabel1, $data1, $tabel1, $data1) {
         $this->db->trans_begin();
         $model = $this->db->insert($tabel, $data);

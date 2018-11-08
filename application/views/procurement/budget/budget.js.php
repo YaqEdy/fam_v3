@@ -1,11 +1,13 @@
 <script>
 function showQR() {
     //alert(e);
-    $("#qr_code").empty();
+    $("#qr_code").empty();    
     var qrcode = new QRCode("qr_code");
     qrcode.makeCode($('#qrtext').val());
-
+    $("#qr_desc").text($('#qrtext').val());
 }
+
+    
     
     var dataTable;
     var iStatus = '%';

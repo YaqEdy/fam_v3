@@ -20,7 +20,11 @@
     </select>
 </div>-->
 
-<div id="qr_code"></div>
+<div id="qr_code_header">
+    <div id="qr_code"></div>
+    <div id="qr_desc"></div>
+</div>
+<br>
 <input type="text" id="qrtext">
 <button onclick="showQR()">QR</button>
 
