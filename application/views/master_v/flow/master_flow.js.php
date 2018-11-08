@@ -6,15 +6,7 @@
 
     jQuery(document).ready(function () {
         loadGridGroup();
-//        dd_Zone("A");
-        $('.date-picker').datepicker({
-            orientation: "left",
-            autoclose: true
-        });
-
-    });
-    
-        jQuery(document).ready(function () {
+        loadGridStatus();
         loadGridFlow();
 //        dd_Zone("A");
         $('.date-picker').datepicker({
@@ -23,16 +15,8 @@
         });
 
     });
+    
 
-        jQuery(document).ready(function () {
-        loadGridStatus();
-//        dd_Zone("A");
-        $('.date-picker').datepicker({
-            orientation: "left",
-            autoclose: true
-        });
-
-    });
     
     btnStart();
 
@@ -324,6 +308,19 @@
     // resetForm();
     readyToStart();
     }
+
+         function reload_ () {
+        // alert('new');
+        btnStart();
+        readyToStart();
+
+    }
+    
+
+
+
+
+
 
     function onDelete(a) {
         $.ajax({

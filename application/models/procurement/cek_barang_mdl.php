@@ -84,7 +84,7 @@ Class Cek_barang_mdl extends CI_Model {
         foreach ($query1->result_array() as $id_po) {
             $id_pos[] = $id_po['ID_PO_DETAIL'];
         }
-        $this->db->select("*, (SELECT sum(QTY) from TBL_T_TERIMA_BARANG where ID_PO = TBL_T_PO_DETAIL.ID_PO_DETAIL AND ITEM_ID = TBL_T_PO_DETAIL.ITEM_ID) as kurang");
+        $this->db->select("*, (SELECT sum(QTY) from TBL_T_TERIMA_BARANG where ID_PO_DETAIL = TBL_T_PO_DETAIL.ID_PO_DETAIL AND ITEM_ID = TBL_T_PO_DETAIL.ITEM_ID) as kurang");
         // var_dump($query1->result_array());exit();
         $this->db->where_in('ID_PO_DETAIL', $id_pos);
         return $this->db->get('TBL_T_PO_DETAIL')->result();
@@ -92,7 +92,7 @@ Class Cek_barang_mdl extends CI_Model {
     }
 
     function get_detail($id){
-        $this->db->where('ID_PO', $id);
+        $this->db->where('ID_PO_DETAIL', $id);
         return $this->db->get('TBL_T_PO_DETAIL')->row();
     }
 
@@ -110,7 +110,7 @@ Class Cek_barang_mdl extends CI_Model {
             $id_pos[] = $id_po['ID_PO_DETAIL'];
         }
         // var_dump($id_pos);exit();
-        $this->db->where_in('ID_PO', $id_pos);
+        $this->db->where_in('ID_PO_DETAIL', $id_pos);
         return $this->db->get('TBL_T_TERIMA_BARANG')->result();
         // var_dump($this->db->last_query());exit();
     }
@@ -122,7 +122,7 @@ Class Cek_barang_mdl extends CI_Model {
 
     function get_one_barang($id)
     {
-        $this->db->where('ID_PO', $id);
+        $this->db->where('ID_PO_DETAIL', $id);
         return $this->db->get('TBL_T_TERIMA_BARANG')->row();
     }
 
@@ -166,7 +166,7 @@ Class Cek_barang_mdl extends CI_Model {
 
     function get_sn($idtb, $idpo)
     {
-        $this->db->where('ID_PO', $idpo);
+        $this->db->where('ID_PO_DETAIL', $idpo);
         $this->db->where('ID_TB', $idtb);
         return $this->db->get('TBL_T_TB_DETAIL')->result();
     }

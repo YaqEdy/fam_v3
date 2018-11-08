@@ -119,6 +119,15 @@
 										if($approve_pr->status == '5-1'){
 									?>
 									<div class="form-group">
+                                        <label class="control-label col-sm-3">Jenis Pengadaan</label>
+                                        <div class="col-md-7">
+                                            <select id="jns_pengadaan" name="jns_pengadaan" class="form-control">
+												<option value="ias">IAS</option>
+												<option value="fpurfpum">FPUR - FPUM</option>
+											</select>
+										</div>
+                                    </div>
+									<div class="form-group">
                                         <label class="control-label col-sm-3">PIC PO</label>
                                         <div class="col-md-7">
                                             <select id="pic_po" name="pic_po" class="form-control">
@@ -135,6 +144,7 @@
 										}
 										else{
 											echo '<input type="hidden" id="pic_po" name="pic_po" value="">';
+											echo '<input type="hidden" id="jns_pengadaan" name="jns_pengadaan" value="">';
 										}
 									?>
                                     <div class="form-group">
@@ -190,7 +200,7 @@
 <div id="his_app"></div>
 <?php $this->load->view('app.min.inc.php'); ?>
 
-<script>
+<script>	
 	$(document).ready( function () {
 		$('#item_table').DataTable({
 			"aaSorting": [],
@@ -211,13 +221,15 @@
 		var status = document.getElementById('status').value;
 		var notes = document.getElementById('notes').value;
 		var pic_po = document.getElementById('pic_po').value;
+		var jns_pengadaan = document.getElementById('jns_pengadaan').value;
         $.post('<?= base_url("/procurement/purchase_request/app_requestproc");?>', {
 			action:action,
 			RequestID:RequestID,
 			flow_id:flow_id,
 			status:status,
 			notes:notes,
-			pic_po:pic_po
+			pic_po:pic_po,
+			jns_pengadaan:jns_pengadaan
 		},
 		function(data){
 			alert(data);

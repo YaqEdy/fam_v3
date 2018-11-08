@@ -32,6 +32,7 @@ class master_coa extends CI_Controller {
         }
     }
 
+
 function home() {
         $menuId = $this->home_m->get_menu_id('master/master_coa/home');
         $data['menu_id'] = $menuId[0]->menu_id;
@@ -53,57 +54,150 @@ function home() {
         $this->template->load('template/template_dataTable', 'master_v/master_coa_v', $data);
     }
 
-// if (!defined('BASEPATH'))
-//     exit('No direct script access allowed');
 
-// class master_coa extends CI_Controller {
+    function getfamdatabranch() {
+    $this->getfamdataaccount();
+    $this->getfamdatasubaccount();
+    $this->getfamdatasubaccount();
+    $this->getfamdataLOB();
+    $this->getfamdataDivision();
+    $this->getfamdatatype();
+    $this->getfamdataproject();
+    $this->getfamdatafuture1();
+    $this->getfamdatafuture2();
 
-//     function __construct() {
-//         parent::__construct();
-//         if ($this->session->userdata("is_login") === FALSE) {
-//             $this->sso->log_sso();
-//         } else {
-//             session_start();
-//             $this->load->model('home_m');
-//             $this->load->model('admin/konfigurasi_menu_status_user_m');
-// //        $this->load->model('zsessions_m');
-//             $this->load->model('global_m');
-//             $this->load->model('master_m/master_coa_m');
-//             $this->load->model('datatables_custom');
-//         }
-//     }
+        $Table='TBL_M_BRANCH';
+        $DescTable='BRANCH_DESC';
+        $ValueParam='BRANCH';
+        $Param='SEGMENT_NAME';
+        $this->getCOA($Param,$ValueParam,$Table,$DescTable);
+        //$this setiap function APIs
+    }
 
-//     public function index() {
-//         if ($this->auth->is_logged_in() == false) {
-//             $this->login();
-//         } else {
-//             $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
+    function getfamdataaccount() {
+        $Table='TBL_M_ACCOUNT';
+        $DescTable='ACCOUNT_DESC';
+        $ValueParam='ACCOUNT';
+        $Param='SEGMENT_NAME';
+        $this->getCOA($Param,$ValueParam,$Table,$DescTable);
+    }
+ 
+    function getfamdatasubaccount() {
+        $Table='TBL_M_SUBACCOUNT';
+        $DescTable='SUBACCOUNT_DESC';
+        $ValueParam='SUB_ACCOUNT';
+        $Param='SEGMENT_NAME';
+        $this->getCOA($Param,$ValueParam,$Table,$DescTable);
+    }
 
-//             $this->template->set('title', 'Home');
-//             $this->template->load('template/template1', 'global/index', $data);
-//         }
-//     }
+       function getfamdataLOB() {
+        $Table='TBL_M_LOB';
+        $DescTable='LOB_DESC';
+        $ValueParam='LOB';
+        $Param='SEGMENT_NAME';
+        $this->getCOA($Param,$ValueParam,$Table,$DescTable);
+    }
 
-// function home() {
-//         $menuId = $this->home_m->get_menu_id('master/master_coa/home');
-//         $data['menu_id'] = $menuId[0]->menu_id;
-//         $data['menu_parent'] = $menuId[0]->parent;
-//         $data['menu_nama'] = $menuId[0]->menu_nama;
-//         $data['menu_header'] = $menuId[0]->menu_header;
-//         $this->auth->restrict($data['menu_id']);
-//         $this->auth->cek_menu($data['menu_id']);
-//         $data['group_user'] = $this->konfigurasi_menu_status_user_m->get_status_user();
-//         //$data['level_user'] = $this->sec_user_m->get_level_user();
 
-//         $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
-//         $data['menu_all'] = $this->user_m->get_menu_all(0);
-// //            $data['karyawan'] = $this->global_m->tampil_id_desk('master_karyawan', 'id_kyw', 'nama_kyw', 'id_kyw');
-// //            $data['goluser'] = $this->global_m->tampil_id_desk('sec_gol_user', 'goluser_id', 'goluser_desc', 'goluser_id');
-// //            $data['statususer'] = $this->global_m->tampil_id_desk('sec_status_user', 'statususer_id', 'statususer_desc', 'statususer_id');
+       function getfamdataDivision() {
+        $Table='TBL_M_DIVISION';
+        $DescTable='DIV_DESC';
+        $ValueParam='DIVISION';
+        $Param='SEGMENT_NAME';
+        $this->getCOA($Param,$ValueParam,$Table,$DescTable);
+    }
 
-//         $this->template->set('title', 'Master COA');
-//         $this->template->load('template/template_dataTable', 'master_v/master_coa_v', $data);
-//     }
+
+      function getfamdatatype() {
+        $Table='TBL_M_TYPE';
+        $DescTable='TYPE_DESC';
+        $ValueParam='TYPE';
+        $Param='SEGMENT_NAME';
+        $this->getCOA($Param,$ValueParam,$Table,$DescTable);
+    }
+
+       function getfamdataproject() {
+        $Table='TBL_M_PROJECT';
+        $DescTable='PROJECT_DESC';
+        $ValueParam='PROJECT';
+        $Param='SEGMENT_NAME';
+        $this->getCOA($Param,$ValueParam,$Table,$DescTable);
+    }
+
+      function getfamdatafuture1() {
+        $Table='TBL_M_FUTURE1';
+        $DescTable='FUTURE1_DESC';
+        $ValueParam='FUTURE1';
+        $Param='SEGMENT_NAME';
+        $this->getCOA($Param,$ValueParam,$Table,$DescTable);
+    }
+
+       function getfamdatafuture2() {
+        $Table='TBL_M_FUTURE2';
+        $DescTable='FUTURE2_DESC';
+        $ValueParam='FUTURE2';
+        $Param='SEGMENT_NAME';
+        $this->getCOA($Param,$ValueParam,$Table,$DescTable);
+    }
+
+
+    function getCOA($Param,$ValueParam,$Table,$DescTable) {
+    // $this->getfamkota();
+        // die("j");
+      $jsonarr=[ 
+        'table'=>'PNM_COA_V',
+        // 'filter'=>array($Param=>"WHERE/".$ValueParam)
+        'filter'=>[ $Param=>"where/".$ValueParam
+
+        ]
+
+    ];
+    // print_r($jsonarr); die();
+    // $curlurl="http://192.168.10.241/OCI/index.php/api/v1/fam/get_all";
+     $query = $this->db->query("SELECT LINK FROM TBL_API_LINK WHERE API_NAME='CRUD ORACLE'");
+     $result = $query->result()[0];
+     $curlurl = $result->LINK . "/get_all";
+
+    $ch = curl_init($curlurl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($jsonarr));
+    $responsejson = curl_exec($ch);
+    curl_close($ch);
+
+    $response=json_decode($responsejson,true);
+print_r($response);die();
+
+    $no = 1;
+    $data['data'] = array();
+    foreach ( $response['data'] as $row) {
+        // echo "<pre>";
+        // print_r($row); die();
+
+        $cek=$this->global_m->tampil_data("SELECT COUNT(*) as JML FROM $Table WHERE FLEX_VALUE ='".$row['FLEX_VALUE']."'")[0]->JML;
+
+        $data = array(
+            // 'no'=>$no,
+            'FLEX_VALUE'=>$row['FLEX_VALUE'],
+             $DescTable=>$row['DESCRIPTION'],
+            'ENABLED_FLAG' => $row['ENABLED_FLAG'],
+            'SUMMARY_FLAG' => $row['SUMMARY_FLAG'],
+            'PARENT_FLEX' => $row['PARENT_FLEX_VALUE'],
+           
+        );
+
+// array_push($data['data'], $array);
+
+// $no++;
+        if($cek==0){
+
+            $model=$this->global_m->simpan($Table,$data);
+        }else{
+            $model=$this->global_m->ubah($Table,$data,'FLEX_VALUE',$row['FLEX_VALUE']);    
+        }
+    }
+
+   echo json_encode($model);
+}
 
 
      function get_server_side() {
@@ -208,7 +302,7 @@ function home() {
         echo json_encode($json_data);  
     }
 
-
+//===================================================================================================================================
 
          function get_server_side_coa() {
         $requestData = $_REQUEST;
@@ -304,7 +398,6 @@ function home() {
 
         echo json_encode($json_data);  
     }
-
 
 
 

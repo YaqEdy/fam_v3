@@ -64,7 +64,7 @@ class master_flow extends CI_Controller {
          $data['dd_status'] = $this->global_m->tampil_data("SELECT id, status FROM MS_STATUS");
 
 
-        $this->template->set('title', 'HPS TIKET');
+        $this->template->set('title', 'Master');
         $this->template->load('template/template_dataTable', 'master_v/flow/master_flow_tampil', $data);
     }
 
@@ -72,14 +72,12 @@ class master_flow extends CI_Controller {
          // die('asd');
         $id = trim($this->input->post('id'));
         $status = trim($this->input->post('status'));
-        $id_grup = $this->global_m->getIdMax('id','MS_GRUP');
-         $grup = trim($this->input->post('status_dari'));
-         $status = trim($this->input->post('status_ke'));
-        $nama_flow = trim($this->input->post('nama_flow'));
-        $status_dari = trim($this->input->post('status_dari'));
         $status_ke = trim($this->input->post('status_ke'));
+        $grup_input = trim($this->input->post('grup_input'));
+        $status_dari = trim($this->input->post('status_dari'));
+        $nama_flow = trim($this->input->post('nama_flow'));
         $action = trim($this->input->post('action'));
-        $input_status = trim($this->input->post('status'));
+        $input_status = trim($this->input->post('input_status'));
         // print_r($_POST); die();
 
 
@@ -90,8 +88,8 @@ class master_flow extends CI_Controller {
 
                 'flow_id' => 1,
                 'nama_flow' => $nama_flow,
-                'status_dari' => $id_grup,
-                'status_ke' => $id,
+                'status_dari' => $status_dari,
+                'status_ke' => $status_ke,
                 'action' => $action
                 // 'status' => 0 //aktif
         );
@@ -101,7 +99,7 @@ class master_flow extends CI_Controller {
 
             $data = array(
                'id' => $this->global_m->getIdMax('id','MS_GRUP'),
-               'grup' => $grup
+               'grup' => $grup_input
 
         );
         $table = "MS_GRUP";

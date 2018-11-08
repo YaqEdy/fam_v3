@@ -114,28 +114,6 @@
 							</table>
 							
 							<hr class="dotted">
-                            
-                                            <table class="table table-striped table-bordered table-hover text_kanan" id="table_gridItemProcess">
-                                                <thead>
-                                                    <tr>
-                                                        <th>NO</th>     
-                                                        <th>Name</th>
-                                                        <th>Wilayah</th>
-                                                        <th>Status WP</th>
-                                                        <th>Barang & Jasa</th>
-                                                        <th>Harga Penawaran</th>
-
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-
-
-                                                </tbody>
-                                                <tfoot>
-
-                                                </tfoot>
-                                            </table>
-							<hr class="dotted">
 							
 							<div class="col-md-12" style="margin-bottom:2em">
 								<div class="col-md-6">
@@ -145,34 +123,8 @@
                                             <?=$approve_pr->JenisPengadaan?>
                                         </div>
                                     </div>
-									<div class="col-sm-12">
-                                        <label class="control-label col-sm-4">Vendor Pemenang </label>
-                                        <div class="col-sm-7">
-                                            <?=$approve_pr->VendorPemenang?>
-                                        </div>
-                                    </div>
-									<div class="col-sm-12">
-                                        <label class="control-label col-sm-4">Harga Vendor </label>
-                                        <div class="col-sm-7">
-                                            <?=$approve_pr->HargaVendor?>
-                                        </div>
-                                    </div>
-									<div class="col-sm-12">
-                                        <label class="control-label col-sm-4">PPN </label>
-                                        <div class="col-sm-7">
-                                            <?=$approve_pr->PPN?> %
-                                        </div>
-                                    </div>
 								</div>
 								<div class="col-md-6">
-									<div class="col-sm-12">
-                                        <label class="control-label col-sm-4">Dokumen Scoring </label>
-                                        <div class="col-sm-7">
-											<div class="btn-group btn-group-xs btn-group-solid">
-                                                <button type="button" class="btn green"><i class="fa fa-download"> Download</i></button>
-                                            </div>
-                                        </div>
-                                    </div>
 									<div class="col-sm-12">
                                         <label class="control-label col-sm-4">Dokumen Vendor </label>
                                         <div class="col-sm-7">
@@ -183,6 +135,43 @@
                                     </div>
 								</div>
                             </div>
+                            
+							<hr class="dotted">
+							
+							<table class="table table-striped table-bordered table-hover text_kanan" id="table_gridVendorProcess">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>     
+                                        <th>Alamat</th>
+                                        <th>Pemenang</th>
+                                        <th>Harga Setelah Penawaran</th>
+                                        <th>Item</th>
+                                        <th>PPN %</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+									<?php
+										foreach($vendor as $v){
+											if($v['Pemenang'] == 1){$pemenang = 'Pemenang';}
+											else{$pemenang = 'Peserta';}
+											echo '
+									<tr>
+										<td>'.$v['VendorName'].'</td>
+										<td>'.$v['VendorAddress'].'</td>
+										<td>'.$pemenang.'</td>
+										<td>'.$v['HargaVendor'].'</td>
+										<td>'.$v['ItemName'].'</td>
+										<td>'.$v['PPN'].'</td>
+									</tr>
+											';
+										}
+									?>
+                                </tbody>
+                                <tfoot>
+
+                                </tfoot>
+                            </table>
 							
 							<hr class="dotted">
                             

@@ -548,35 +548,45 @@ button:hover {
                 <div class="m-portlet__body col-md-12">
                     <div class="form-group m-form__group col-md-4">
                         <label for="exampleInputtext1">Jumlah Barang</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Jumlah Barang" disabled>
+                        <input type="text" class="form-control m-input" id="jmlbrg<?php echo $l?>" aria-describedby="textHelp" placeholder="Jumlah Barang" name="jmlbrg" readonly="">
                     </div>
                     <div class="form-group m-form__group col-md-4">
                         <label for="exampleInputtext1">Jenis Barang</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Jenis Barang" disabled>
+                        <input type="text" class="form-control m-input" id="jnsbrg<?php echo $l?>" aria-describedby="textHelp" placeholder="Jenis Barang" name="jnsbrg" readonly="">
                     </div>
                     <div class="form-group m-form__group col-md-4">
                         <label for="exampleInputtext1">Sub Total</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Sub Total" disabled>
+                        <input type="text" class="form-control m-input" id="hargatotal<?php echo $l?>" aria-describedby="textHelp" placeholder="Sub Total" name="subtotal" readonly="">
                     </div>
                     <div class="form-group m-form__group col-md-4">
                         <label for="exampleInputtext1">PPN</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="PPN" disabled>
+                        <input type="text" class="form-control m-input" id="ppn<?php echo $l?>" aria-describedby="textHelp" placeholder="PPN" name="ppn" readonly="">
+                    </div>
+                    <div class="form-group m-form__group col-md-4">
+                        <label for="exampleInputtext1">Presentase</label>
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <input class="form-control m-input" value="10" name="presentase" id="presen<?php echo $l?>" type="number" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="button" class="btn red col-md-6" id="edit_presentase<?php echo $l?>">Edit</button>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group m-form__group col-md-4">
                         <label for="exampleInputtext1">Disc</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Disc" disabled>
+                        <input type="number" name="disc" class="form-control m-input" id="disc<?php echo $l?>" aria-describedby="textHelp" placeholder="Disc">
                     </div>
                     <div class="form-group m-form__group col-md-4">
                         <label for="exampleInputtext1">PPH</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="PPH" disabled>
+                        <input type="number" name="pph" class="form-control m-input" id="pph<?php echo $l?>" aria-describedby="textHelp" placeholder="PPH">
                     </div>
                     <div class="form-group m-form__group col-md-4">
                         <label for="exampleInputtext1">Total</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" aria-describedby="textHelp" placeholder="Total" disabled>
+                        <input type="text" name="totalall" class="form-control m-input" id="totalall<?php echo $l?>" aria-describedby="textHelp" placeholder="Total" readonly="">
                     </div>
                 </div>
                 <input type="hidden" name="id_pr" value="<?php echo $po->RequestID?>">
-                <input type="hidden" id="hargatotal<?php echo $l?>" value="">
                 <input type="hidden" name="id_vendor" value="<?php echo trim($vendor->VendorID)?>">
                 <input type="hidden" name="redirect" value="ada">
                 <?php if(trim($po->ReqTypeID) == '3'){ ?>
@@ -638,7 +648,7 @@ button:hover {
                         foreach ($item as $list){?>
                             <tr id="row<?php echo $i.$l;?>">
                                 <td><input type="hidden" name="itemid[]" value="<?php echo $list->ItemID?>"><input type="text" name="barang[]" value="<?php echo $list->ItemName?>"></td>
-                                <td><input type="number" name="qty[]" id="qty<?php echo $i?>" value="<?php echo $list->Qty?>"></td>
+                                <td><input class="brg<?php echo $l;?>" type="number" name="qty[]" id="qty<?php echo $i?>" value="<?php echo $list->Qty?>"></td>
                                 <td><input type="number" name="satuan[]" class="satuan<?php echo $l;?>" id="satuan<?php echo $i?>" value="<?php echo $list->HargaHPS?>"></td>
                                 <td><input type="number" name="hargatotal[]" class="total<?php echo $l;?>" id="total<?php echo $i?>" value="<?php echo $list->total?>"></td>
                                 <td><button onclick="dltRow('<?php echo $i;?>', '<?php echo $l;?>')">Delete</button></td>
@@ -741,11 +751,27 @@ $( document ).ready(function() {
             }
         });
 
+        $('#edit_presentase'+l).click(function(){
+            var kelas = $(this).attr('id');
+            var form = kelas.substring(kelas.length-1, kelas.length);
+            $('#presen'+form).attr('readonly', false);
+        });
+
         var sum = 0;
+        var brg = 0;
+
         $('.total'+l).each(function(){
             sum += parseInt(this.value);
         });
+
+        $('.brg'+l).each(function(){
+            brg += parseInt(this.value);
+        });
+
         $('#hargatotal'+l).val(sum);
+        $('#ppn'+l).val(sum*0.1);
+        $('#jmlbrg'+l).val(brg);
+        $('#jnsbrg'+l).val($('.brg'+l).length);
     }
 });
 var currentTab = 0; // Current tab is set to be the first tab (0)
@@ -754,12 +780,19 @@ var seluruh = $('.tanda').length;
 
 function dltRow(row, form){
     var sum = 0;
+    var brg = 0;
     $('#row'+row+form).remove();
     console.log('.total'+form);
     $('.total'+form).each(function(){
         sum += parseInt(this.value);
     });
+    $('.brg'+form).each(function(){
+            brg += parseInt(this.value);
+        });
     $('#hargatotal'+form).val(sum);
+    $('#jmlbrg'+form).val(brg);
+    $('#jnsbrg'+form).val($('.brg'+form).length);
+    hitung2(form);
 }
 function showTab(n) {
   // This function will display the specified tab of the form...
@@ -849,12 +882,13 @@ for (var l = 1; l <= $(".tanda").length; l++){
 }
 
 function add_termin(e){
+    console.log(e.data.param);
     num++;
         
-    if($('#detail').is(":checked")){
-        $('.termin'+e.data.param).append('<div class="m-portlet__body col-md-12"><div class="form-group m-form__group m--margin-top-10 col-md-12"><div class="form-group m-form__group col-md-3"><label for="exampleInputtext1">Persentase</label><input type="number" class="form-control m-input form'+e.data.param+'" name="persentase[]" id="presentase'+num+'" aria-describedby="textHelp" placeholder="Persentase"></div><div class="form-group m-form__group col-md-3"><label for="exampleInputtext1">Nilai</label><input type="text" class="form-control m-input" id="nilai'+num+'" name="nilai[]" aria-describedby="textHelp" placeholder="Nilai" readonly></div><div class="form-group m-form__group col-md-3"><label for="exampleInputtext1">Tanggal Jatuh Tempo</label><input type="text" class="form-control m-input datepicker" id="exampleInputtext1" name="tempo[]" aria-describedby="textHelp" placeholder="Tanggal Jatuh Tempo"></div><div class="form-group m-form__group col-md-3 terima"><label for="exampleInputtext1">Tgl Akhir Penerimaan Barang</label><input type="text" class="form-control m-input datepicker" name="akhir[]" aria-describedby="textHelp" placeholder="Tgl Akhir Penerimaan Barang"></div></div></div>');
+    if($('#detail'+e.data.param).is(":checked")){
+        $('.termin'+e.data.param).append('<div class="m-portlet__body col-md-12"><div class="form-group m-form__group m--margin-top-10 col-md-12"><div class="form-group m-form__group col-md-3"><label for="exampleInputtext1">Persentase</label><input type="number" class="form-control m-input form'+e.data.param+'" name="persentase[]" id="presentase'+num+'" aria-describedby="textHelp" placeholder="Persentase"></div><div class="form-group m-form__group col-md-3"><label for="exampleInputtext1">Nilai</label><input type="text" class="form-control m-input" id="nilai'+num+'" name="nilai[]" aria-describedby="textHelp" placeholder="Nilai" readonly></div><div class="form-group m-form__group col-md-3"><label for="exampleInputtext1">Tanggal Jatuh Tempo</label><input type="text" class="form-control m-input datepicker" id="exampleInputtext1" name="tempo[]" aria-describedby="textHelp" placeholder="Tanggal Jatuh Tempo"></div><div class="form-group m-form__group col-md-3 terima'+e.data.param+'"><label for="exampleInputtext1">Tgl Akhir Penerimaan Barang</label><input type="text" class="form-control m-input datepicker" name="akhir[]" aria-describedby="textHelp" placeholder="Tgl Akhir Penerimaan Barang"></div></div></div>');
     }else{
-        $('.termin'+e.data.param).append('<input type="hidden" name="term[]" value="'+num+'"><div class="m-portlet__body col-md-12"><div class="form-group m-form__group col-md-3"><label for="exampleInputtext1">Persentase</label><input type="number" class="form-control m-input form'+e.data.param+'" name="persentase[]" id="presentase'+num+'" aria-describedby="textHelp" placeholder="Persentase"></div><div class="form-group m-form__group col-md-3"><label for="exampleInputtext1">Nilai</label><input type="text" class="form-control m-input" id="nilai'+num+'" name="nilai[]" aria-describedby="textHelp" placeholder="Nilai" readonly></div><div class="form-group m-form__group col-md-3"><label for="exampleInputtext1">Tanggal Jatuh Tempo</label><input type="text" class="form-control m-input datepicker" id="exampleInputtext1" name="tempo[]" aria-describedby="textHelp" placeholder="Tanggal Jatuh Tempo"></div><div class="form-group m-form__group col-md-3 terima" hidden><label for="exampleInputtext1">Tgl Akhir Penerimaan Barang</label><input type="text" class="form-control m-input datepicker" name="akhir[]" aria-describedby="textHelp" placeholder="Tgl Akhir Penerimaan Barang"></div></div>');
+        $('.termin'+e.data.param).append('<input type="hidden" name="term[]" value="'+num+'"><div class="m-portlet__body col-md-12"><div class="form-group m-form__group col-md-3"><label for="exampleInputtext1">Persentase</label><input type="number" class="form-control m-input form'+e.data.param+'" name="persentase[]" id="presentase'+num+'" aria-describedby="textHelp" placeholder="Persentase"></div><div class="form-group m-form__group col-md-3"><label for="exampleInputtext1">Nilai</label><input type="text" class="form-control m-input" id="nilai'+num+'" name="nilai[]" aria-describedby="textHelp" placeholder="Nilai" readonly></div><div class="form-group m-form__group col-md-3"><label for="exampleInputtext1">Tanggal Jatuh Tempo</label><input type="text" class="form-control m-input datepicker" id="exampleInputtext1" name="tempo[]" aria-describedby="textHelp" placeholder="Tanggal Jatuh Tempo"></div><div class="form-group m-form__group col-md-3 terima'+e.data.param+'" hidden><label for="exampleInputtext1">Tgl Akhir Penerimaan Barang</label><input type="text" class="form-control m-input datepicker" name="akhir[]" aria-describedby="textHelp" placeholder="Tgl Akhir Penerimaan Barang"></div></div>');
     }
 
     $("input[name='persentase[]']").on("keyup", function(){
@@ -886,6 +920,30 @@ function submit(){
 
     for (var j = 1; j <= $("input[name='barang[]']").length; j++) {
         $("#qty"+j).on("keyup", {obj: j}, counter);
+        $("#disc"+j).on("keyup", {obj: j}, hitung);
+        $("#pph"+j).on("keyup", {obj: j}, hitung);
+        $("#presen"+j).on("keyup", {obj: j}, hitung);
+    }
+
+    function hitung(e){
+        var obj = e.data.obj;
+        var sub = parseInt($('#hargatotal'+obj).val());
+        var disc = $('#disc'+obj).val();
+        var presentase = parseInt($('#presen'+obj).val());
+        var pph = $('#pph'+obj).val();
+        $('#ppn'+obj).val((sub-disc)*(presentase/100))
+        var ppn = parseInt($('#ppn'+obj).val());
+        $('#totalall'+obj).val((sub-disc)+ppn-pph);
+    }
+
+    function hitung2(obj){
+        var sub = parseInt($('#hargatotal'+obj).val());
+        var disc = parseInt($('#disc'+obj).val());
+        var presentase = $('#presen'+obj).val();
+        var pph = $('#pph'+obj).val();
+        $('#ppn'+obj).val((sub-disc)*(presentase/100))
+        var ppn = parseInt($('#ppn'+obj).val());
+        $('#totalall'+obj).val((sub-disc)+ppn-pph);
     }
 
     function counter(e){
@@ -900,6 +958,7 @@ function submit(){
             sum += parseInt(this.value);
         });
         $('#hargatotal'+form).val(sum);
+        hitung2(form);
     }
 
     for (var k = 1; k <= $("input[name='qty[]']").length; k++) {

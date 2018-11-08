@@ -52,63 +52,8 @@ function home() {
         $this->template->load('template/template_dataTable', 'master_v/master_itemcategory_v', $data);
     }
 
-// if (!defined('BASEPATH'))
-//     exit('No direct script access allowed');
 
-// class master_itemcategory extends CI_Controller {
-
-//     function __construct() {
-//         parent::__construct();
-//         if ($this->session->userdata("is_login") === FALSE) {
-//             $this->sso->log_sso();
-//         } else {
-//             session_start();
-//             $this->load->model('home_m');
-//             $this->load->model('admin/konfigurasi_menu_status_user_m');
-// //        $this->load->model('zsessions_m');
-//             $this->load->model('global_m');
-//             $this->load->model('master_m/master_itemcategory_m');
-//             $this->load->model('datatables_custom');
-//         }
-//     }
-
-//     public function index() {
-//         if ($this->auth->is_logged_in() == false) {
-//             $this->login();
-//         } else {
-//             $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
-
-//             $this->template->set('title', 'Home');
-//             $this->template->load('template/template1', 'global/index', $data);
-//         }
-//     }
-
-// function home() {
-//         $menuId = $this->home_m->get_menu_id('master/master_itemcategory/home');
-//         $data['menu_id'] = $menuId[0]->menu_id;
-//         $data['menu_parent'] = $menuId[0]->parent;
-//         $data['menu_nama'] = $menuId[0]->menu_nama;
-//         $data['menu_header'] = $menuId[0]->menu_header;
-//         $this->auth->restrict($data['menu_id']);
-//         $this->auth->cek_menu($data['menu_id']);
-//         $data['group_user'] = $this->konfigurasi_menu_status_user_m->get_status_user();
-//         $data['item_classprov'] = $this->global_m->tampil_provinsi();
-//         $data['item_country'] = $this->global_m->tampil_country();
-//         $data['item_branch'] = $this->global_m->tampil_branch();
-//         //$data['level_user'] = $this->sec_user_m->get_level_user();
-
-//         $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
-//         $data['menu_all'] = $this->user_m->get_menu_all(0);
-// //            $data['karyawan'] = $this->global_m->tampil_id_desk('master_karyawan', 'id_kyw', 'nama_kyw', 'id_kyw');
-// //            $data['goluser'] = $this->global_m->tampil_id_desk('sec_gol_user', 'goluser_id', 'goluser_desc', 'goluser_id');
-// //            $data['statususer'] = $this->global_m->tampil_id_desk('sec_status_user', 'statususer_id', 'statususer_desc', 'statususer_id');
-
-//         $this->template->set('title', 'Item Category');
-//         $this->template->load('template/template_dataTable', 'master_v/master_itemcategory_v', $data);
-//     }
-
-
-    function get_server_side() {
+        function get_server_side() {
         $requestData = $_REQUEST;
 //        print_r($requestData);die();
         $iStatus = $this->input->post('sStatus');

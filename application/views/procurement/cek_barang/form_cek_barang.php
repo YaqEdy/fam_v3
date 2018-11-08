@@ -185,10 +185,10 @@ button:hover {
                                 <td><?php echo $item->TGL_TERIMA?></td>
                                 <td><?php echo $item->CREATE_BY?></td>
                                 <?php foreach($lists as $list){
-                                if ($list->ID_PO_DETAIL == $item->ID_PO) {
+                                if ($list->ID_PO_DETAIL == $item->ID_PO_DETAIL) {
                                     if($list->ITEM_ID == $item->ITEM_ID){
                                         if((($list->QTY) - ($list->kurang)) == 0){?>
-                                <td><a class="btn blue" href="javascript:void(0)" title="Edit" onclick="edit_sn(<?php echo $item->ID?>, <?php echo $item->ID_PO?>)">Edit SN</a></td>
+                                <td><a class="btn blue" href="javascript:void(0)" title="Edit" onclick="edit_sn(<?php echo $item->ID?>, <?php echo $item->ID_PO_DETAIL?>)">Edit SN</a></td>
                                 <?php }else{?>
                                 <td></td>
                                     <?php }

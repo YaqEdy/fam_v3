@@ -2,7 +2,7 @@
     var dataTable;
     var iSampai = '';
     var iMulai = '';
-    var iSearch = 'NAMA_BARANG';
+    var iSearch = 'ID_PO';
 
     jQuery(document).ready(function () {
         ComponentsDateTimePickers.init();
@@ -35,11 +35,11 @@
         dataTable = $('#table_gridBudget').DataTable({
             dom: 'C<"clear">l<"toolbar">frtip',
             "lengthMenu": [
-                [5, 10, 15, 20, -1],
-                [5, 10, 15, 20, "All"] // change per page values here
+                [10, 20, 30, 40, 50, -1],
+                [10, 20, 30, 40, 50, "All"] // change per page values here
             ],
 //                // set the initial value
-            "pageLength": 5,
+            "pageLength": 10,
             "processing": true,
             "serverSide": true,
             "ajax": {
@@ -295,6 +295,7 @@
                 [10, 15, 20, "All"] // change per page values here
             ],
 //                // set the initial value
+            "scrollX": true,
             "pageLength": 10,
             "processing": true,
             "serverSide": true,
@@ -382,6 +383,31 @@
                     $('#table_gridSetting').DataTable().ajax.reload();
                     UIToastr.init(e.type, e.iremarks);
                 }
+            }
+        });
+    }
+
+    function edit_sn(idpo, idtb)
+    {
+        $('#table_sn tbody').empty();
+        $.ajax({
+            url : "<?php echo base_url('procurement/ias/get_sn/')?>/" + idpo + "/" +idtb,
+            type: "GET",
+            dataType: "JSON",
+            success: function(data)
+            {
+                for(var i = 0; i < data.length; i++){
+                    $('#table_sn tbody').append('<tr><td>'+data[i].ID_PO+'</td><td>'+data[i].ID_TB+'</td><td>'+data[i].ITEM_ID+'</td><td>'+data[i].QTY+'</td><td>'+data[i].SN+'</td></tr>');
+                }
+
+                $('#table_sn').dataTable();
+
+                $('#myModal').modal('show'); // show bootstrap modal when complete loaded
+     
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data from ajax');
             }
         });
     }

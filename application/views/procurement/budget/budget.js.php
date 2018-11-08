@@ -1,4 +1,12 @@
 <script>
+function showQR() {
+    //alert(e);
+    $("#qr_code").empty();
+    var qrcode = new QRCode("qr_code");
+    qrcode.makeCode($('#qrtext').val());
+
+}
+    
     var dataTable;
     var iStatus = '%';
     var iSearch = 'BudgetCOA';

@@ -434,3 +434,7 @@
 <script src="<?php echo base_url('metronic/layouts/layout4/scripts/demo.min.js'); ?>" type="text/javascript"></script>
 <!-- END THEME LAYOUT SCRIPTS -->
 <script src="<?php echo base_url('metronic/additional/start.js'); ?>" type="text/javascript"></script>
+
+<!--QR Code-->
+<script src="<?php echo base_url('metronic/qr_code/qrcode.js'); ?>" type="text/javascript"></script>
+<script src="<?php echo base_url('metronic/qr_code/qrcode.min.js'); ?>" type="text/javascript"></script>

@@ -20,6 +20,7 @@ class project extends CI_Controller {
         }
     }
 
+
     public function index() {
         if ($this->auth->is_logged_in() == false) {
             $this->login();
@@ -27,9 +28,11 @@ class project extends CI_Controller {
             $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
 
             $this->template->set('title', 'Home');
-            $this->template->load('template/template1', 'global/index', $data);
+            $this->template->load('template/template1','global/index', $data);
         }
     }
+
+
 
 function home() {
         $menuId = $this->home_m->get_menu_id('master/project/home');

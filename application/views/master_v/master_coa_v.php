@@ -4,7 +4,6 @@
 <style type="text/css">
 
 
-
     table#table_gridCategory th:nth-child(5){
         display: none;
     } 
@@ -24,7 +23,6 @@
         display: none;
     }
 
-
     table#coa_table th:nth-child(5){
         display: none;
     } 
@@ -38,7 +36,6 @@
     table#coa_table td:nth-child(4){
         display: none;
     }
-
 
     table#subcoa_table th:nth-child(5){
         display: none;
@@ -54,7 +51,6 @@
         display: none;
     }
 
-
     table#lob_table th:nth-child(5){
         display: none;
     } 
@@ -68,8 +64,6 @@
     table#lob_table td:nth-child(4){
         display: none;
     }
-
-
 
     table#div_table th:nth-child(5){
         display: none;
@@ -164,6 +158,7 @@
                     <span class="caption-subject font-red sbold uppercase"><?php echo $menu_header; ?></span>
                 </div>
                 <div class="tools">
+                     <button  onclick="sys_coa()">Button Sync API <i class="fa fa-refresh green"></i></button>
                     <a href="javascript:;" class="collapse">
                     </a>
                     <a href="javascript:;" class="fullscreen">
@@ -435,9 +430,7 @@
                     </div>
 
 
-
-
-                        <div class="tab-pane" id="tab_2_5">
+                    <div class="tab-pane" id="tab_2_5">
                         <div class="scroller" style="height:400px; ">
                             <div class="row">
                                 <div class="col-md-12">
@@ -918,6 +911,25 @@
         }
 
     }
+
+
+
+
+function sys_coa(){
+
+ $.ajax({
+        type: "POST",
+        url: "<?php echo site_url('master/master_coa/getfamdatabranch'); ?>",
+        // data: form.serialize(), // <--- THIS IS THE CHANGE
+        dataType: "JSON",
+        success: function(data){
+             $('#table_gridCategory').DataTable().ajax.reload();
+        },
+        error: function() { alert("Error posting feed."); }
+   });
+
+}
+
 
     $('#table_gridCategory').on('click', '#btnDetail', function () {
         $('#mdl_Update').find('.modal-title').text('Detail');

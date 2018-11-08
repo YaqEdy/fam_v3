@@ -1,7 +1,6 @@
 
 <div class="row">
     <div class="col-md-12">
-
         <!-- BEGIN VALIDATION STATES-->
         <div class="portlet light portlet-fit  bordered">
             <div class="portlet-body">
@@ -44,14 +43,14 @@
                                                         <input required="required" class="form-control" id="nama_flow" name="nama_flow" type="number" min="1" max="100" step="1" />
                                                     </div>
                                                        <div class="form-group">
-                                                        <label>GROUP</label>
+                                                        <label>Status dari</label>
                                                         <?php
                                                         $data = array();
                                                         $data[''] = '';
-                                                        foreach ($dd_grup as $row) :
-                                                            $data[$row->id] = $row->grup;
+                                                        foreach ($dd_status as $row) :
+                                                            $data[$row->id] = $row->status;
                                                         endforeach;
-                                                        echo form_dropdown('id', $data, '', 'id="id_grup" name="grup" class="form-control  input-sm select2me" required="required"');
+                                                        echo form_dropdown('status_dari', $data, '', 'id="id_status_x" class="form-control  input-sm select2me" required="required"');
                                                         ?>
                                                      </div>
                                                      <div class="form-group">
@@ -62,7 +61,7 @@
                                                         foreach ($dd_status as $row) :
                                                             $data[$row->id] = $row->status;
                                                         endforeach;
-                                                        echo form_dropdown('id', $data, '', 'id="id_status" class="form-control  input-sm select2me"');
+                                                        echo form_dropdown('status_ke', $data, '', 'id="id_status" class="form-control  input-sm select2me"');
                                                         ?>
                                                     </div>
                                                
@@ -83,11 +82,10 @@
                                             <div class="col-md-12">
                                                 <div class="form-actions">
 
-                                                    <button name="btnSimpan" onclick="reload2()"  class="btn blue" id="id_btnSimpan">
-                                                        <!--<i class="fa fa-check"></i>--> Simpan
-                                                    </button>
+                                                    <button name="btnSimpan" onclick="reload_()" type="submit" class="btn blue" id="id_btnSimpan">Simpan</button>
                                                     <button name="btnUbah" onclick="" class="btn yellow" id="id_btnUbah">
-                                                        <!--<i class="fa fa-edit"></i>--> Ubah
+                                                        <!--<i cla
+                                                            ss="fa fa-edit"></i>--> Ubah
                                                     </button>
 
                                                     <button id="id_btnBatal" type="reset" class="btn default">Batal</button>
@@ -177,7 +175,7 @@
                                                         <div class="form-group">
                                                             <label>Input Grup</label> <span class="required">*</span>
                                                             <input required="required" class="form-control"
-                                                                   type="text" id="grup" name="grup"/>
+                                                                   type="text" id="grup_input" name="grup_input"/>
                                                         </div>
                                                     </div>                                                 
                                                 </div>

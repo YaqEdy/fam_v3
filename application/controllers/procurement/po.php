@@ -162,7 +162,7 @@ class po extends CI_Controller {
     }
 
     public function getTableList() {
-        $this->CI = & get_instance(); //and a.kcab_id<>'1100'
+        $this->CI = & get_instance();
         $rows = $this->master_po_m->getList($this->global_m->getFlow('7-2'));
         $data['data'] = array();
         foreach ($rows as $row) {
@@ -187,7 +187,6 @@ class po extends CI_Controller {
 
     public function savedata()
     {
-        // var_dump($_POST['check']);exit();
         $flow = $this->master_po_m->getflow();
         $cek_po = $this->master_po_m->cek_po($this->input->post('id_pr'));
         $id_po_detail = $this->global_m->getIdMax('ID_PO_DETAIL','TBL_T_PO_DETAIL');
@@ -198,9 +197,23 @@ class po extends CI_Controller {
             $head['ID_PO'] = $id_po;
             $head['ID_PR'] = $this->input->post('id_pr');
             $head['flow_id'] = 1;
-            $head['status'] = '7-2';
+            $head['status'] = '6-2';
             $this->master_po_m->save_po($head);
         }
+
+        // po detail total
+        $detail['ID'] = $this->global_m->getIdMax('ID','TBL_T_PO_DTL_TOTAL');
+        $detail['ID_PO_DETAIL'] = $id_po_detail;
+        $detail['JML_ITEM'] = $this->input->post('jnsbrg');
+        $detail['TTL_QTY'] = $this->input->post('jmlbrg');
+        $detail['SUB_TOTAL'] = $this->input->post('subtotal');
+        $detail['DISC'] = $this->input->post('disc');
+        $detail['PPN'] = $this->input->post('ppn');
+        $detail['PPH'] = $this->input->post('pph');
+        $detail['TOTAL'] = $this->input->post('totalall');
+        $detail['CREATE_BY'] = $this->session->userdata('user_id');
+        $detail['CREATE_DATE'] = date('Y-m-d H:i:s');
+        $this->master_po_m->save_detail_total($detail);
         
         //request log
         $log['RequestID'] = $this->input->post('id_pr');
@@ -226,7 +239,7 @@ class po extends CI_Controller {
             $this->master_po_m->save_po_detail($data);
         }
         
-
+        // termin
         for ($i=0; $i < count($_POST['persentase']); $i++) {
             $termin = array(
                             'ID_PO' => $id_po,
@@ -247,99 +260,56 @@ class po extends CI_Controller {
             $this->master_po_m->save_termin($termin);
         }
 
-        for ($i=0; $i < count($_POST['check']); $i++) { 
-            $doc['ID'] = $this->global_m->getIdMax('ID','TBL_T_PO_GENERATE_DOC');
-            $doc['ID_PO_DETAIL'] = $id_po_detail;
-            $doc['NAMA_DOC'] = $_POST['check'][$i];
-            
-            $doc['CREATE_BY'] = $this->session->userdata('user_id');
-            $doc['CREATE_DATE'] = date('Y-m-d H:i:s');
-            if ($_POST['check'][$i] == 'PO') {
-                $max_po = "PO-00000000000-0000";
-                // $urut_dpo = (int) substr($max_po, 15, 18);
-                $kode_po = substr($max_po, 0, 16);
-                $doc['NO_DOC'] = $kode_po.sprintf("%04s", $id_po);
-            }elseif ($_POST['check'][$i] == 'SPK') {
-                $get_spk = $this->master_po_m->no_doc($_POST['check'][$i], strlen($_POST['check'][$i]));
-                if (!empty($get_spk)) {
-                    $max_spk = $get_spk->NO_DOC;
-                }else{
-                    $max_spk = "SPK-00000000000-0000";
+        if (count($_POST['check'] > 0)) {
+            for ($i=0; $i < count($_POST['check']); $i++) { 
+                $doc['ID'] = $this->global_m->getIdMax('ID','TBL_T_PO_GENERATE_DOC');
+                $doc['ID_PO_DETAIL'] = $id_po_detail;
+                $doc['NAMA_DOC'] = $_POST['check'][$i];
+                
+                $doc['CREATE_BY'] = $this->session->userdata('user_id');
+                $doc['CREATE_DATE'] = date('Y-m-d H:i:s');
+                if ($_POST['check'][$i] == 'PO') {
+                    $max_po = "PO-00000000000-0000";
+                    // $urut_dpo = (int) substr($max_po, 15, 18);
+                    $kode_po = substr($max_po, 0, 16);
+                    $doc['NO_DOC'] = $kode_po.sprintf("%04s", $id_po);
+                }elseif ($_POST['check'][$i] == 'SPK') {
+                    $get_spk = $this->master_po_m->no_doc($_POST['check'][$i], strlen($_POST['check'][$i]));
+                    if (!empty($get_spk)) {
+                        $max_spk = $get_spk->NO_DOC;
+                    }else{
+                        $max_spk = "SPK-00000000000-0000";
+                    }
+
+                    $urut_spk = (int) substr($max_spk, 16, 19);
+                    $kode_spk = substr($max_spk, 0, 16);
+                    $doc['NO_DOC'] = $kode_spk.sprintf("%04s", $urut_spk+1);
+                }elseif ($_POST['check'][$i] == 'KPBJ') {
+                    $get_kpbj = $this->master_po_m->no_doc($_POST['check'][$i], strlen($_POST['check'][$i]));
+                    if (!empty($get_kpbj)) {
+                        $max_kpbj = $get_kpbj->NO_DOC;
+                    }else{
+                        $max_kpbj = "KPBJ-00000000000-0000";
+                    }
+
+                    $urut_kpbj = (int) substr($max_kpbj, 17, 20);
+                    $kode_kpbj = substr($max_kpbj, 0, 17);
+                    $doc['NO_DOC'] = $kode_kpbj.sprintf("%04s", $urut_kpbj+1);
+                }elseif ($_POST['check'][$i] == 'PSW') {
+                    $get_psw = $this->master_po_m->no_doc($_POST['check'][$i], strlen($_POST['check'][$i]));
+                    if (!empty($get_psw)) {
+                        $max_psw = $get_psw->NO_DOC;
+                    }else{
+                        $max_psw = "PSW-00000000000-0000";
+                    }
+
+                    $urut_psw = (int) substr($max_psw, 16, 19);
+                    $kode_psw = substr($max_psw, 0, 16);
+                    $doc['NO_DOC'] = $kode_psw.sprintf("%04s", $urut_psw+1);
                 }
 
-                $urut_spk = (int) substr($max_spk, 16, 19);
-                $kode_spk = substr($max_spk, 0, 16);
-                $doc['NO_DOC'] = $kode_spk.sprintf("%04s", $urut_spk+1);
-            }elseif ($_POST['check'][$i] == 'KPBJ') {
-                $get_kpbj = $this->master_po_m->no_doc($_POST['check'][$i], strlen($_POST['check'][$i]));
-                if (!empty($get_kpbj)) {
-                    $max_kpbj = $get_kpbj->NO_DOC;
-                }else{
-                    $max_kpbj = "KPBJ-00000000000-0000";
-                }
-
-                $urut_kpbj = (int) substr($max_kpbj, 17, 20);
-                $kode_kpbj = substr($max_kpbj, 0, 17);
-                $doc['NO_DOC'] = $kode_kpbj.sprintf("%04s", $urut_kpbj+1);
-            }elseif ($_POST['check'][$i] == 'PSW') {
-                $get_psw = $this->master_po_m->no_doc($_POST['check'][$i], strlen($_POST['check'][$i]));
-                if (!empty($get_psw)) {
-                    $max_psw = $get_psw->NO_DOC;
-                }else{
-                    $max_psw = "PSW-00000000000-0000";
-                }
-
-                $urut_psw = (int) substr($max_psw, 16, 19);
-                $kode_psw = substr($max_psw, 0, 16);
-                $doc['NO_DOC'] = $kode_psw.sprintf("%04s", $urut_psw+1);
+                $this->master_po_m->save_doc($doc);
             }
-
-            // if (!empty($this->master_po_m->get_t_po())) {
-            //     $urut_dpo = (int) $this->master_po_m->get_t_po()->ID_PO;
-            // }else{
-            //     $urut_dpo = (int) substr($doc_po, 15, 18);
-            // }
-            // $kode_dpo = substr($doc_po, 0, 15);
-            // $data['doc_po'][] = $kode_dpo.sprintf("%04s", $urut_dpo+$i);
-
-            // $get_spk = $this->master_po_m->no_doc($doc_spk, strlen($doc_spk));
-            // if (!empty($get_spk)) {
-            //     $max_spk = $get_spk->NO_DOC;
-            // }else{
-            //     $max_spk = "SPK-00000000000-0000";
-            // }
-
-            // $urut_spk = (int) substr($max_spk, 16, 19);
-            // $kode_spk = substr($max_spk, 0, 16);
-            // $data['doc_spk'][] = $kode_spk.sprintf("%04s", $urut_spk+$i);
-
-
-            // $get_kpbj = $this->master_po_m->no_doc($doc_kpbj, strlen($doc_kpbj));
-            // if (!empty($get_kpbj)) {
-            //     $max_kpbj = $get_kpbj->NO_DOC;
-            // }else{
-            //     $max_kpbj = "KPBJ-00000000000-0000";
-            // }
-
-            // $urut_kpbj = (int) substr($max_kpbj, 17, 20);
-            // $kode_kpbj = substr($max_kpbj, 0, 17);
-            // $data['doc_kpbj'][] = $kode_kpbj.sprintf("%04s", $urut_kpbj+$i);
-
-            // $get_psw = $this->master_po_m->no_doc($doc_psw, strlen($doc_psw));
-            // if (!empty($get_psw)) {
-            //     $max_psw = $get_psw->NO_DOC;
-            // }else{
-            //     $max_psw = "PSW-00000000000-0000";
-            // }
-
-            // $urut_psw = (int) substr($max_psw, 16, 19);
-            // $kode_psw = substr($max_psw, 0, 16);
-            // $data['doc_psw'][] = $kode_psw.sprintf("%04s", $urut_psw+$i);
-
-
-            // $ex_cek = explode('-', $_POST['check'][$i]);
-
-            $this->master_po_m->save_doc($doc);
         }
 
         $return['status'] = true;
@@ -348,6 +318,60 @@ class po extends CI_Controller {
         }
 
         echo json_encode($return);
+    }
+
+    public function uploaddok()
+    {
+        // var_dump($_FILES);exit();
+        foreach ($_FILES as $key => $value) {
+            if ($_FILES[$key]['name'] != NULL) {
+                $new_name = time().$_FILES[$key]['name'];
+                $config = array(
+                        'upload_path' => "./uploads/template/doc/",
+                        'allowed_types' => "doc|docx",
+                        'file_name' => $new_name,
+                        'overwrite' => TRUE,
+                        // 'max_size' => "2048000", // Can be set to particular file size , here it is 2 MB(2048 Kb)
+                        // 'max_height' => "2048",
+                        // 'max_width' => "2048"
+                        );
+                $upload = $this->load->library('upload', $config);
+                if($this->upload->do_upload($key))
+                {
+                    $doc['DOC_PATH'] = 'uploads/template/doc/'.$new_name;
+                    $this->master_po_m->uploaddoc($doc, $key);
+                }else{
+                    $this->session->set_flashdata('error', $this->upload->display_errors());
+                    redirect('procurement/po/home');
+                }
+            }
+        }
+        $this->session->set_flashdata('success', 'Data Berhasil Disimpan');
+        redirect('procurement/po/home');
+    }
+
+    public function dl_dok($no_dok)
+    {
+        $this->load->library('word');
+        $PHPWord = $this->word; // New Word Document
+        $section = $PHPWord->createSection(); // New portrait section
+        // Add text elements
+        $section->addText($no_dok, array('name'=>'Verdana', 'color'=>'006699'));
+        $section->addTextBreak(2);
+        $PHPWord->addFontStyle('rStyle', array('bold'=>true, 'italic'=>true, 'size'=>16));
+        $PHPWord->addParagraphStyle('pStyle', array('align'=>'center', 'spaceAfter'=>100));
+        // Save File / Download (Download dialog, prompt user to save or simply open it)
+        $section->addText('Test dokumen', 'rStyle', 'pStyle');
+        
+        $filename='dokumen '.$no_dok.'.docx'; //save our document as this file name
+        ob_end_clean();
+        header("Content-type: application/vnd.ms-word");
+        header('Content-Disposition: attachment;filename="' . $filename . '"'); //tell browser what's the file name
+        header('Cache-Control: max-age=0'); //no cache
+        header("Pragma: no-cache");
+        header("Expires: 0");
+        $objWriter = PHPWord_IOFactory::createWriter($PHPWord, 'Word2007');
+        $objWriter->save('php://output');
     }
   
 }

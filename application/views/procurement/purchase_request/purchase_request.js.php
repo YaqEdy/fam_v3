@@ -159,7 +159,7 @@
             "serverSide": true,
             "ajax": {
                 url: "<?php echo base_url("/procurement/purchase_request/ajax_GridProcessItem"); ?>",
-                type: "post", // method  , by default get
+                type: "get", // method  , by default get
                 data: function (z) {
                     z.sItemID = iItemID;
                     z.sItemIDDelete = iItemIDDelete;

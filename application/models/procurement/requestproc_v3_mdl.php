@@ -19,9 +19,19 @@ Class Requestproc_v3_mdl extends CI_Model {
 	}
 	
 	function getMasterOra($table){
-		$get = $this->db->where('Is_trash',0)->where('SUMMARY_FLAG','N')->get($table);
+		$get = $this->db->where('IS_TRASH',0)->where('SUMMARY_FLAG','N')->get($table);
 		
 		return $get;
+	}
+	
+	function getOptMasterOra($table,$id,$value){
+		$opt=[];
+		$get = $this->db->where('IS_TRASH',0)->where('SUMMARY_FLAG','N')->get($table)->result_array();
+		foreach($get as $optt){
+			$opt[$optt[$id]] = $optt[$value];
+		}
+		
+		return $opt;
 	}
 	
 	function getDataID($table,$colomn_id,$id){
@@ -135,6 +145,55 @@ Class Requestproc_v3_mdl extends CI_Model {
 		return $up;
 	}
 	
+	function update_flow($RequestID,$jns_pengadaan=null){
+		$req = $this->db->where('RequestID',$RequestID)
+						->get('VW_PR_OUT_REQ')
+						->row();
+		
+		if($jns_pengadaan == null){$jns_pengadaan='ias';}
+		
+		$ambil_flow = $this->db->query("
+							SELECT * FROM MS_FLOW 
+							WHERE 
+								tipe = '".$jns_pengadaan."'
+								and min_hps < ".$req->BudgetUsed."
+								and max_hps > ".$req->BudgetUsed."
+						")->row();
+						
+		$data['flow_id'] = $ambil_flow->flow_id;
+		$data['UpdateDate'] = date('Y-m-d H:i:s');
+		$data['UpdateBy'] = $this->session->userdata('id_user');
+		
+		$up = $this->db
+				->where('RequestID',$RequestID)
+				->update('TBL_REQUEST',$data);		
+		
+		return $up;
+	}
+	
+	function set_pr_vendor($data){
+		$del_vendor_pr = $this->db->where('RequestID', $data['RequestID'])->delete('TBL_REQUEST_VENDOR');
+		
+		$VendorID = explode(",", $data['VendorID']);
+		$VendorPemenang = explode(",", $data['VendorPemenang']);
+		$HargaSetelahPenawaran = explode(",", $data['HargaSetelahPenawaran']);
+		$VendorItemID = explode(",", $data['VendorItemID']);
+		$PPNVendor = explode(",", $data['PPNVendor']);
+		for($i = 0; $i < $data['row_vendor']; $i++){
+			$datain['RequestID'] = $data['RequestID'];
+			$datain['VendorID'] = $VendorID[$i];
+			$datain['Pemenang'] = $VendorPemenang[$i];
+			$datain['ItemID'] = $VendorItemID[$i];
+			$datain['HargaVendor'] = $HargaSetelahPenawaran[$i];
+			$datain['PPN'] = $PPNVendor[$i];
+			$in_vendor_pr = $this->db->insert('TBL_REQUEST_VENDOR',$datain);
+		}
+		#
+		
+		
+		return $in_vendor_pr;
+	}
+	
 	function tbl_insert($table,$data){	
 		$add = $this->db->insert($table,$data);
 		
@@ -162,7 +221,50 @@ Class Requestproc_v3_mdl extends CI_Model {
 		$this->db->like('status', $grup.'-', 'after');
 		$this->db->where('is_trash', 0);
 		// $get = $this->db->get('tbl_request');
+		$this->db->order_by('Priority', 'desc');
+		$this->db->order_by('CreateDate', 'desc');
 		$get = $this->db->get('VW_PR_OUT_REQ');
+		
+		return $get;
+	}
+	
+	function get_list_approve_request($status){
+		$this->db->where('status', $status);
+		$this->db->where('is_trash', 0);
+		$this->db->order_by('Priority', 'desc');
+		$this->db->order_by('CreateDate', 'desc');
+		$get = $this->db->get('VW_PR_OUT_REQ');
+		
+		return $get;
+	}
+	
+	function get_list_all_request_after($status){
+		$arr_status = [];
+		
+		$list_flow = $this->db	->distinct()
+								->select('flow_id')
+								->get('MS_FLOW')
+								->result_array();
+		foreach($list_flow as $lf){
+			$flow = $this->db	->where('flow_id',$lf['flow_id'])
+								->order_by('order', 'asc')
+								->get('MS_FLOW')
+								->result_array();
+			$ord = 0;
+			foreach($flow as $f){
+				if($f['status_dari'] == $status){$ord=1;}
+				if($ord==1){
+					if (!in_array($f['status_dari'], $arr_status)){
+						array_push($arr_status,$f['status_dari']);
+					}
+				}
+			}
+		}
+		
+		$get = $this->db->where('is_trash', 0)
+						->where_in('status', $arr_status)
+						->order_by('CreateDate', 'desc')
+						->get('VW_PR_OUT_REQ');
 		
 		return $get;
 	}
@@ -234,6 +336,14 @@ Class Requestproc_v3_mdl extends CI_Model {
 		return $get;
 	}
 	
+	function get_vendor_pr($RequestID){
+		$get = $this->db
+				->where('RequestID',$RequestID)
+				->get('VW_PR_VENDOR_LIST');
+				
+		return $get;
+	}
+	
 	function delete_PR($id){
 		$data_up['is_trash']=1;
 		$up = $this->db
@@ -251,6 +361,34 @@ Class Requestproc_v3_mdl extends CI_Model {
 		
 		return $get;
 	}
+	
+	function get_item_vendor($RequestID,$VendorID){
+		$get = $this->db
+				->where('RequestID',$RequestID)
+				->where	('VendorID',$VendorID)
+				->get('VW_PR_VENDOR_LIST');
+				
+		return $get;	
+	}
+	
+	function get_item_in($ItemID){
+		$get = $this->db->query("SELECT * FROM Mst_ItemList WHERE ItemID in ($ItemID)");
+		
+		return $get;
+	}
+	
+	function update_item_request($data){
+		$up = $this->db
+				->where('RequestID',$data['RequestID'])
+				->where('ItemID',$data['ItemID'])
+				->update('TBL_REQUEST_ITEMLIST',$data);
+		
+		return $up;
+	}
+	
+	
+	
+	
 	
 }
 

@@ -35,6 +35,79 @@
 //     }
 
 
+
+
+
+//  function getfamvendor() {
+//         // die("j");
+//     //   $jsonarr=[ 
+//     //     'table'=>'PNM_FAM_SUPPLIERS_STG'
+//     // ];
+//     // $curlurl="http://192.168.10.241/OCI/index.php/api/v1/fam/get_all";
+
+//     // $ch = curl_init($curlurl);
+//     // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//     // curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($jsonarr));
+//     // $responsejson = curl_exec($ch);
+//     // curl_close($ch);
+
+//     // $response=json_decode($responsejson,true);
+//     $data['data'] = [];
+// // print_r($response['data']);die();
+
+//     $no = 1;
+//     // $data['data'] = array();
+//     foreach ( $response['data'] as $row) {
+//         // echo "<pre>";
+//         // print_r($response['data']);
+
+//         $cek=$this->global_m->tampil_data("SELECT COUNT(*) as JML FROM Mst_Vendor WHERE VendorID='".$row['VendorID']."'")[0]->JML;
+
+//         $data['data'][] = array(
+//             // 'no'=>$no,
+//             'VENDOR_NAME'=>$row['VendorName'],
+//             'ALT_VENDOR_NAME'=>$row['VendorAlias'],
+//             'NPWP' => $row['NPWP'],
+//             'ADDRESS1' => $row['VendorAddress'],
+//             'CITY' => $row['IdKabupaten'],
+//             'PROVINCE' => $row['IdProvinsi'],
+//             'COUNTRY' => $row['ID_Country'],
+//             'BRANCH' => $row['ID_Branch'],
+//             'ACCOUNT_LIABILITY' => $row['AccountLiability'],
+//             'ACCOUNT_PREPAYMENT' => $row['AccountPrepayment'],
+//             'CURRENCY' => $row['Currency'],
+//             'TERMS' => $row['Terms'],
+//             'NOMOR_REK_VENDOR1' => $row['NomorRekening'],
+//             'NAMA_REKENING1' => $row['NamaRekening'],
+//             'NAMA_BANK1' => $row['NamaBank'],
+//             'NOMOR_REK_VENDOR2' => $row['NomorRekening2'],
+//             'NAMA_REKENING2' => $row['NamaRekening2'],
+//             'NAMA_BANK2' => $row['NamaBank2'],
+//             'NOMOR_REK_VENDOR3' => $row['NomorRekening3'],
+//             'NAMA_REKENING3' => $row['NamaRekening3'],
+//             'NAMA_BANK3' => $row['NamaBank3'],
+
+//         );
+
+
+
+// // array_push($data['data'], $array);
+
+// // $no++;
+//         // if($cek==0){
+
+//         //     $model=$this->global_m->simpan('TBL_M_LOCATION',$data);
+//         // }else{
+//         //     $model=$this->global_m->ubah('TBL_M_LOCATION',$data,'LOCATION_ID',$row['LOCATION_ID']);    
+//         // }
+//     }
+//     // var_dump($data);
+//     // exit();
+
+//    echo json_encode($model);
+// }
+
+
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
@@ -51,6 +124,8 @@ class master_vendorlist extends CI_Controller {
 //        $this->load->model('zsessions_m');
             $this->load->model('global_m');
             $this->load->model('master_m/master_vendorlist_m');
+            $this->load->model('api/api_m');
+            
             $this->load->model('datatables_custom');
         }
     }
@@ -176,12 +251,12 @@ class master_vendorlist extends CI_Controller {
 
      );
 
-        $sql = "select a.Raw_ID, a.VendorID, a.VendorName, a.NamaRekening2, a.NamaBank2, a.NomorRekening2, a.NamaRekening3,  a.NamaBank3, a.NomorRekening3, a.ID_Country, a.ID_Branch, a.PKP, b.ID, b.BRANCH_DESC, a.AFILIASI, a.NPWP, c.NamaProvinsi, 
+        $sql = "select a.Raw_ID, a.VendorID, a.VendorName, a.NamaRekening2, a.NamaBank2, a.NomorRekening2, a.NamaRekening3,  a.NamaBank3, a.NomorRekening3, a.ID_Country, a.ID_Branch, a.PKP, b.FLEX_VALUE, b.BRANCH_DESC, a.AFILIASI, a.NPWP, c.NamaProvinsi, 
         d.NamaKabupaten, a.Terms, a.Currency, a.NomorRekening, a.NamaRekening, a.NamaBank, a.Image,
         a.Performance, a.VendorAlias, a.AlamatNPWP, a.AlamatSupplier,a.VendorAddress,a.IdProvinsi, a.IdKabupaten, 
         a.ID_Country,a.MasaBerlakuTDP, e.CountryName,  a.Status, a.AccountLiability, a.AccountPrepayment, a.CreateDate
         from Mst_Vendor a 
-        left join TBL_M_BRANCH b on a.ID_Branch = b.ID  
+        left join TBL_M_BRANCH b on a.ID_Branch = b.FLEX_VALUE  
         left join Mst_Provinsi c on a.IdProvinsi = c.IdProvinsi
         left join Mst_Kabupaten d on a.IdKabupaten = d.IdKabupaten
         left join TBL_CountryNew e on a.ID_Country = e.ID_Country where Status like '%".$iStatus."%'";            
@@ -242,7 +317,7 @@ class master_vendorlist extends CI_Controller {
         $nestedData[] = $row["NamaProvinsi"];
         $nestedData[] = $row["NamaKabupaten"];
         $nestedData[] = $row["CountryName"];
-        $nestedData[] = $row["BRANCH_DESC"];
+        $nestedData[] = $row["ID_Branch"];
 
 
         $nestedData[] = $row["AccountLiability"];
@@ -280,10 +355,9 @@ class master_vendorlist extends CI_Controller {
         $nestedData[] = $row["IdProvinsi"]; 
         $nestedData[] = $row["IdKabupaten"];
         $nestedData[] = $row["ID_Country"];
-        $nestedData[] = $row["ID"];
+        $nestedData[] = $row["ID_Branch"];
         
         // $nestedData[] = $this->master_vendorlist_m->getRek($row["VendorID"]);
-
 
 
         $data[] = $nestedData;
@@ -348,6 +422,66 @@ public function ajax_UpdateStatusCategory(){
     }
     echo json_encode($notifikasi);
 }
+
+
+
+function getfamvendor() {
+        $this->load->database();
+        $query = $this->db->query("SELECT LINK FROM TBL_API_LINK WHERE API_NAME='CRUD ORACLE'");
+        $result = $query->result()[0];
+
+      $data['data'] = [];
+// print_r($response['data']);die();
+
+    $no = 1;
+    // $data['data'] = array();
+    foreach ( $_POST as $row) {
+        // echo "<pre>";
+        // print_r($response['data']);
+
+       
+
+        $data['data'][] = array(
+            // 'no'=>$no,
+            'VENDOR_NAME'=>$row['VendorName'],
+            'ALT_VENDOR_NAME'=>$row['VendorAlias'],
+            'NPWP' => $row['NPWP'],
+            'ADDRESS1' => $row['VendorAddress'],
+            'CITY' => $row['IdKabupaten'],
+            'PROVINCE' => $row['IdProvinsi'],
+            'COUNTRY' => $row['ID_Country'],
+            'BRANCH' => $row['ID_Branch'],
+            'ACCOUNT_LIABILITY' => $row['AccountLiability'],
+            'ACCOUNT_PREPAYMENT' => $row['AccountPrepayment'],
+            'CURRENCY' => $row['Currency'],
+            'TERMS' => $row['Terms'],
+            'NOMOR_REK_VENDOR1' => $row['NomorRekening'],
+            'NAMA_REKENING1' => $row['NamaRekening'],
+            'NAMA_BANK1' => $row['NamaBank'],
+            'NOMOR_REK_VENDOR2' => $row['NomorRekening2'],
+            'NAMA_REKENING2' => $row['NamaRekening2'],
+            'NAMA_BANK2' => $row['NamaBank2'],
+            'NOMOR_REK_VENDOR3' => $row['NomorRekening3'],
+            'NAMA_REKENING3' => $row['NamaRekening3'],
+            'NAMA_BANK3' => $row['NamaBank3'],
+
+        );
+
+}
+
+        $curlurl = $result->LINK . "/insert_vendor";
+
+        $ch = curl_init($curlurl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        $responsejson = curl_exec($ch);
+        curl_close($ch);
+
+        $response = json_decode($responsejson, true);
+
+        print_r($response);
+    }
+
 
 
 
@@ -492,6 +626,8 @@ echo json_encode($notifikasi);
 
 
 public function ajax_UpdateImage(){
+$iBranch=explode(',', trim($this->input->get('sBranch')));
+
     $config['upload_path']="./uploads/vendorlist/";
     $config['allowed_types']='zip|rar';
     $config['max_size'] = '5048';
@@ -509,7 +645,7 @@ public function ajax_UpdateImage(){
     $NamaProvinsi = trim($this->input->post('IdProvinsi'));
     $NamaKabupaten = trim($this->input->post('IdKabupaten'));
     $CountryName = trim($this->input->post('ID_Country'));
-    $ID_Branch = trim($this->input->post('ID_Branch'));
+    $ID_Branch = trim($this->input->get('sBranch'));
     $AccountLiability = trim($this->input->post('AccountLiability'));
     $AccountPrepayment = trim($this->input->post('AccountPrepayment')); 
     $Terms = trim($this->input->post('Terms'));
@@ -590,7 +726,7 @@ public function ajax_UpdateImage(){
 
 
             $model = $this->global_m->simpan('Mst_Vendor', $data);
-
+            $this->api_m->insert_update_vendor(0,$iBranch,$NamaKabupaten,$NamaProvinsi);
             if ($model) {
                 $msg = 'Data Berhasil Disimpan';
                 $notifikasi = Array(
@@ -711,6 +847,7 @@ public function ajax_UpdateImage(){
 }
 
 $model = $this->global_m->ubah('Mst_Vendor', $data,'Raw_ID',$Raw_ID);
+$this->api_m->insert_update_vendor(1,$iBranch,$NamaKabupaten,$NamaProvinsi);
 if ($model) {
     $msg = 'Data Berhasil DiUpdate';
     $notifikasi = Array(
@@ -729,14 +866,118 @@ if ($model) {
 
 }
 
+
+
+
+//  $this->load->database();
+//         $query = $this->db->query("SELECT LINK FROM TBL_API_LINK WHERE API_NAME='CRUD ORACLE'");
+//         $result = $query->result()[0];
+
+//         $query = $this->db->query("Select a.NamaKabupaten from Mst_Kabupaten a where IdKabupaten  ='" . $NamaKabupaten . "'");
+//         $NamaKabupaten = $query->result()[0]->NamaKabupaten;
+
+//         $query = $this->db->query("Select a.NamaProvinsi from Mst_Provinsi a where IdProvinsi  ='" . $NamaProvinsi . "'");
+//         $NamaProvinsi = $query->result()[0]->NamaProvinsi;
+
+//         // $query = $this->db->query("Select a.BRANCH_DESC from TBL_M_BRANCH a where ID  ='" . $ID_Branch . "'");      
+//         // $BRANCH_DESC = $query->result()[0]->BRANCH_DESC;
+  
+// // print_r($response['data']);die();
+//         foreach ($iBranch as $data) {
+//             $data_oracle =
+//                 array(
+//                 'VENDOR_NAME'=>$VendorName,
+//                 'ALT_VENDOR_NAME'=>$VendorAlias,
+//                 'NPWP' => $NPWP,
+//                 'ADDRESS1' => $VendorAddress,
+//                 'CITY' => $NamaKabupaten,
+//                 'PROVINCE' => $NamaProvinsi,
+//                 'COUNTRY' => $CountryName,
+//                 'BRANCH' => $data,
+//                 'SITE_NAME' => $NamaKabupaten,
+//                 'ACCOUNT_LIABILITY' => $AccountLiability,
+//                 'ACCOUNT_PREPAYMENT' => $AccountPrepayment,
+//                 'CURRENCY' => $Currency,
+//                 'TERMS' => $Terms,
+//                 'NOMOR_REK_VENDOR1' => $NomorRekening,
+//                 'NAMA_REKENING1' => $NamaRekening,
+//                 'NAMA_BANK1' => $NamaBank,
+//                 'NOMOR_REK_VENDOR2' => $NomorRekening2,
+//                 'NAMA_REKENING2' => $NamaRekening2,
+//                 'NAMA_BANK2' => $NamaBank2,
+//                 'NOMOR_REK_VENDOR3' => $NomorRekening3,
+//                 'NAMA_REKENING3' => $NamaRekening3,
+//                 'NAMA_BANK3' => $NamaBank3,
+//                 );
+
+//                 $curlurl = $result->LINK . "/insert_vendor";
+
+//                 $ch = curl_init($curlurl);
+//                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//                 curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data_oracle));
+//                 $responsejson = curl_exec($ch);
+//                 curl_close($ch);
+
+//                 $response = json_decode($responsejson, true);
+//     // print_r($data);die();
+// }
+
+
+
+        // print_r($response);
+
+
 echo json_encode($notifikasi);
 }
 
 
+// function insert_ias_orc() {
+//         $this->load->database();
+//         $query = $this->db->query("SELECT LINK FROM TBL_API_LINK WHERE API_NAME='CRUD ORACLE'");
+//         $result = $query->result()[0];
 
+  
+// // print_r($response['data']);die();
+//         $data =
+//             array(
+//             // 'no'=>$no,
+//                 'VENDOR_NAME'=>'Hafidz',
+//                 'ALT_VENDOR_NAME'=>'Hafidz',
+//                 'NPWP' => 'Hafidz',
+//                 'ADDRESS1' => 'Hafidz',
+//                 'CITY' => 'Hafidz',
+//                 'PROVINCE' => 'Hafidz',
+//                 'COUNTRY' => 'Hafidz',
+//                 'BRANCH' => 'Hafidz',
+//                 'ACCOUNT_LIABILITY' =>null,
+//                 'ACCOUNT_PREPAYMENT' =>null,
+//                 'CURRENCY' => 'Hafidz',
+//                 'TERMS' => 'Hafidz',
+//                 'NOMOR_REK_VENDOR1' => 'Hafidz',
+//                 'NAMA_REKENING1' => 'Hafidz',
+//                 'NAMA_BANK1' => 'Hafidz',
+//                 'NOMOR_REK_VENDOR2' =>null,
+//                 'NAMA_REKENING2' => 'Hafidz',
+//                 'NAMA_BANK2' => 'Hafidz',
+//                 'NOMOR_REK_VENDOR3' =>null,
+//                 'NAMA_REKENING3' =>'Hafidz',
+//                 'NAMA_BANK3' =>'Hafidz',
+//             );
 
+//         // var_dump($data);exit();
 
+//         $curlurl = $result->LINK . "/insert_vendor";
+//         $ch = curl_init($curlurl);
+//         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+//         $responsejson = curl_exec($ch);
+//         var_dump($responsejson);exit();
+//         curl_close($ch);
 
+//         $response = json_decode($responsejson, true);
+
+//         print_r($response);
+//     }
 
 
 

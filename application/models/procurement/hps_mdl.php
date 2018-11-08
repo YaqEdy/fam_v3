@@ -250,13 +250,13 @@ Class Hps_mdl extends CI_Model {
         }
     }
 
-    function simpanData($itemid, $nama, $start, $end, $price) {
+    function simpanData($itemid, $nama, $start, $end, $price,$zonaid) {
         $this->db2 = $this->load->database('config1', true);
         $this->db2->query("
                 BEGIN
-                    INSERT INTO Mst_HPS (ItemID, StartDate, EndDate, CreateDate, CreateBy, Is_trash,Price) VALUES 
+                    INSERT INTO Mst_HPS (ItemID, StartDate, EndDate, CreateDate, CreateBy, Is_trash,Price,ZoneID) VALUES 
                     ('" . $itemid . "', '" . date('Y-m-d H:i:s', strtotime($start)) . "','" . date('Y-m-d H:i:s', strtotime($end)) . "',
-                        '" . date('Y-m-d H:i:s') . "','" . $this->session->userdata('id_user') . "','0','" . str_replace(",", "", $price) . "')
+                        '" . date('Y-m-d H:i:s') . "','" . $this->session->userdata('id_user') . "','0','" . str_replace(",", "", $price) . "','" . $zonaid . "')
                 END");
 
          // $this->db2->query("IF NOT EXISTS ( SELECT ItemID FROM Mst_HPS WHERE ItemID = '" . $itemid . "' )

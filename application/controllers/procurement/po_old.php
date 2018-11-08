@@ -152,7 +152,7 @@ class po extends CI_Controller {
         $data['HARGA'] = $this->input->post('satuan');
         $data['TTL_HARGA'] = $this->input->post('hargatotal');
         $data['flow_id'] = 1;
-        $data['status'] = '7-2';
+        $data['status'] = '6-2';
 
         $po_id = $this->master_po_m->save_po($data);
         for ($i=0; $i < count($_POST['persentase']); $i++) {

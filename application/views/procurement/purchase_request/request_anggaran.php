@@ -51,6 +51,12 @@
                                             <?=$approve_pr->ProjectName?>
                                         </div>
                                     </div>
+									<div class="col-sm-12">
+                                        <label class="control-label col-sm-4">Jenis Pengadaan </label>
+                                        <div class="col-sm-7">
+                                            <?=$approve_pr->JenisPengadaan?>
+                                        </div>
+                                    </div>
 								</div>
 								<div class="col-md-6">
 									<div class="col-sm-12">
@@ -77,134 +83,12 @@
                                             <?=$approve_pr->DIV_DESC?>
                                         </div>
                                     </div>
-								</div>
-                            </div>
-						</div>
-						<div class="panel panel-inverse">
-							<div class="col-md-12">
-								<table class="table table-striped table-bordered table-hover" id="item_table">
-								<thead>
-									<tr align="center">
-										<th>Item Name</th>
-										<th>Quantity</th>
-										<th>HPS</th>
-										<th>Sub Total</th>
-									</tr>
-								</thead>
-								<tbody>
-									<?php
-									foreach($item as $itm){
-										echo '
-									<tr>
-										<td>'.$itm['ItemName'].'</td>
-										<td>'.$itm['Qty'].'</td>
-										<td align="right">Rp. '.number_format($itm['HargaHPS'],2,',','.').'</td>
-										<td align="right">Rp. '.number_format($itm['harga_sub_total'],2,',','.').'</td>
-									</tr>
-										';
-									}
-									?>
-									<tr>
-										<td></td>
-										<td></td>
-										<td><b>Total</b></td>
-										<td align="right"><b>Rp. <?=number_format($approve_pr->BudgetUsed,2,',','.')?></b></td>
-									</tr>
-								</tbody>
-								</table>
-							</div>	
-						</div>
-						<div class="panel panel-inverse">
-							<hr class="dotted">
-                            <div class="col-md-12">
-                                            <table class="table table-striped table-bordered table-hover text_kanan" id="table_gridItemProcess">
-                                                <thead>
-                                                    <tr>
-                                                        <th>NO</th>     
-                                                        <th>Name</th>
-                                                        <th>Wilayah</th>
-                                                        <th>Status WP</th>
-                                                        <th>Barang & Jasa</th>
-                                                        <th>Harga Penawaran</th>
-
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-
-
-                                                </tbody>
-                                                <tfoot>
-
-                                                </tfoot>
-                                            </table>
-							</div>
-						</div>
-						<div class="panel panel-inverse">
-							<hr class="dotted">
-							
-							<div class="col-md-12" style="margin-bottom:2em">
-								<div class="col-md-6">
-									<div class="col-sm-12">
-                                        <label class="control-label col-sm-4">Jenis Pengadaan </label>
-                                        <div class="col-sm-7">
-                                            <?=$approve_pr->JenisPengadaan?>
-                                        </div>
-                                    </div>
-									<div class="col-sm-12">
-                                        <label class="control-label col-sm-4">Vendor Pemenang </label>
-                                        <div class="col-sm-7">
-                                            <?=$approve_pr->VendorPemenang?>
-                                        </div>
-                                    </div>
-								</div>
-								<div class="col-md-6">
-									<div class="col-sm-12">
-                                        <label class="control-label col-sm-4">Harga Vendor </label>
-                                        <div class="col-sm-7">
-                                            <?=$approve_pr->HargaVendor?>
-                                        </div>
-                                    </div>
-									<div class="col-sm-12">
-                                        <label class="control-label col-sm-4">PPN </label>
-                                        <div class="col-sm-7">
-                                            <?=$approve_pr->PPN?> %
-                                        </div>
-                                    </div>
-								</div>
-                            </div>
-						</div>	
-						<div class="panel panel-inverse">
-							<hr class="dotted">
-                            <hr class="dotted">
-							
-                        </div>
-
-                    
-					
-                </div>
-            </div>
-			
-			<hr class="dotted">
-			<hr class="dotted">
-			<hr class="dotted">
-			<hr class="dotted">
-			<i style="margin:2em;"></i>
-			
-			<div class="portlet-body">
-                <div class="tab-content">
-					<h5 class="sbold uppercase">Check Anggaran</h5>
-                        <div class="panel panel-inverse">
-                            <hr class="dotted">
-                            <div class="col-md-12">
-								<div class="col-md-6">
 									<div class="col-sm-12">
                                         <label class="control-label col-sm-4">Sisa Anggaran </label>
                                         <div class="col-sm-7">
                                             <?=$approve_pr->RequestID?>
                                         </div>
                                     </div>
-								</div>
-								<div class="col-md-6">
 									<div class="col-sm-12">
                                         <label class="control-label col-sm-4">Anggaran Terpakai </label>
                                         <div class="col-sm-7">
@@ -214,57 +98,43 @@
 								</div>
                             </div>
 						</div>
+						<div class="panel">
+							<hr class="dotted">
+							
+							<div class="col-md-12" style="margin-bottom:2em">
+								<div class="col-md-6">
+								</div>
+								<div class="col-md-6">
+								</div>
+                            </div>
+						</div>	
+                </div>
+            </div>
+			
+			<hr class="dotted">
+			<hr class="dotted">
+			<hr class="dotted">
+			
+			<div class="portlet-body">
+                <div class="tab-content">
+					<h5 class="sbold uppercase">COA</h5>
+                        <div class="panel panel-inverse">
+                            <hr class="dotted">
+                            <div class="col-md-12">
+                            </div>
+						</div>
 						<div class="panel panel-inverse">
 							<form class="" id="fm_apppr" enctype="multipart/form-data" method="POST">
-                            	<div class="validator-form form-horizontal" style="margin-top:2em">
-                                    <div class="form-group">
-                                        <div class="col-md-6">
-											<div class="form-group">
-												<label class="control-label col-sm-3">Entity PNM </label>
-												<div class="col-md-9">
-													<input type="text" class="form-control" id="EntityPNM" name="EntityPNM">
-												</div>
-											</div>
-											<div class="form-group">
-												<label class="control-label col-sm-3">Main Account </label>
-												<div class="col-md-9">
-													<input type="text" class="form-control" id="MainAccount" name="MainAccount">
-												</div>
-											</div>
-											<div class="form-group">
-												<label class="control-label col-sm-3">Sub Account </label>
-												<div class="col-md-9">
-													<input type="text" class="form-control" id="SubAccount" name="SubAccount">
-												</div>
-											</div>
-										</div>
-                                        <div class="col-md-6">
-											<div class="form-group">
-												<label class="control-label col-sm-3">LOB </label>
-												<div class="col-md-9">
-													<input type="text" class="form-control" id="LOB" name="LOB">
-												</div>
-											</div>
-											<div class="form-group">
-												<label class="control-label col-sm-3">Division </label>
-												<div class="col-md-9">
-													<input type="text" class="form-control" id="Division_form" name="Division_form">
-												</div>
-											</div>
-											<div class="form-group">
-												<label class="control-label col-sm-3">Bisnis Type </label>
-												<div class="col-md-9">
-													<input type="text" class="form-control" id="BisnisType" name="BisnisType">
-												</div>
-											</div>
-										</div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-sm-3">COA </label>
-                                        <div class="col-md-7">
-                                            <input type="text" class="form-control" id="COA" name="COA">
-										</div>
-                                    </div>
+                            	<?php
+									foreach($vendor_po as $vpo){
+								?>
+								<div id="vendor_<?=$vpo['VendorID']?>"></div>
+								<?php
+									}
+								?>
+						
+								<hr class="dotted">		
+                                <div class="validator-form form-horizontal" style="margin-top:2em">
                                     <div class="form-group">
                                         <label class="control-label col-sm-3">Anggaran </label>
                                         <div class="col-md-7">
@@ -297,11 +167,7 @@
 											</select>
 										</div>
                                     </div>
-                                    <div class="form-group">
-                                        <div class="col-sm-12">
-										</div>
-                                    </div>
-                                    <div class="form-group">
+									<div class="form-group">
                                         <div class="col-sm-3">
 											
 										</div>
@@ -315,6 +181,7 @@
 											<button type="submit" class="btn btn-primary" id="appreq" name="appreq" value="Submit" >Submit</button>       
                                         	-->
 											<a class="btn btn-primary" onclick="submit_app()">Submit</a>       
+											<a class="btn btn-primary" onclick="myFunction()">myFunction</a>       
                                         </div>
                                     </div>
                                 </div>
@@ -334,6 +201,7 @@
 <?php $this->load->view('app.min.inc.php'); ?>
 
 <script>
+	var sum_item = 0;
 	$(document).ready( function () {
 		$('#item_table').DataTable({
 			"aaSorting": [],
@@ -341,10 +209,57 @@
 			"paging": false,
 			"info": false
 		});
+		<?php
+			foreach($vendor_po as $vpo){
+				if($vpo['Pemenang'] == 1){
+					echo "get_item_coa('".$vpo['VendorID']."');";
+					echo "console.log('".$vpo['VendorID']."');";
+				}
+			}
+		?>
 	} );
 
 	function go_to_list(){
 		$(location).attr("href","<?php echo base_url("/procurement/purchase_request/list_request_anggaran")?>");
+	}
+
+    function get_item_coa(vendorid) { 
+		var RequestID = <?=$approve_pr->RequestID?>;
+        $.post('<?= base_url("/procurement/purchase_request/get_item_coa");?>', {
+			RequestID:RequestID,
+			vendorid:vendorid
+		},
+		function(data){
+			$('#vendor_'+vendorid).html(data);
+		})
+    }
+	
+	function myFunction() {
+		var x = document.getElementById("coa-data").querySelectorAll(".coa-data");
+		var coa = [];
+		// x.forEach(function(x){
+			// coa[x.id] = x.innerText;
+			// console.log(coa[x.id]);
+			// console.log(coa[x.innerText]);
+		// });
+		// alert(x.length);
+		
+		// alert('id:'+ x[0].id +' ; value:'+ x[0].innerText);
+		 console.log('id:' + x[0].id + ' ; value:' + x[0].innerText);
+		 console.log(x.length);
+		
+		
+		for (i=0; i<x.length; i++) {
+			var obj = {};
+			obj[x[i].id] = x[i].innerText;
+			// coa[x[i].id] = x[i].innerText;
+			console.log(x[i].id);
+			console.log(x[i].innerText);
+			coa.push(obj);
+		}
+		console.log(coa);
+		// alert('id:'+ x[0].id +' ; value:'+ x[0].innerText);
+		// alert(coa);
 	}
 
     function submit_app() { 
@@ -354,15 +269,17 @@
 		var status = document.getElementById('status').value;
 		var notes = document.getElementById('notes').value;
 		var pic_po = document.getElementById('pic_po').value;
-		var EntityPNM = document.getElementById('EntityPNM').value;
-		var MainAccount = document.getElementById('MainAccount').value;
-		var SubAccount = document.getElementById('SubAccount').value;
-		var LOB = document.getElementById('LOB').value;
-		var Division_form = document.getElementById('Division_form').value;
-		var BisnisType = document.getElementById('BisnisType').value;
-		var COA = document.getElementById('COA').value;
 		var Anggaran = document.getElementById('Anggaran').value;
 		var BudgetDisetujui = document.getElementById('BudgetDisetujui').value;
+		
+		var x = document.getElementById("coa-data").querySelectorAll(".coa-data");
+		var coa = [];
+		var obj = {};
+		for (i=0; i<x.length; i++) {
+			obj[x[i].id] = x[i].innerText;
+			coa.push(obj);
+		}
+		
         $.post('<?= base_url("/procurement/purchase_request/app_requestproc_anggaran");?>', {
 			action:action,
 			RequestID:RequestID,
@@ -370,15 +287,9 @@
 			status:status,
 			notes:notes,
 			pic_po:pic_po,
-			EntityPNM:EntityPNM,
-			MainAccount:MainAccount,
-			SubAccount:SubAccount,
-			LOB:LOB,
-			Division:Division_form,
-			BisnisType:BisnisType,
-			COA:COA,
 			Anggaran:Anggaran,
-			BudgetDisetujui:BudgetDisetujui
+			BudgetDisetujui:BudgetDisetujui,
+			coa:obj
 		},
 		function(data){
 			alert(data);
@@ -429,6 +340,10 @@
         });
     }
 
+	function get_coa(id,ItemID,value){
+		$('#'+id+'_pil_'+ItemID).html(value);
+		// alert(id+'-'+ItemID+'-'+value);
+	}
 	
 </script>
 

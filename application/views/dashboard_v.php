@@ -10,8 +10,8 @@
 		<h3 class="font-grey-cascade">Procurement <small></small></h3>
 
 
-		<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                <div class="dashboard-stat red-intense">
+		<div class="col-lg-3 col-md-2 col-sm-6 col-xs-12">
+                <div class="dashboard-stat yellow-lemon">
                     <div class="visual">
                         <i class="fa fa-comments"></i>
                     </div>
@@ -172,7 +172,7 @@
                             <label id="id_proses" style="font-size: 50px;"></label>
                         </div>
                         <div class="desc">
-                            Reject
+                            Belum
                         </div>
                     </div>
 			</div>
@@ -236,37 +236,4 @@
 <script src="<?php echo base_url('metronic/layouts/global/scripts/quick-sidebar.min.js'); ?>" type="text/javascript"></script>
 <!-- END THEME LAYOUT SCRIPTS -->
 
-<script>
-	jQuery(document).ready(function () {
-		file();
-	});
-	
-function file() {
-        id = '';
-        $.post("<?php echo site_url('main/getdetail'); ?>",
-                {
-                    'id': id
-                }, function (data)
-        {
-            if (data.data_file.length > 0) {
-                for (i = 0; i < data.data_file.length; i++) {
-                    var ket = data.data_file[i].ket;
-                    var nilai = data.data_file[i].nilai;
-                    // alert(ket);
-                    // alert(nilai);
-                    if (ket == 'id_request') {
-                        jQuery("label[id='id_request']").html(nilai);
-                    } else if (ket == 'id_proses') {
-                        jQuery("label[id='id_proses']").html(nilai);
-                    }  else if (ket == 'id_close') {
-                        jQuery("label[id='id_close']").html(nilai);
-                    } else if (ket == 'id_reject') {
-                        jQuery("label[id='id_reject']").html(nilai);
-                    }
-                }
-            }
-        }, "JSON");
-    }
-
-
-</script>
+x`

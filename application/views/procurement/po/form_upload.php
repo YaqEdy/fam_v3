@@ -89,22 +89,38 @@ button:hover {
                 </div>
             </div>
             <div class="portlet-body">
-                <form role="form"  method="post"  action="<?php echo base_url('procurement/po/upload'); ?>">
+                <form role="form"  method="post" enctype="multipart/form-data" action="<?php echo base_url('procurement/po/uploaddok'); ?>">
                 <?php foreach ($detail_po as $detail) {?>
                 <div class="form-group m-form__group m--margin-top-10">
-                    <h5 class="m-portlet__head-text"><strong>Dokumen PO <?php echo $detail->ID_PO_DETAIL; ?></strong></h5>
+                    <h5 class="m-portlet__head-text"><strong>Dokumen PO DETAIL <?php echo $detail->ID_PO_DETAIL; ?></strong></h5>
                 </div>
                 <div class="m-portlet__body col-md-12">
                     <?php foreach ($dokumen as $dok) { ?>
                         <?php if ($detail->ID_PO_DETAIL == $dok->ID_PO_DETAIL): ?>
                             <div class="form-group col-md-12">
-                                <a href="#" class="btn blue">Download Dokumen <?php echo $dok->NO_DOC; ?></a>
+                                <a href="<?php echo base_url('procurement/po/dl_dok').'/'.$dok->NO_DOC ?>" target="_blank" class="btn blue">Download Dokumen <?php echo $dok->NO_DOC; ?></a>
                             </div>
                         <?php endif ?>
                     <?php } ?>
                 </div>
                 <?php } ?>
-                
+                <?php foreach ($detail_po as $detail) {?>
+                <div class="form-group m-form__group m--margin-top-10">
+                    <h5 class="m-portlet__head-text"><strong>Upload Dokumen PO DETAIL <?php echo $detail->ID_PO_DETAIL; ?></strong></h5>
+                </div>
+                <div class="m-portlet__body">
+                  <?php foreach ($dokumen as $dok) { ?>
+                    <?php if ($detail->ID_PO_DETAIL == $dok->ID_PO_DETAIL): ?>
+                  <div class="form-group m-form__group col-md-12">
+                      <label for="example-text-input" class="col-sm-4 col-form-label">Upload <?php echo $dok->NO_DOC; ?></label>
+                      <div class="col-sm-8">
+                          <input type="file" class="form-control m-input" name="<?php echo $dok->ID; ?>" aria-describedby="textHelp">
+                      </div>
+                  </div>
+                    <?php endif ?>
+                  <?php } ?>
+                </div>
+                <?php } ?>
                 <!-- <div style="overflow:auto;"> -->
                     <!-- <div style="float:right;"> -->
                             <button type="submit" name="simpan" value="Simpan" class="btn blue">Simpan</button>

@@ -288,8 +288,8 @@ class hps_tiket extends CI_Controller {
             $row[] = $idatatables->tanggal;
             $row[] = $idatatables->divisi;
             $row[] = $idatatables->nama_barang;
-            $row[] = $idatatables->jumlah;
             $row[] = $idatatables->spesifikasi;
+            $row[] = $idatatables->jumlah;
             $row[] = $idatatables->status;
             // $row[] = '<a class="btn btn-xs btn-warning" href="#" id="btnUpdate" data-toggle="modal" data-target="#mdl_Update">Update</a>'
             //         . '<a class="btn btn-xs btn-danger" href="#" id="btnDelete">Delete</a>';

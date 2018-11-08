@@ -184,7 +184,7 @@ class Budget extends CI_Controller {
 
         $objPHPExcel->getActiveSheet()->setCellValue('I1', 'LENGKAPI DATA HANYA DI BAGIAN COA, YEAR, BUDGET VALUE DAN JENIS BUDGET');
         $objPHPExcel->getActiveSheet()->setCellValue('I2', 'DILARANG MENGUBAH DATA SELAIN KOLOM YANG DISEBUTKAN DIATAS');
-        $objPHPExcel->getActiveSheet()->setCellValue('I3', 'JENIS BUDGET (1=CAPEX) , (2=OPEX)');
+        $objPHPExcel->getActiveSheet()->setCellValue('I3', 'JENIS BUDGET (1=CAPEX) , (0=OPEX)');
 
         //make the font become bold
         $objPHPExcel->getActiveSheet()->getStyle('A1')->getFont()->setBold(true);

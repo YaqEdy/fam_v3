@@ -139,40 +139,29 @@ button:hover {
                             </tbody>
                         </table>
                     </div>
+                    <input type="hidden" name="id_po_detail" value="<?php echo $dpp->ID_PO_DETAIL;?>">
                     <div class="form-group col-md-12">
                         <label class="col-sm-3 control-label" style="text-align: left;">DPP</label>
                         <div class="col-sm-3">
-                            <input class="form-control m-input" name="dpp" id="dpp" value="<?php echo $dpp->total;?>" type="number" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="mt-checkbox">
-                                <input type="checkbox" id="detail"> PKP
-                                <span></span>
-                            </label>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="mt-checkbox">
-                                <input type="checkbox" id="detail"> Include PPN
-                                <span></span>
-                            </label>
+                            <input class="form-control m-input" name="dpp" id="dpp" value="<?php echo $dpp->TOTAL;?>" type="number" required>
                         </div>
                     </div>
                     <div class="form-group col-md-12">
                         <label class="col-sm-3 control-label" style="text-align: left;">PPN</label>
                         <div class="col-sm-3">
-                            <input class="form-control m-input" value="<?php echo $dpp->total*0.1;?>" name="ppn" id="ppn" type="number" required>
+                            <input class="form-control m-input" value="<?php echo $dpp->PPN;?>" name="ppn" id="ppn" type="number" required>
                         </div>
-                        <div class="col-sm-3">
+                        <!-- <div class="col-sm-3">
                             <input class="form-control m-input" value="10" name="presentase" id="presentase" type="number" readonly>
                         </div>
                         <div class="col-sm-3">
                             <button type="button" class="btn red" id="edit_presentase">Edit</button>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="form-group col-md-12">
                         <label class="col-sm-3 control-label" style="text-align: left;">PPH</label>
                         <div class="col-sm-3">
-                            <input class="form-control m-input" name="pph" id="pph" type="number" required>
+                            <input class="form-control m-input" name="pph" id="pph" value="<?php echo $dpp->PPH;?>" type="number" required>
                         </div>
                     </div>
                     <div class="form-group col-md-12">
@@ -245,7 +234,7 @@ button:hover {
                     </div>
                     <div class="form-group m-form__group col-md-4">
                         <label for="exampleInputtext1">Penilaian X Bobot</label>
-                        <input type="number" min="0" class="form-control m-input pxb" id="pxb1" name="pxb[]" required>
+                        <input type="text" class="form-control m-input pxb" id="pxb1" name="pxb[]" readonly>
                     </div>
                 </div>
                 <div class="m-portlet__body col-md-12 text-center">
@@ -254,14 +243,27 @@ button:hover {
                 <div class="form-group col-md-12" style="margin-top: 2%;">
                     <label class="col-sm-3 control-label" style="text-align: left;"><strong>Nilai Akhir</strong></label>
                     <div class="col-sm-3">
-                        <input class="form-control m-input" id="akhir" name="akhir" type="text">
+                        <input class="form-control m-input" id="akhir" name="akhir" type="text" readonly>
                     </div>
                 </div>
                 
                 <!-- <div style="overflow:auto;"> -->
                     <!-- <div style="float:right;"> -->
                             <a href="<?php echo base_url('procurement/ias/home')?>" class="btn red">Cancel</a>
+
+                        <?php if (empty($done_termin)) {
+                        if (!empty($last_termin)) {
+                                if($quant->quant == $dpp->TTL_QTY){?>
                             <button type="submit" class="btn blue">Send</button>
+                        <?php }else{?>
+                            <label class="control-label" style="text-align: left;">Tidak dapat menambah penilaian termin akhir. Item belum diterima 100%.</label>
+                            <?php }
+                        }else{ ?>
+                            <button type="submit" class="btn blue">Send</button>
+                        <?php }
+                        }else{?>
+                            <label class="control-label" style="text-align: left;">Penilaian sudah selesai. Tidak dapat menambah penilaian termin.</label>
+                        <?php } ?>
                     <!-- </div> -->
                 <!-- </div> -->
                 </form>
@@ -299,6 +301,7 @@ $("#cek").change(function() {
         var ppn = parseInt($("input[name='ppn']").val());
         var pph = parseInt($("input[name='pph']").val());
         var denda = parseInt($("input[name='denda']").val());
+        $("input[name='dibayarkan']").val(dpp + ppn - pph - denda);
     }
 });
 $("input[name='dpp']").on("keyup", function(){
@@ -402,7 +405,7 @@ $("#add_val").click(function(){
         $('#pxb'+lastid+'').val(percent*total);
         var sum = 0;
         $('.pxb').each(function(){
-            sum += parseInt(this.value);
+            sum += parseFloat($(this).val());
             $('#akhir').val(sum);
         });
     });
@@ -418,7 +421,7 @@ $("#add_val").click(function(){
         $('#pxb'+lastid+'').val(percent*total);
         var sum = 0;
         $('.pxb').each(function(){
-            sum += parseInt(this.value);
+            sum += parseFloat($(this).val());
             $('#akhir').val(sum);
         });
     });
@@ -437,7 +440,7 @@ $("#varia1").change(function(){
         $('#pxb'+lastid+'').val(percent*total);
         var sum = 0;
         $('.pxb').each(function(){
-            sum += parseInt(this.value);
+            sum += parseFloat($(this).val());
             $('#akhir').val(sum);
         });
     });
@@ -452,7 +455,8 @@ $("#varia1").change(function(){
         $('#pxb'+lastid+'').val(percent*total);
         var sum = 0;
         $('.pxb').each(function(){
-            sum += parseInt(this.value);
+            console.log(parseFloat($(this).val()));
+            sum += parseFloat($(this).val());
             $('#akhir').val(sum);
         });
         console.log(sum);

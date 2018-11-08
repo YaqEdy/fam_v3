@@ -94,6 +94,11 @@ class master_po_m extends CI_Model {
    		return $this->db->insert('TBL_T_PO_DETAIL', $data);
    	}
 
+   	public function save_detail_total($data)
+	{
+   		return $this->db->insert('TBL_T_PO_DTL_TOTAL', $data);
+   	}
+
 	public function save_termin($termin)
 	{
 		return $this->db->insert('TBL_T_TERMIN', $termin);
@@ -107,6 +112,12 @@ class master_po_m extends CI_Model {
 
         $this->db->where('ID_PO', $id);
         return $this->db->update('TBL_T_PO', $data);
+    }
+
+    public function uploaddoc($data, $id)
+    {
+    	$this->db->where('ID', $id);
+        return $this->db->update('TBL_T_PO_GENERATE_DOC', $data);
     }
 
     function no_doc($code, $length)

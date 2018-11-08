@@ -41,10 +41,10 @@ class Hps extends CI_Controller {
         $this->auth->restrict($data['menu_id']);
         $this->auth->cek_menu($data['menu_id']);
         $data['group_user'] = $this->konfigurasi_menu_status_user_m->get_status_user();
-        $data ['ItemID'] = $this->input->post('ItemID',true);
-        $data ['Price'] = $this->input->post('Price',true);
-        $data ['StartDate'] = $this->input->post('StartDate',true);
-        $data ['EndDate'] = $this->input->post('EndDate',true);
+        $data ['ItemID'] = $this->input->post('ItemID', true);
+        $data ['Price'] = $this->input->post('Price', true);
+        $data ['StartDate'] = $this->input->post('StartDate', true);
+        $data ['EndDate'] = $this->input->post('EndDate', true);
         //$data['level_user'] = $this->sec_user_m->get_level_user();
         $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
         $data['menu_all'] = $this->user_m->get_menu_all(0);
@@ -55,7 +55,6 @@ class Hps extends CI_Controller {
         $this->template->set('title', 'HPS');
         $this->template->load('template/template_dataTable', 'procurement/hps/hps_v', $data);
     }
-
 
     function tampil_data() {
         $id = trim($this->input->post('id', true));
@@ -71,8 +70,8 @@ class Hps extends CI_Controller {
         $icolumn = array('HpsID', 'ItemName', 'Price', 'StartDate', 'EndDate');
 //        $icolumn = array('HpsID');
         $iwhere = array(
-            // 'ItemID' => $this->input->post('sItemID'),
-            // $this->input->post('sSearch') => $_POST['search']['value']
+                // 'ItemID' => $this->input->post('sItemID'),
+                // $this->input->post('sSearch') => $_POST['search']['value']
         );
         $iorder = array('HpsID' => 'asc');
         $list = $this->datatables_custom->get_datatables('VW_M_HPS', $icolumn, $iorder, $iwhere);
@@ -140,21 +139,17 @@ class Hps extends CI_Controller {
 
     public function ajax_Delete() {
         $id = $this->input->post('sID');
-         // print_r($id); die();
+        // print_r($id); die();
         $result = $this->hps->deletedata($id);
 
 //        $this->session->set_flashdata('msg', 'Success! HPS ID: ' . $id . ' Success Delete data');
         if ($result == true) {
             $result = array('istatus' => true, 'iremarks' => 'Success! HPS ID: ' . $id . ' Success Delete data');
-        
         } else {
             $result = array('istatus' => false, 'iremarks' => 'Failed! HPS ID: ' . $id . 'Failed Delete data');
         }
         echo json_encode($result);
     }
-
-   
-
 
     public function branch() {
         $ddZone = $this->hps->getzone3();
@@ -173,7 +168,6 @@ class Hps extends CI_Controller {
 
         echo json_encode($options);
     }
-
 
     public function readExcela() {
         $config['upload_path'] = "./uploads/hps/";
@@ -215,17 +209,17 @@ class Hps extends CI_Controller {
             $date = date('Y-m-d');
             $by = $this->session->userdata('id_user');
             // $zone = $this->input->get('sZone');
-                // print_r($arr_data );die();
+            // print_r($arr_data );die();
 
             foreach ($arr_data as $key => $value) {
                 // print_r($value['E'] );die();
                 // if ($value["E"] != '-' && !empty($value["E"])) {
-                    // $this->hps->simpanData($zone, $value['A'],  $value['B'],  $value['C'],  $value['D'],  $value['E'] );
-                    if (PHPExcel_Shared_Date::ExcelToPHP($value["E"]) < 0) {
-                        // $this->hps->simpanData( $value['A'], $value['B'], $value['C'], $value['D'], $value['E']);
-                    } else {
-                        $this->hps->simpanData( $value["A"], $value["B"], date($format = "Y-m-d", PHPExcel_Shared_Date::ExcelToPHP($value["C"])), date($format = "Y-m-d", PHPExcel_Shared_Date::ExcelToPHP($value["D"])), $value["E"]);
-                    }
+                // $this->hps->simpanData($zone, $value['A'],  $value['B'],  $value['C'],  $value['D'],  $value['E'] );
+                if (PHPExcel_Shared_Date::ExcelToPHP($value["E"]) < 0) {
+                    // $this->hps->simpanData( $value['A'], $value['B'], $value['C'], $value['D'], $value['E']);
+                } else {
+                    $this->hps->simpanData($value["A"], $value["B"], date($format = "Y-m-d", PHPExcel_Shared_Date::ExcelToPHP($value["C"])), date($format = "Y-m-d", PHPExcel_Shared_Date::ExcelToPHP($value["D"])), $value["E"]);
+                }
                 // }
             }
 
@@ -275,7 +269,7 @@ class Hps extends CI_Controller {
 
             foreach ($arr_data as $key => $value) {
                 if (!empty($value["E"]) && $value["E"] != "-" && $value["E"] != "") {
-                     $this->hps->simpanData( $value["A"], $value["B"], date($format = "Y-m-d", PHPExcel_Shared_Date::ExcelToPHP($value["C"])), date($format = "Y-m-d", PHPExcel_Shared_Date::ExcelToPHP($value["D"])), $value["E"]);
+                    $this->hps->simpanData($value["A"], $value["B"], date($format = "Y-m-d", PHPExcel_Shared_Date::ExcelToPHP($value["C"])), date($format = "Y-m-d", PHPExcel_Shared_Date::ExcelToPHP($value["D"])), $value["E"], $value["F"]);
                 }
             }
 
@@ -305,11 +299,21 @@ class Hps extends CI_Controller {
         $objPHPExcel->getActiveSheet()->setCellValue('C1', 'START DATE');
         $objPHPExcel->getActiveSheet()->setCellValue('D1', 'END DATE');
         $objPHPExcel->getActiveSheet()->setCellValue('E1', 'HARGA');
+        $objPHPExcel->getActiveSheet()->setCellValue('F1', 'ZONA');
 
-        $objPHPExcel->getActiveSheet()->setCellValue('G1', 'HANYA DI PERBOLEHKAN MENGUBAH START DATE, END DATE DAN HARGA. JIKA TIDAK ADA HARGA, BIARKAN DI ISI DENGAN ANGKA NOL (0)');
-        $objPHPExcel->getActiveSheet()->setCellValue('G2', 'MENU HPS HANYA UNTUK UPDATE HARGA, TIDAK UNTUK MENAMBAH ITEM MASTER');
-        $objPHPExcel->getActiveSheet()->setCellValue('G3', 'UNTUK START & END DATE, GUNAKAN FORMAT TEXT');
-        $objPHPExcel->getActiveSheet()->setCellValue('G4', 'UNTUK START & END DATE, FORMATNYA (YYYY-MM-DD) CONTOH = 1945-08-17');
+        $objPHPExcel->getActiveSheet()->setCellValue('H1', 'HANYA DI PERBOLEHKAN MENGUBAH START DATE, END DATE DAN HARGA. JIKA TIDAK ADA HARGA, BIARKAN DI ISI DENGAN ANGKA NOL (0)');
+        $objPHPExcel->getActiveSheet()->setCellValue('H2', 'MENU HPS HANYA UNTUK UPDATE HARGA, TIDAK UNTUK MENAMBAH ITEM MASTER');
+        $objPHPExcel->getActiveSheet()->setCellValue('H3', 'UNTUK START & END DATE, GUNAKAN FORMAT TEXT');
+        $objPHPExcel->getActiveSheet()->setCellValue('H4', 'UNTUK START & END DATE, FORMATNYA (YYYY-MM-DD) CONTOH = 1945-08-17');
+        $objPHPExcel->getActiveSheet()->setCellValue('H5', 'Untuk Zona Diisi "ID"(Pilih ID Sesuai NAMA ZONA) DIBAWAH Ini');
+
+        //SAMPLE ZONASI
+        $zona = $this->global_m->tampil_data('SELECT ZoneID,ZoneName FROM Mst_Zonasi');
+        $counter_ = 6;
+        foreach ($zona as $key) {
+            $objPHPExcel->getActiveSheet()->setCellValue('H' . $counter_, 'ID='. $key->ZoneID . ' | NAMA=' . $key->ZoneName);
+            $counter_++;
+        }
 
         //make the font become bold
         $objPHPExcel->getActiveSheet()->getStyle('A1')->getFont()->setBold(true);
@@ -317,18 +321,7 @@ class Hps extends CI_Controller {
         $objPHPExcel->getActiveSheet()->getStyle('C1')->getFont()->setBold(true);
         $objPHPExcel->getActiveSheet()->getStyle('D1')->getFont()->setBold(true);
         $objPHPExcel->getActiveSheet()->getStyle('E1')->getFont()->setBold(true);
-
-        // $objPHPExcel->getActiveSheet()->setCellValue('A2', 'XXXX');
-        // $objPHPExcel->getActiveSheet()->setCellValue('B2', 'Example Item ');
-        // $objPHPExcel->getActiveSheet()->setCellValue('C2', '100000');
-        // $objPHPExcel->getActiveSheet()->setCellValue('D2', date('Y-m-d'));
-        // $objPHPExcel->getActiveSheet()->setCellValue('E2', date('Y-m-d'));
-
-        // $objPHPExcel->getActiveSheet()->getStyle('A2')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setRGB('FF0000');
-        // $objPHPExcel->getActiveSheet()->getStyle('B2')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setRGB('FF0000');
-        // $objPHPExcel->getActiveSheet()->getStyle('C2')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setRGB('FF0000');
-        // $objPHPExcel->getActiveSheet()->getStyle('D2')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setRGB('FF0000');
-        // $objPHPExcel->getActiveSheet()->getStyle('E2')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setRGB('FF0000');
+        $objPHPExcel->getActiveSheet()->getStyle('F1')->getFont()->setBold(true);
 
         $data = $this->hps->getAllItem();
         $counter = 2;

@@ -149,7 +149,7 @@ class cek_barang extends CI_Controller {
                 if (!empty($_POST['qty'][$i])) {
                     $id_barang = $this->global_m->getIdMax('ID','TBL_T_TERIMA_BARANG');
                     $barang['ID'] = $id_barang;
-                    $barang['ID_PO'] =  $_POST['podetail'][$i];
+                    $barang['ID_PO_DETAIL'] =  $_POST['podetail'][$i];
                     $barang['ITEM_ID'] = $_POST['itemid'][$i];
                     $barang['NAMA_BARANG'] = $_POST['nama_barang'][$i];
                     $barang['QTY'] = $_POST['qty'][$i];
@@ -160,7 +160,7 @@ class cek_barang extends CI_Controller {
                     for ($j=1; $j <= $_POST['qty'][$i]; $j++) { 
                         $id_sn = $this->global_m->getIdMax('ID','TBL_T_TB_DETAIL');
                         $sn['ID'] = $id_sn;
-                        $sn['ID_PO'] = $_POST['podetail'][$i];
+                        $sn['ID_PO_DETAIL'] = $_POST['podetail'][$i];
                         $sn['ID_TB'] = $id_barang;
                         $sn['ITEM_ID'] = $_POST['itemid'][$i];
                         $sn['QTY'] = 1;

@@ -69,11 +69,9 @@ function home() {
             5 => 'Status',
             6 => 'CreateDate',
             7 => 'CreateBy'
-
-           
+  
         );
 
-        
         $sql = "SELECT mc.*,reqcat.ReqCategoryID, reqcat.ReqCategoryName, reqcat.CreateDate, reqtype.ReqTypeName, reqcat.Is_trash, div.DIV_DESC, br.FLEX_VALUE, reqcat.Status
                                 FROM Mst_RequestCategory reqcat
                 INNER JOIN Mst_RequestType reqtype ON reqcat.ReqTypeID = reqtype.ReqTypeID
@@ -294,7 +292,7 @@ function home() {
             $id = trim(element('ReqCategoryID',$i_list));
          $data = array(
 
-            
+
             'ReqCategoryName' => $ReqCategoryName,
             'BudgetID' => $BudgetID,
             'BudgetCOA' => $BudgetCOA,

@@ -171,13 +171,24 @@ class Global_m extends CI_Model {
     public function getFlow($status_dari) {
         $sql = "SELECT id, flow_id, nama_flow, status_dari, action, status_ke
                 FROM dbo.MS_FLOW
-                WHERE action = 'approve' AND status_dari='". $status_dari."'" ;
+                WHERE action = 'approve' AND status_dari='" . $status_dari . "'";
         $query = $this->db->query($sql);
         $hasil = $query->result();
         $ireturn = $hasil[0]->status_ke;
         return $ireturn;
     }
-    
+
+    public function sp($sql, $sParam = array()) {
+        $this->db->trans_begin();
+        $query = $this->db->query($sql, $sParam);
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            return false;
+        } else {
+            $this->db->trans_commit();
+            return true;
+        }
+    }
 
 }
 

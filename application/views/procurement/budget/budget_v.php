@@ -7,6 +7,22 @@
 <input type="hidden" id="id_userName" value="<?php echo $this->session->userdata('user_name'); ?>">
 <input type="hidden" id="id_posisi" value="<?php echo $this->session->userdata('posisi_desc'); ?>">
 
+<!--<div class="form-group">
+    <label>Kota Favorit</label>
+    <select id="kota2" name="kota2" class="form-control kota2" multiple="multiple">
+        <option value=""></option>
+
+            <option value="aa.aa">TES1</option>
+            <option value="bb.bb">TES2</option>
+            <option value="cc.cc">TES3</option>
+
+        ?>
+    </select>
+</div>-->
+
+<div id="qr_code"></div>
+<input type="text" id="qrtext">
+<button onclick="showQR()">QR</button>
 
 <div class="row">
     <div class="col-md-12">

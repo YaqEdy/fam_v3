@@ -77,6 +77,11 @@ Class Ias_mdl extends CI_Model {
         return $this->db->get('VW_IAS')->row();
     }
 
+    function get_all_ias($id){
+        $this->db->where('ID_PO_DETAIL', $id);
+        return $this->db->get('TBL_T_IAS')->result();
+    }
+
     function get_var()
     {
         return $this->db->get('TBL_R_VARIABEL')->result();
@@ -232,8 +237,34 @@ Class Ias_mdl extends CI_Model {
 
     function get_dpp($id)
     {
-        $dpp = $this->db->query("select sum(TTL_HARGA) as total from TBL_T_PO_DETAIL where ID_PO = $id");
-        return $dpp->row();
+        $this->db->where('ID_PO_DETAIL', $id);
+        return $this->db->get('TBL_T_PO_DTL_TOTAL')->row();
+    }
+
+    function get_termin($id)
+    {
+        $this->db->where('ID_TERMIN', $id);
+        return $this->db->get('TBL_T_TERMIN')->row();
+    }
+
+    function get_all_termin($id)
+    {
+        $this->db->where('ID_PO_DETAIL', $id);
+        return $this->db->get('TBL_T_TERMIN')->result();
+    }
+
+    public function get_quant($id)
+    {
+        $query = "select sum(QTY) as quant from TBL_T_TERIMA_BARANG WHERE ID_PO_DETAIL = $id";
+        $get = $this->db->query($query);
+        return $get->row();
+    }
+
+    public function count_termin($id)
+    {
+        $query = "select count(ID_PO_DETAIL) as jml from TBL_T_TERMIN WHERE ID_PO_DETAIL = $id";
+        $get = $this->db->query($query);
+        return $get->row();
     }
 
 }
