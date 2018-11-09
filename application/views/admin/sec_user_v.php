@@ -142,6 +142,14 @@
           <input required="required" class="form-control" type="text" id="name"  name="name"/>
             </div>
                 </div>
+                <div class="form-group">
+                     <label class="control-label col-md-3">Email 
+                     <span class="required" aria-required="true"> * </span>
+                 </label>
+             <div class="col-md-6">
+          <input required="required" class="form-control" type="text" id="email"  name="email"/>
+            </div>
+                </div>
 
             <div class="form-group">
                <label class="control-label col-md-3">Branch
@@ -351,6 +359,12 @@
                         <label>Nama </label> <span class="required">*</span>
                         <input required="required" class="form-control" type="text" id="name_edit"  name="name"/>
                     </div>
+                    <div class="form-group">
+                        <label>Email </label> <span class="required">*</span>
+                        <input required="required" class="form-control" type="text" id="email_edit"  name="email"/>
+                    </div>
+
+
                    <div class="row">
                 <div class="col-md-12">
                    <div class="form-group">
@@ -389,11 +403,13 @@
                                         $data[''] = '';
                                         foreach ($dd_Position as $k) :
                                             // $data[trim($row['ZoneID'])] = $row['ZoneName'];
-                                            $data[$k->PositionID] = $k->PositionName;
+                                           // $data[trim($row['PositionID'])] = $row['usergroup_desc'];
+                                            $data[trim($k->PositionID)] = $k->PositionName;
                                         endforeach;
                                         echo form_dropdown('PositionID', $data, '', 'id="id_position_edit" class="select2me form-control" required');
                                         ?> 
                                 </div>
+
 
                                 <div class="form-group">
                                     <label>Zone  </label>  <span class="">*</span>
