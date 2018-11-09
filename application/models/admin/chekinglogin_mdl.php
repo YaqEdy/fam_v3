@@ -8,13 +8,22 @@ Class Chekinglogin_mdl extends CI_Model {
 
     function chek_user($nik) {
         $this->db2 = $this->load->database('config1', true);
-        $sqldata = $this->db2->query("SELECT a.*,mz.ZoneName,mb.BRANCH_DESC as BranchName,mb.FLEX_VALUE as BranchCode,a.DivisionID as DivisionCode
+        $sqldata = $this->db2->query("SELECT a.*,mz.ZoneName,mb.BRANCH_DESC as BranchName,mb.FLEX_VALUE as BranchCode,a.DivisionID as DivisionCode,mp.PositionName,su.usergroup_desc
                                             from [user] a
                                             left join Mst_Zonasi mz on a.ZoneID = mz.ZoneID
                                             left join TBL_M_BRANCH mb on a.BranchID = mb.FLEX_VALUE
+                                            left join Mst_Position as mp on a.PositionID= mp.PositionName
+                                            left join sec_usergroup as su on a.user_groupid=su.usergroup_id
                                             WHERE a.nik='" . $nik . "'");
         //$sqldata = $db2->query("SELECT * FROM Mst_Branch");  
         return $sqldata->result();
+    }
+    
+     function update_user($nik,$foto) {
+        $this->db2 = $this->load->database('config1', true);
+        $sqldata = $this->db2->query("UPDATE [user]
+                                        SET user_photo='".$foto."'
+                                      WHERE nik='" . $nik . "'");
     }
 
     /* MODEL FINANCE MONITORING BUDGET------------------------------------------------------------------------------------------------------------------ */

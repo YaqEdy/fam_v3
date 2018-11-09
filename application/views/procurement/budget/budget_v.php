@@ -19,7 +19,12 @@
         ?>
     </select>
 </div>-->
-
+<div class="task-checkbox">
+    <label class="mt-checkbox mt-checkbox-single mt-checkbox-outline">
+        <input id="idcb" type="checkbox" class="checkboxes" >
+        <span></span>
+    </label> dfasfs
+</div>
 <div id="qr_code_header">
     <div id="qr_code"></div>
     <div id="qr_desc"></div>
@@ -118,14 +123,14 @@
                                                 <th>BranchID</th>
                                                 <th>DivisionID</th>
 
-                                                <th>COA</th>
+                                                <!--<th>COA</th>-->
                                                 <th>Period</th>
                                                 <th>Branch</th>
                                                 <th>Division/Cabang</th>
-                                                <th>Budget</th>
-                                                <th>Sisa Budget</th>
-                                                <th>Budget Booking</th>
-                                                <th>Budget Terpakai</th>
+                                                <th>Budget (Rp)</th>
+                                                <th>Sisa Budget (Rp)</th>
+                                                <th>Budget Booking (Rp)</th>
+                                                <th>Budget Terpakai (Rp)</th>
                                                 <th>Action</th>
 
                                             </tr>

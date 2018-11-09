@@ -12,6 +12,51 @@ class Api_m extends CI_Model {
         $this->load->database();
     }
 
+    function get_data_orc($JsonArr = array()) {
+        $query = $this->db->query("SELECT LINK FROM TBL_API_LINK WHERE API_NAME='CRUD ORACLE'");
+        $result = $query->result()[0];
+
+//        $jsonarr = [
+//            'table' => 'PNM_FAM_FA_WORKBENCH_V',
+//            'filter_where_in' => ["ASSET_NUMBER" => $ID_ASSETS]
+//        ];
+
+        $curlurl = $result->LINK . "/get_all";
+
+        $ch = curl_init($curlurl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($JsonArr));
+        $responsejson = curl_exec($ch);
+        curl_close($ch);
+
+        $response = json_decode($responsejson, true);
+
+        return $response['data'];
+    }
+
+    function insert_to_orc($JsonArr = array()) {
+        $query = $this->db->query("SELECT LINK FROM TBL_API_LINK WHERE API_NAME='CRUD ORACLE'");
+        $result = $query->result()[0];
+
+//        $jsonarr = [
+//            'to_table' => 'TBL_ANGGOTA',
+//            'nik' => '1234',
+//            'nama' => 'afrizal'
+//        ];
+
+        $curlurl = $result->LINK . "/insert_to_table";
+
+        $ch = curl_init($curlurl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        $responsejson = curl_exec($ch);
+        curl_close($ch);
+
+        $response = json_decode($responsejson, true);
+
+        return $response;
+    }
+
     public function insert_ias_orc($ID_PO, $ID_IAS, $ID_PO_DETAIL) {
 //        $this->load->database();
 //Link Api
@@ -281,7 +326,7 @@ class Api_m extends CI_Model {
         return $response['data'];
     }
 
-    function get_user_fam() {
+    function sync_user_fam() {
         $this->load->database();
         $query = $this->db->query("SELECT LINK FROM TBL_API_LINK WHERE API_NAME='GET USER FAM'");
         $result = $query->result()[0];
@@ -293,18 +338,46 @@ class Api_m extends CI_Model {
         $homepage = file_get_contents($curlurl, false, $context);
         $result = json_decode($homepage);
 
+        foreach ($result->profile[0]->data as $data) {
+            $CEK = $this->db->query("SELECT COUNT(*) as count FROM TBL_M_USER_FAM WHERE profile_id_sdm='" . $data->profile_id_sdm . "'")->result()[0]->count;
+            if ($CEK == 0) {
+                $ArrInsert = array(
+                    'profile_id_sdm' => $data->profile_id_sdm,
+                    'profile_nip' => $data->profile_nip,
+                    'profile_nama' => $data->profile_nama,
+                    'profile_username' => $data->profile_username,
+                    'profile_email' => $data->profile_email,
+                    'create_by' => 'SYSTEM',
+                    'create_date' => date('Y-m-d h:i:s')
+                );
+                $this->db->insert('TBL_M_USER_FAM', $ArrInsert);
+            } else {
+                $ArrUpdate = array(
+//                    'profile_id_sdm' => $data->profile_id_sdm,
+                    'profile_nip' => $data->profile_nip,
+                    'profile_nama' => $data->profile_nama,
+                    'profile_username' => $data->profile_username,
+                    'profile_email' => $data->profile_email,
+                    'update_by' => 'SYSTEM',
+                    'update_date' => date('Y-m-d h:i:s')
+                );
+                $this->db->update('TBL_M_USER_FAM', $ArrUpdate);
+                $this->db->where('profile_id_sdm', $data->profile_id_sdm);
+            }
+        }
+
         return $result;
     }
 
-    function get_kehilangan($ID_ASSETS=array()){
+    function get_kehilangan($ID_ASSETS = array()) {
         $query = $this->db->query("SELECT LINK FROM TBL_API_LINK WHERE API_NAME='CRUD ORACLE'");
         $result = $query->result()[0];
-        
+
         $jsonarr = [
             'table' => 'PNM_FAM_FA_WORKBENCH_V',
             'filter_where_in' => ["ASSET_NUMBER" => $ID_ASSETS]
         ];
-                
+
         $curlurl = $result->LINK . "/get_all";
 
         $ch = curl_init($curlurl);
@@ -317,9 +390,34 @@ class Api_m extends CI_Model {
 
         return $response['data'];
     }
-    
-    
-    
+
+    function inserttransferAPI($id) {
+        $query = $this->db->query("SELECT LINK FROM TBL_API_LINK WHERE API_NAME='CRUD ORACLE'");
+        $result = $query->result()[0];
+
+        $query1 = $this->db->query("SELECT * FROM TBL_T_ASSETS WHERE ID_ASSET = " . $id . " AND IS_TRASH=0 AND STATUS_TRANS=2");
+        $result1 = $query1->result()[0];
+        $query2 = $this->db->query("SELECT TOP 1 * FROM TBL_T_ASSETS WHERE ID_ASSET = " . $id . " AND IS_TRASH=1 ORDER BY ID DESC");
+        $result2 = $query2->result()[0];
+
+        $data = array(
+            'to_table' => 'PNM_FAM_FA_TRANSFER_STG',
+            'COST_ADJUST' => $result1->ID_ASSET,
+            'SALVAGE_VALUE' => $result1->QTY,
+            'LIFE_IN_YEAR' => $result2->LOKASI,
+        );
+
+        $curlurl = $result->LINK . "/insert_to_table";
+
+        $ch = curl_init($curlurl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        $responsejson = curl_exec($ch);
+        curl_close($ch);
+
+        $response = json_decode($responsejson, true);
+    }
+
 }
 
 /* End of file sec_menu_user_m.php */

@@ -134,15 +134,7 @@ function new22(){
             },
             "columnDefs": [
                 {"targets": [-1], "orderable": false, "searchable": false},
-//                {"targets": [0], "orderable": false},
-//                {"targets": [1], "orderable": false},
-//                {"targets": [2], "orderable": false},
-//                {"targets": [3], "orderable": false},
-//                {"targets": [4], "orderable": false},
-//                {"targets": [5], "orderable": false},
-                // {"targets": [6], "orderable": false},
-                // {"targets": [7], "visible": true, "searchable": true},
-                // {"targets": [8], "visible": false, "searchable": false},
+                {"targets": [6], "visible": false, "searchable": false}
             ],
         });
     }
@@ -239,6 +231,7 @@ function new22(){
                         $('#id_branch_edit').select2('val',data.data_res[i].BranchID);
                         $('#id_statusUser_edit').select2('val',data.data_res[i].status);
                         $('#id_zone_edit').select2('val',data.data_res[i].ZoneID); 
+                        $('#id_position_edit').select2('val',data.data_res[i].PositionID);
                         $('#id_btnUbah').attr("disabled", false);
                         $('#id_btnSimpan').attr("disabled", true);
                         $('#id_data').val(input);
@@ -270,13 +263,17 @@ function new22(){
                     UIToastr.init(e.tipePesan, e.pesan);
                     iPID=e.iPid;
                     console.log(idata);
-                        $('#idsdm2').val(data.data_res[i].idsdm);
-                        // $('#user_id2').val(data.data_res[i].user_id);
+                         $('#idsdm2').val(data.data_res[i].idsdm);
+                        $('#user_id2').val(data.data_res[i].user_id);
                         $('#nik_edit').val(data.data_res[i].nik);
                         $('#user_name_edit').val(data.data_res[i].user_name);
                         $('#name_edit').val(data.data_res[i].name);
-                        $('#edit_usergroup').val(data.data_res[i].user_groupid);
-                        $('#DivisionID2').val(data.data_res[i].DivisionID);
+                        $('#id_groupUser_edit').select2('val',data.data_res[i].user_groupid);
+                        $('#id_division_edit').select2('val',data.data_res[i].DivisionID);
+                        $('#id_branch_edit').select2('val',data.data_res[i].BranchID);
+                        $('#id_statusUser_edit').select2('val',data.data_res[i].status);
+                        $('#id_zone_edit').select2('val',data.data_res[i].ZoneID); 
+                        $('#id_position_edit').select2('val',data.data_res[i].PositionID);
                         $('#status2').val(data.data_res[i].status);
                         $('#id_btnUbah').attr("disabled", false);
                         $('#id_btnSimpan').attr("disabled", true);

@@ -236,4 +236,3 @@
 <script src="<?php echo base_url('metronic/layouts/global/scripts/quick-sidebar.min.js'); ?>" type="text/javascript"></script>
 <!-- END THEME LAYOUT SCRIPTS -->
 
-x`

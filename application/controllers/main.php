@@ -19,9 +19,7 @@ class Main extends CI_Controller {
         }
     }
 
-
-
-        function getdetail() { 
+    function getdetail() {
         $this->CI = & get_instance();
         $crows = $this->dashboard_m->getCdisplay();
         if ($crows <= 0) {
@@ -33,7 +31,6 @@ class Main extends CI_Controller {
             $this->output->set_output(json_encode($rows));
         }
     }
-
 
     public function index() {
         if ($this->auth->is_logged_in() == false) {
@@ -206,17 +203,7 @@ class Main extends CI_Controller {
         //$this->load->view ( 'admin/login_form' );
     }
 
-
-
-
-
-
-
-
 }
-
-
-
 
 /* End of file main.php */
 /* Location: ./application/controllers/main.php */

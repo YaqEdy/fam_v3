@@ -60,7 +60,7 @@ class Budget extends CI_Controller {
     }
 
     public function ajax_GridBudgetCapex() {
-        $icolumn = array('BudgetCOA', 'Year', 'BranchName', 'DivisionName', 'BudgetValue', 'sisa', 'Budget_booking', 'terpakai', 'BudgetID', 'BranchID', 'DivisionID');
+        $icolumn = array( 'Year', 'BranchName', 'DivisionName', 'BudgetValue', 'sisa', 'Budget_booking', 'terpakai', 'BudgetID', 'BranchID', 'DivisionID');
 //        $icolumn = array('BudgetID');
         $ilike = array(
             $this->input->post('sSearch') => $_POST['search']['value']
@@ -85,7 +85,7 @@ class Budget extends CI_Controller {
             $row[] = $idatatables->BranchID;
             $row[] = $idatatables->DivisionID;
 
-            $row[] = $idatatables->BudgetCOA;
+//            $row[] = $idatatables->BudgetCOA;
             $row[] = $idatatables->Year;
             $row[] = $idatatables->BranchName;
             $row[] = $idatatables->DivisionName;

@@ -5,6 +5,9 @@ function showQR() {
     var qrcode = new QRCode("qr_code");
     qrcode.makeCode($('#qrtext').val());
     $("#qr_desc").text($('#qrtext').val());
+    
+//    document.getElementById("idcb").checked = true;
+    console.log(document.getElementById("idcb").checked);
 }
 
     
