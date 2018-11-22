@@ -15,11 +15,14 @@ class Main extends CI_Controller {
             $this->load->model('user_m');
             $this->load->model('dashboard/dashboard_m');
             $this->load->helper('cookie');
+            $this->load->model('global_m');
             session_start();
         }
     }
 
-    function getdetail() {
+
+
+        function getdetail() { 
         $this->CI = & get_instance();
         $crows = $this->dashboard_m->getCdisplay();
         if ($crows <= 0) {
@@ -32,6 +35,7 @@ class Main extends CI_Controller {
         }
     }
 
+
     public function index() {
         if ($this->auth->is_logged_in() == false) {
             $this->login();
@@ -42,6 +46,34 @@ class Main extends CI_Controller {
             $tanggal = $this->session->userdata('tgl_d');
             $this->template->set('title', 'Mega Jaya | Beranda');
             $this->template->set('title', 'Home');
+            
+            $sql_pr = "select warna,ket,nilai from(
+                                SELECT 'green' as warna,'Request' as ket, Count(*) as nilai        
+                                FROM TBL_REQUEST WHERE status='2-1' AND Is_trash =0        
+                         union
+                                SELECT 'yellow-lemon' as warna,'Proses' as ket,Count(*) as nilai
+                                FROM TBL_REQUEST WHERE status > '2' AND Is_trash =0 
+                                AND RequestID not in (select  c.ID_PR from TBL_T_IAS a
+                                        INNER JOIN TBL_T_PO_DETAIL as b on a.ID_PO_DETAIL = b.ID_PO_DETAIL
+                                INNER JOIN TBL_T_PO as c on b.ID_PO = c.ID_PO)
+                         union
+                                        SELECT 'purple' as warna,'Close' as ket,ISNULL(COUNT(*),0) as nilai
+                                        FROM(
+                                        select B.ID_PO
+                                        from TBL_T_IAS AS A INNER JOIN
+                                        TBL_T_PO_DETAIL as B on A.ID_PO_DETAIL = B.ID_PO_DETAIL
+                                        where A.IS_TRASH=0 
+                                        group by B.ID_PO
+                                        having SUM(A.NILAI_DIBAYARKAN) >= SUM(B.TTL_HARGA)) AS ZZ 
+                         union
+                                select 'red-intense' as warna,'Reject' as ket, count(*) as nilai 
+                                from TBL_REQUEST AS A left JOIN
+                                TBL_REQUEST_LOG AS B ON A.RequestID=B.RequestID and A.status=B.status_dari
+                                where b.action='Reject'
+                            )x";
+            
+            $data['data_pr'] = $this->global_m->tampil_data($sql_pr);
+            
             $this->template->load('template/template1', 'dashboard_v', $data);
         }
     }
@@ -203,7 +235,17 @@ class Main extends CI_Controller {
         //$this->load->view ( 'admin/login_form' );
     }
 
+
+
+
+
+
+
+
 }
+
+
+
 
 /* End of file main.php */
 /* Location: ./application/controllers/main.php */

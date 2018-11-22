@@ -115,14 +115,58 @@
 			<hr class="dotted">
 			<hr class="dotted">
 			
+							<?php
+								if(count($vendor) > 0){
+							?>
+			
+			<div class="portlet-body">
+                <div class="tab-content">
+					<h5 class="sbold uppercase">Data</h5>
+                        <div class="panel panel-inverse">				
+							<table class="table table-striped table-bordered table-hover text_kanan" id="table_gridVendorProcess">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>     
+                                        <th>Alamat</th>
+                                        <th>Pemenang</th>
+                                        <th>Harga Setelah Penawaran</th>
+                                        <th>Item</th>
+                                        <th>PPN %</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+									<?php
+										foreach($vendor as $v){
+											if($v['Pemenang'] == 1){$pemenang = 'Pemenang';}
+											else{$pemenang = 'Peserta';}
+											echo '
+									<tr>
+										<td>'.$v['VendorName'].'</td>
+										<td>'.$v['VendorAddress'].'</td>
+										<td>'.$pemenang.'</td>
+										<td align="right">Rp. '.number_format($v['HargaVendor'],2,',','.').'</td>
+										<td>'.$v['ItemName'].'</td>
+										<td>'.$v['PPN'].'</td>
+									</tr>
+											';
+										}
+									?>
+                                </tbody>
+                                <tfoot>
+
+                                </tfoot>
+                            </table>
+						</div>
+				</div>
+			</div>
+							<?php
+								}
+							?>
+			
 			<div class="portlet-body">
                 <div class="tab-content">
 					<h5 class="sbold uppercase">COA</h5>
-                        <div class="panel panel-inverse">
-                            <hr class="dotted">
-                            <div class="col-md-12">
-                            </div>
-						</div>
 						<div class="panel panel-inverse">
 							<form class="" id="fm_apppr" enctype="multipart/form-data" method="POST">
                             	<?php
@@ -181,7 +225,7 @@
 											<button type="submit" class="btn btn-primary" id="appreq" name="appreq" value="Submit" >Submit</button>       
                                         	-->
 											<a class="btn btn-primary" onclick="submit_app()">Submit</a>       
-											<a class="btn btn-primary" onclick="myFunction()">myFunction</a>       
+											<!--<a class="btn btn-primary" onclick="myFunction()">myFunction</a>   -->    
                                         </div>
                                     </div>
                                 </div>
@@ -204,6 +248,12 @@
 	var sum_item = 0;
 	$(document).ready( function () {
 		$('#item_table').DataTable({
+			"aaSorting": [],
+			"searching": false,
+			"paging": false,
+			"info": false
+		});
+		$('#table_gridVendorProcess').DataTable({
 			"aaSorting": [],
 			"searching": false,
 			"paging": false,

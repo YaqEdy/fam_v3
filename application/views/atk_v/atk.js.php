@@ -223,15 +223,16 @@ if (r == true) {
      function loadGridItemBarang() {
         // iZone = $("#dd_id_zone_A").val();
         dataTable3 = $('#table_grid_daftarItemBarang').DataTable({
-            dom: 'C<"clear">l<"toolbar">frtip',
-            initComplete: function () {
-                $("div.toolbar").append('<div class="col-md-8">\n\
-            <div class="row">\n\
-                <div class="col-md-1"></div>\n\
-                </div>\n\
-            </div>\n\
-        </div>');
-            }, "lengthMenu": [
+        //     dom: 'C<"clear">l<"toolbar">frtip',
+        //     initComplete: function () {
+        //         $("div.toolbar").append('<div class="col-md-100">\n\
+        //     <div class="row">\n\
+        //         <div class="col-md-100"></div>\n\
+        //         </div>\n\
+        //     </div>\n\
+        // </div>');
+        //     }, 
+            "lengthMenu": [
                 [5, 10, 15, 20, -1],
                 [5, 10, 15, 20, "All"] // change per page values here
             ],
@@ -316,27 +317,27 @@ if (r == true) {
         });
     }
 
-    function hapus_item(input) {
+    // function hapus_item(input) {
         
-        var r = confirm('Do you want to remove this file ?');
-        if (r == true) {
-             $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "hapus_itembarang",
-                data: {data : input},
-                success: function (data) {
-                    $('#table_grid_daftarItemBarang').DataTable().ajax.reload();
-                    UIToastr.init(data.tipePesan, data.pesan);
-                }
+    //     var r = confirm('Do you want to remove this file ?');
+    //     if (r == true) {
+    //          $.ajax({
+    //             type: "POST",
+    //             dataType: "json",
+    //             url: "hapus_itembarang",
+    //             data: {data : input},
+    //             success: function (data) {
+    //                 $('#table_grid_daftarItemBarang').DataTable().ajax.reload();
+    //                 UIToastr.init(data.tipePesan, data.pesan);
+    //             }
 
-            });
-        }else{
-            return false;
-        }
+    //         });
+    //     }else{
+    //         return false;
+    //     }
        
         
-    }
+    // }
 
     function teruskanPR (){
         console.log(iID_PR);
@@ -367,29 +368,184 @@ if (r == true) {
          // location.reload('#navitab_2_1');
    }
 
-    function edit_qty(input) {
-            alert('eki');
-        $('#myModalUpdate').trigger("click");
+   
+    //   function edit_qty(inputx) {
+    //         // alert('eki');
+    //         console.log(inputx);
+    //     $('#myModalUpdate').trigger("click");
 
-        // $('#table_gridUSER').on('click', '#btnUpdate2');
-        $.post("tampil_QTY",
-            {
-                'id': input //id yang dilempar
-            },
-            function (data) {
-                console.log(data);
-                if (data.data_res.length > 0) {
-                    // $group = '1';
-                    for (i = 0; i < data.data_res.length; i++) {
-                        $('#Qty').val(data.data_res[i].Qty);
-                        $('#id').val(data.data_res[i].id);
-
+    //     // $('#table_gridUSER').on('click', '#btnUpdate2');
+    //     $.post("tampil_QTY", {
+    //             'ID': inputx //id yang dilempar
+    //         },
+    //         function (data) {
+    //            console.log(data);
+    //             if (data.data_res.length > 0) {
+    //                 // $group = '1';
+    //                 // alert('ASD');
+    //                 for (i = 0; i < data.data_res.length; i++) {
+    //                     $('#Qty').val(data.data_res[i].Qty);
+    //                     $('#ID').val(data.data_res[i].ID);
+    //                     $('#id_btnUbah').attr("disabled", true);
+    //                     $('#id_btnSimpan').attr("disabled", true);
+    //                     $('#id_data').val(input);
               
-                    }
-                }       
-            }, "JSON");
+    //                 }
+    //             }       
+    //         }, "JSON");
+
+    // }
+
+
+  
+
+   function show_qty(val){
+        // alert(val);
+
+             console.log(val);
+        $('#myModalUpdate').trigger("click");
+        // Qty
+        var res = val.split("#");
+        var id = res[0];
+        var qty = res[1];
+        $('#ID').val(id);
+        $('#Qty').val(qty);
+        // $('#ItemName').val(ItemName);
+
+
+
 
     }
+
+
+
+    //         function edit_qty(inputx) {
+    //         // alert('eki');
+    //         console.log(inputx);
+    //     $('#myModalUpdate').trigger("click");
+
+    //     // $('#table_gridUSER').on('click', '#btnUpdate2');
+    //     $.post("tampil_QTY", {
+    //             'ID': inputx //id yang dilempar
+    //         },
+    //         function (data) {
+    //            console.log(data);
+    //             if (data.data_res.length > 0) {
+    //                 // $group = '1';
+    //                 // alert('ASD');
+    //                 for (i = 0; i < data.data_res.length; i++) {
+    //                     $('#Qty').val(data.data_res[i].Qty);
+    //                     $('#ID').val(data.data_res[i].ID);
+    //                     $('#id_btnUbah').attr("disabled", true);
+    //                     $('#id_btnSimpan').attr("disabled", true);
+    //                     // $('#id_data').val(input);
+              
+    //                 }
+    //             }       
+    //         }, "JSON");
+
+    // }
+
+
+
+    //     $('#id_formRoom').submit(function (event) {
+    //         // alert('asd')  
+    //     var iclosestRow = $(this).closest('tr');
+    //     var idata = dataTable.row(iclosestRow).data();      
+    //     var r = confirm('Apakah anda ingin merubah data ini ?');
+    //         if (r == true) {
+    //             $.ajax({
+
+    //         url: "ubah", // json datasource
+    //         type: 'POST',
+    //         data: new FormData(this),
+    //         async: false,
+    //         cache: false,
+    //         contentType: false,
+    //         processData: false,
+    //         dataType: "JSON",
+    //         success: function (e) {
+    //             if(e.act){
+    //                 UIToastr.init(e.tipePesan, e.pesan);
+    //                 iPID=e.iPid;
+    //                 console.log(idata);
+    //                     $('#ID').val(data.data_res[i].ID);
+    //                     $('#Qty').val(data.data_res[i].Qty);
+    //                     // $('#ItemName').val(data.data_res[i].ItemName);
+    //                     $('#id_btnUbah').attr("disabled", true);
+    //                     $('#id_btnSimpan').attr("disabled", true);
+    //                     // $('#id_data').val(input);
+
+    //                     // $('#id_data').val(input);
+    //             }else{
+    //                 UIToastr.init(e.tipePesan, e.pesan);
+    //             }
+    //         },
+    //         complete:function(e){
+    //             $('#table_grid_daftarItemBarang').DataTable().ajax.reload();
+    //         }
+    //     }); 
+    //             event.preventDefault(); 
+    //         } else {//if(r)
+    //             return false;
+    //         }
+             
+    // });
+
+
+    //   $('#id_formRoom').submit(function (event) {
+    //         // alert('asd')  
+    //     var iclosestRow = $(this).closest('tr');
+    //     var idata = dataTable.row(iclosestRow).data();      
+    //     var r = confirm('Apakah anda ingin merubah data ini ?');
+    //         if (r == true) {
+    //             $.ajax({
+
+    //         url: "ubah", // json datasource
+    //         type: 'POST',
+    //         data: new FormData(this),
+    //         async: false,
+    //         cache: false,
+    //         contentType: false,
+    //         processData: false,
+    //         dataType: "JSON",
+    //         success: function (e) {
+    //             if(e.act){
+    //                 UIToastr.init(e.tipePesan, e.pesan);
+    //                 iPID=e.iPid;
+    //                 console.log(idata);
+    //                     $('#Qty').val(data.data_res[i].Qty);
+    //                     $('#ID').val(data.data_res[i].ID);
+    //                     $('#id_btnUbah').attr("disabled", false);
+    //                     $('#id_btnSimpan').attr("disabled", true);
+    //                     $('#id_data').val(input);
+
+    //                     // $('#id_data').val(input);
+    //             }else{
+    //                 UIToastr.init(e.tipePesan, e.pesan);
+    //             }
+    //         },
+    //         complete:function(e){
+    //             $('#table_grid_daftarItemBarang').DataTable().ajax.reload();
+    //         }
+    //     }); 
+    //             event.preventDefault(); 
+    //         } else {//if(r)
+    //             return false;
+    //         }
+             
+    // });
+
+      
+
+
+
+     
+
+
+     
+
+
 
        $("#id_btnSimpan").click(function () {
         $('#idTmpAksiBtn').val('1');

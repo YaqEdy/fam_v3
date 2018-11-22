@@ -58,6 +58,22 @@
             .kanan {
                 text-align: right;
             }
+            .modal_bar {
+                display:    none;
+                position:   fixed;
+                z-index:    1000;
+                top:        0;
+                left:       0;
+                height:     100%;
+                width:      100%;
+                background:  rgba( 255, 255, 255, .8 ) 
+                    url(<?php echo base_url('metronic/global/img/loading_bar.gif'); ?>) 
+                    50% 50% 
+                    no-repeat;
+                opacity: 0.80;
+                -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity = 80);
+                filter: alpha(opacity = 80)
+            }
         </style>
     </head>
     <!-- END HEAD -->

@@ -30,7 +30,9 @@ class pr extends CI_Controller {
     }
 
     function home() {
-
+//        print_r($this->session->userdata('usergroup'));
+//        die();
+//        die($this->session->userdata('DivisionID'));
         $menuId = $this->home_m->get_menu_id('procurement/po/home');
         $data['menu_id'] = $menuId[0]->menu_id;
         $data['menu_parent'] = $menuId[0]->parent;
@@ -42,6 +44,17 @@ class pr extends CI_Controller {
         $data['zonasi1'] = $this->global_m->tampil_zone1();
         $data['branch'] = $this->global_m->tampil_division();
         //$data['level_user'] = $this->sec_user_m->get_level_user();
+        $usergroup = $this->session->userdata('usergroup');
+        $divisionID = $this->session->userdata('DivisionID');
+        
+        if($usergroup =='0'){ //administrator
+            $sql_div = "select FLEX_VALUE,DIV_DESC FROM TBL_M_DIVISION";
+        }else{
+            $sql_div = "select FLEX_VALUE,DIV_DESC FROM TBL_M_DIVISION where FLEX_VALUE = '$divisionID'";
+        }
+        
+        $data['divisi'] = $this->global_m->tampil_data($sql_div);
+        
          if (isset($_POST["idTmpAksiBtn"])) {
              $act=$_POST["idTmpAksiBtn"];
         if ($act==1) {
@@ -82,7 +95,7 @@ class pr extends CI_Controller {
         $data['data'] = array();
         foreach ($rows as $row) {
             $array = array(
-                'tgl' => trim($row->TANGGAL),
+                'tgl' => date('d-m-Y',strtotime(($row->TANGGAL))),
                 'div' => trim($row->DIVISI),
                 'nama' => trim($row->NAMA_BARANG),
                 'spek' => trim($row->JUMLAH),

@@ -48,8 +48,9 @@ class Api_m extends CI_Model {
 
         $ch = curl_init($curlurl);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($JsonArr));
         $responsejson = curl_exec($ch);
+//        print_r($responsejson);die();
         curl_close($ch);
 
         $response = json_decode($responsejson, true);
@@ -75,25 +76,40 @@ class Api_m extends CI_Model {
 //Faktur pajak
         $query5 = $this->db->query("SELECT NO_DOC FROM TBL_T_IAS_DOC WHERE NAMA_DOC=3 AND ID_IAS=" . $ID_IAS);
         $result5 = $query5->row();
+        if (sizeof($result5) != 0) {
+            $faktur = $result5->NO_DOC;
+        } else {
+            $faktur = 0;
+        }
 //Infoice
         $query6 = $this->db->query("SELECT NO_DOC FROM TBL_T_IAS_DOC WHERE NAMA_DOC=2 AND ID_IAS=" . $ID_IAS);
         $result6 = $query6->row();
+        if (sizeof($result6) != 0) {
+            $invoice = $result6->NO_DOC;
+        } else {
+            $invoice = 0;
+        }
 
         $arrData = [];
         foreach ($dataH as $hdr) {
-//            print_r($dataH[0]->VENDOR_ID);die();
 //detail data insert to orc
 //            $query3 = $this->db->query("SELECT * FROM VW_IAS_TO_ORC_DETAIL WHERE ID_PO_=" . $ID_PO . " AND VENDOR_ID=" . $hdr->VendorID);
-            $query3 = $this->db->query("SELECT DISTINCT A.ID AS FAM_ASSET_ID,B.*
+            $query3 = $this->db->query("SELECT DISTINCT A.ID AS FAM_ASSET_ID,C.Coa,B.*
                                         FROM TBL_T_TB_DETAIL as A LEFT JOIN VW_IAS_TO_ORC_DETAIL AS B ON A.ID_PO_DETAIL=B.ID_PO_DETAIL AND A.ID_TB=B.ID
+                                        LEFT JOIN  TBL_REQUEST_ITEMLIST AS C ON B.ID_PR=C.RequestID
                                         WHERE B.ID_PO_=" . $ID_PO . " AND VENDOR_ID=" . $hdr->VendorID . " AND A.STATUS = 0 order by A.ID"); //
             $dtl = $query3->result();
-            // $PPN = $result4->PPN;
+//             $PPN = $result4->PPN;
 //            if (!sizeof($dtl)) {
             $i = 0;
+//            print_r($ID_PO);
+//            print_r($hdr->VendorID);
+//            print_r($result3->FLEX_VALUE_);
+//            print_r($dtl[$i]->AccountLiability);
+//            die();
             $arrDataPPH[] = array(
-                'OPERATING_UNIT' => 'PNM Kantor Pusat',
-                'INVOICE_NUM' => $result6->NO_DOC, //TBL_T_IAS_DOC=>NAMA_DOC=2(INVOICE)
+                'OPERATING_UNIT' => $result3->BRANCH_DESC,
+                'INVOICE_NUM' => $invoice, //TBL_T_IAS_DOC=>NAMA_DOC=2(INVOICE)
                 'INVOICE_TYPE' => 'STANDARD',
                 'VENDOR_NAME' => $hdr->VendorName,
                 'VENDOR_SITE_CODE' => $hdr->City, //kapital ?
@@ -103,32 +119,32 @@ class Api_m extends CI_Model {
                 'TERMS_NAME' => 'Immediate',
                 'LIABILITY_ACCOUNT' => $result3->FLEX_VALUE_ . '-' . $dtl[$i]->AccountLiability . '-000000-00-0000-00-0000-0000-0000', //VENDOR paren-liability-9segmen ?
                 'INVOICE_DESCRIPTION' => $hdr->ProjectName, //NAMA PROJECT PR
-                'FAKTUR_PAJAK' => $result5->NO_DOC, //TBL_T_IAS_DOC=>NAMA_DOC=2(FAKTUR PAJAK)
+                'FAKTUR_PAJAK' => $faktur, //TBL_T_IAS_DOC=>NAMA_DOC=2(FAKTUR PAJAK)
 //                    'NOMORPO' => 'PO/' . $hdr->ID_PO,
                 'NOMORPO' => $ID_PO_DETAIL,
                 'LINE_NUMBER' => COUNT($dtl) + 1,
                 'LINE_TYPE_LOOKUP_CODE' => 'ITEM ', //ASER 'AWT' BARANG 'ITEM'
-                'AMOUNT' => '', //$dtl->HARGA, //TAMBAH 1 ROW PPN
-                'AKUN_DISTRIBUSI' => $hdr->COA, //AMBIL DARI COA PER ITEM(tunggu design table)=>SEMENTARA
+                'AMOUNT' => $result4->PPN, //$dtl->HARGA, //TAMBAH 1 ROW PPN
+                'AKUN_DISTRIBUSI' => $result3->FLEX_VALUE_.'-1182001-000000-00-0000-00-0000-0000-0000', //AMBIL DARI COA PER ITEM(tunggu design table)=>SEMENTARA
                 'LINE_DESCRIPTION' => 'PPN', //NAMA ITEM PPN
-                'ITEM_DESCRIPTION' => '',
-                'ASSET_BOOK_NAME' => 'PNM COM BOOK', //$result3->PARENT . ' COM BOOK', //PAREN COM BOOK
+//                'ITEM_DESCRIPTION' => '',
+                'ASSET_BOOK_NAME' => 'PNM COMMERCIAL BOOK', //$result3->PARENT . ' COM BOOK', //PAREN COM BOOK
                 'ASSET_CATEGORY' => $dtl[$i]->ClassCode, //ITEM CATEGORY ->ID
-                'JENIS_BARANG' => $dtl[$i]->ItemTypeID, //ITEM TYPE ->ID
+                'JENIS_BARANG' => $dtl[$i]->TypeCode, //ITEM TYPE ->ID
                 'UMUR_FISKAL' => $dtl[$i]->umurfiskal, //ITEM CATEGORY //masih kosong
-                'AMORTIZATION' => '',
-                'FAM_ASSET_ID' => '', // SN
-                'DEFERRED_ACCTG_FLAG' => '',
-                'DEF_ACCTG_START_DATE' => '',
-                'DEF_ACCTG_END_DATE' => '',
+//                'AMORTIZATION' => '',
+//                'FAM_ASSET_ID' => '', // SN
+//                'DEFERRED_ACCTG_FLAG' => '',
+//                'DEF_ACCTG_START_DATE' => '',
+//                'DEF_ACCTG_END_DATE' => '',
                 'SOURCE' => 'INTEGRATION', //DEFAULT
                 'PAYMENT_METHOD_CODE' => 'PNM PAYMENT METHOD', //PNM PAYMENT METHOD
-                'FAM_INVOICE_ID' => $ID_IAS, //NO IAS -> UNTUK ASSET
-                'TGL_PENGAKUAN_BRG' => '',
-                'STATUS' => '',
-                'ERROR_CODE' => '',
-                'ERROR_MESSAGE' => '',
-                'PROCESS_ID' => ''
+                'FAM_INVOICE_ID' => $ID_IAS //NO IAS -> UNTUK ASSET
+//                'TGL_PENGAKUAN_BRG' => '',
+//                'STATUS' => '',
+//                'ERROR_CODE' => '',
+//                'ERROR_MESSAGE' => '',
+//                'PROCESS_ID' => ''
             );
             // var_dump($dtl);exit();
 
@@ -140,7 +156,7 @@ class Api_m extends CI_Model {
                 $iLine = $i + 1;
                 $arrData[] = array(
                     'OPERATING_UNIT' => $result3->BRANCH_DESC,
-                    'INVOICE_NUM' => $result6->NO_DOC, //TBL_T_IAS_DOC=>NAMA_DOC=2(INVOICE)
+                    'INVOICE_NUM' => $invoice, //TBL_T_IAS_DOC=>NAMA_DOC=2(INVOICE)
                     'INVOICE_TYPE' => 'STANDARD',
                     'VENDOR_NAME' => $hdr->VendorName,
                     'VENDOR_SITE_CODE' => $hdr->City, //huruf besar
@@ -150,32 +166,32 @@ class Api_m extends CI_Model {
                     'TERMS_NAME' => 'Immediate',
                     'LIABILITY_ACCOUNT' => $result3->FLEX_VALUE_ . '-' . $dtl[$i]->AccountLiability . '-000000-00-0000-00-0000-0000-0000', //VENDOR 
                     'INVOICE_DESCRIPTION' => $hdr->ProjectName, //NAMA PROJECT PR
-                    'FAKTUR_PAJAK' => $result5->NO_DOC, //
+                    'FAKTUR_PAJAK' => $faktur, //
 //                        'NOMORPO' => 'PO/' . $hdr->ID_PO,
                     'NOMORPO' => $ID_PO_DETAIL,
                     'LINE_NUMBER' => $iLine,
                     'LINE_TYPE_LOOKUP_CODE' => 'ITEM ', //ASER 'AWT' BARANG 'ITEM'
-                    'AMOUNT' => '', //$dtl[$i]->HARGA, //$dtl->HARGA, //TAMBAH 1 ROW PPN
-                    'AKUN_DISTRIBUSI' => $hdr->COA, //AMBIL DARI COA PER ITEM(tunggu design table)=>SEMENTARA
+                    'AMOUNT' => $dtl[$i]->HARGA, //$dtl->HARGA, //TAMBAH 1 ROW PPN
+                    'AKUN_DISTRIBUSI' => str_replace(" ", "", $dtl[$i]->Coa), //AMBIL DARI COA PER ITEM(tunggu design table)=>SEMENTARA
                     'LINE_DESCRIPTION' => $dtl[$i]->NAMA_BARANG, //NAMA ITEM
-                    'ITEM_DESCRIPTION' => '',
-                    'ASSET_BOOK_NAME' => 'PNM COM BOOK', //$result3->PARENT . ' COM BOOK', //PAREN COM BOOK
+//                    'ITEM_DESCRIPTION' => '',
+                    'ASSET_BOOK_NAME' => 'PNM COMMERCIAL BOOK', //$result3->PARENT . ' COM BOOK', //PAREN COM BOOK
                     'ASSET_CATEGORY' => $dtl[$i]->ClassCode, //ITEM CATEGORY ->ID
-                    'JENIS_BARANG' => $dtl[$i]->ItemTypeID, //ITEM TYPE ->ID
+                    'JENIS_BARANG' => $dtl[$i]->TypeCode, //ITEM TYPE ->ID
                     'UMUR_FISKAL' => $dtl[$i]->umurfiskal, //ITEM CATEGORY 
-                    'AMORTIZATION' => '',
+//                    'AMORTIZATION' => '',
                     'FAM_ASSET_ID' => $dtl[$i]->FAM_ASSET_ID, // SN
-                    'DEFERRED_ACCTG_FLAG' => '',
-                    'DEF_ACCTG_START_DATE' => '',
-                    'DEF_ACCTG_END_DATE' => '',
+//                    'DEFERRED_ACCTG_FLAG' => '',
+//                    'DEF_ACCTG_START_DATE' => '',
+//                    'DEF_ACCTG_END_DATE' => '',
                     'SOURCE' => 'INTEGRATION', //DEFAULT
                     'PAYMENT_METHOD_CODE' => 'PNM PAYMENT METHOD', //PNM PAYMENT METHOD
-                    'FAM_INVOICE_ID' => $ID_IAS, //NO IAS
-                    'TGL_PENGAKUAN_BRG' => '',
-                    'STATUS' => '',
-                    'ERROR_CODE' => '',
-                    'ERROR_MESSAGE' => '',
-                    'PROCESS_ID' => ''
+                    'FAM_INVOICE_ID' => $ID_IAS //NO IAS
+//                    'TGL_PENGAKUAN_BRG' => '',
+//                    'STATUS' => '',
+//                    'ERROR_CODE' => '',
+//                    'ERROR_MESSAGE' => '',
+//                    'PROCESS_ID' => ''
                 );
             }
             // $this->db->update_batch('TBL_T_TB_DETAIL', $update, 'ID');
@@ -183,20 +199,32 @@ class Api_m extends CI_Model {
 //            }
         }
         array_push($arrData, $arrDataPPH[0]);
-//        print_r($arrData);
+
 //        die();
 
         $data['data'] = $arrData;
         $curlurl = $result->LINK . "/insert_invoice";
+        print_r($data['data']);die();
+        foreach ($data['data'] as $value) {
+            $idata['data'] = array($value);
+            $ch = curl_init($curlurl);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($idata));
+            $responsejson = curl_exec($ch);
+//            print_r($responsejson);
+            curl_close($ch);
+        }
 
-        $ch = curl_init($curlurl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-        $responsejson = curl_exec($ch);
-        curl_close($ch);
+//        $ch = curl_init($curlurl);
+//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+//        $responsejson = curl_exec($ch);
+////        print_r($responsejson);die();
+//        curl_close($ch);
 
         $response = json_decode($responsejson, true);
 //        print_r($response);
+//        die();
         return $response;
     }
 
@@ -392,20 +420,31 @@ class Api_m extends CI_Model {
     }
 
     function inserttransferAPI($id) {
+
+        $this->load->database();
         $query = $this->db->query("SELECT LINK FROM TBL_API_LINK WHERE API_NAME='CRUD ORACLE'");
         $result = $query->result()[0];
 
-        $query1 = $this->db->query("SELECT * FROM TBL_T_ASSETS WHERE ID_ASSET = " . $id . " AND IS_TRASH=0 AND STATUS_TRANS=2");
+        $query1 = $this->db->query("SELECT * FROM TBL_T_ASSETS WHERE ID = " . $id . " AND IS_TRASH=0 AND STATUS_TRANS=2");
         $result1 = $query1->result()[0];
-        $query2 = $this->db->query("SELECT TOP 1 * FROM TBL_T_ASSETS WHERE ID_ASSET = " . $id . " AND IS_TRASH=1 ORDER BY ID DESC");
-        $result2 = $query2->result()[0];
 
         $data = array(
             'to_table' => 'PNM_FAM_FA_TRANSFER_STG',
-            'COST_ADJUST' => $result1->ID_ASSET,
-            'SALVAGE_VALUE' => $result1->QTY,
-            'LIFE_IN_YEAR' => $result2->LOKASI,
+            'ASSET_NUMBER' => $result1->ID_ASSET,
+            'UNITS' => $result1->QTY,
+            'OLD_KOTA' => $result1->OLD_KOTA,
+            'OLD_LOKASI' => $result1->OLD_LOKASI,
+            'OLD_SUBLOKASI' => $result1->OLD_SUB_LOKASI,
+            'ASSET_BOOK_NAME' => 'PNM COMMERCIAL BOOK',
+            'OLD_EXPENSE_ACCOUNT' => $result1->BRANCH . '-6062107-000000-UL-0000-KV-0000-0000-0000',
+            'NEW_EXPENSE_ACCOUNT' => $result1->DIV_TUJUAN . '-6062107-000000-UL-0000-KV-0000-0000-0000',
+            'NEW_LOKASI' => $result1->LOKASI,
+            'NEW_KOTA' => $result1->KOTA,
+            'NEW_SUBLOKASI' => $result1->SUB_LOKASI
+                // 'STATUS' => '',
+                // 'PROCESS_ID' => l
         );
+//        print_r($data);die();
 
         $curlurl = $result->LINK . "/insert_to_table";
 
@@ -413,9 +452,12 @@ class Api_m extends CI_Model {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
         $responsejson = curl_exec($ch);
+        // print_r($responsejson); die();
         curl_close($ch);
 
         $response = json_decode($responsejson, true);
+
+        // print_r($response);
     }
 
 }

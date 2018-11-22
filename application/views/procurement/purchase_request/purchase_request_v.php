@@ -122,8 +122,11 @@
 													<option value="">- Branch -</option>
 													<?php
 														foreach($ms_branch as $mb){
+															if($this->session->userdata('BranchID') == $mb['FLEX_VALUE'])
+																{$act_br='selected';}
+															else{$act_br='';}
 															echo '
-																<option value="'.$mb['FLEX_VALUE'].'">'.$mb['BRANCH_DESC'].'</option>
+																<option value="'.$mb['FLEX_VALUE'].'" '.$act_br.'>'.$mb['BRANCH_DESC'].'</option>
 															';
 														}
 													?>
@@ -137,8 +140,11 @@
 													<option value="">- Division -</option>
 													<?php
 														foreach($ms_divisi as $md){
+															if($this->session->userdata('DivisionID') == $md['FLEX_VALUE'])
+																{$act_div='selected';}
+															else{$act_div='';}
 															echo '
-																<option value="'.$md['FLEX_VALUE'].'">'.$md['DIV_DESC'].'</option>
+																<option value="'.$md['FLEX_VALUE'].'" '.$act_div.'>'.$md['DIV_DESC'].'</option>
 															';
 														}
 													?>

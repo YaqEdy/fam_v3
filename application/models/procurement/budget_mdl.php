@@ -184,19 +184,19 @@ Class Budget_mdl extends CI_Model {
         return $division->result();
     }
 
-    function simpan($coa, $year, $branch, $divisi, $budget, $jnsbudget) {
+    function simpan($year, $branch, $divisi, $budget, $jnsbudget) {
         $this->db2 = $this->load->database('config1', true);
 
-        $status = $this->db2->query("IF NOT EXISTS ( SELECT BudgetCOA, Year FROM Mst_Budget WHERE BudgetCOA = '" . $coa . "' AND Year = '" . $year . "' AND (BranchID = '" . $branch . "' OR DivisionID = '" . $divisi . "'))
+        $status = $this->db2->query("IF NOT EXISTS ( SELECT BudgetCOA, Year FROM Mst_Budget WHERE Year = '" . $year . "' AND (BranchID = '" . $branch . "' OR DivisionID = '" . $divisi . "'))
 					BEGIN
-					    INSERT INTO Mst_Budget (BudgetCOA, Year, BranchID, DivisionID, BudgetValue, Jenis_budget, CreateDate, CreateBy, BudgetOwnID, BudgetUsed, Status, Is_trash) VALUES 
-					    ('" . $coa . "', '" . $year . "', '" . $branch . "','" . $divisi . "','" . $budget . "','" . $jnsbudget . "','" . date('Y-m-d H:i:s') . "','" . $this->session->userdata('user_id') . "','0','0','0','0')
+					    INSERT INTO Mst_Budget (Year, BranchID, DivisionID, BudgetValue, Jenis_budget, CreateDate, CreateBy, BudgetOwnID, BudgetUsed, Status, Is_trash) VALUES 
+					    ('" . $year . "', '" . $branch . "','" . $divisi . "','" . $budget . "','" . $jnsbudget . "','" . date('Y-m-d H:i:s') . "','" . $this->session->userdata('user_id') . "','0','0','0','0')
 					END
 					ELSE 
 					BEGIN 
 					    UPDATE Mst_Budget 
 					    SET BudgetValue = '" . $budget . "', UpdateDate ='" . date('Y-m-d H:i:s') . "' , UpdateBy = '" . $this->session->userdata('user_id') . "'
-					    WHERE BudgetCOA = '" . $coa . "' AND Year = '" . $year . "' AND (BranchID = '" . $branch . "' OR DivisionID = '" . $divisi . "')
+					    WHERE Year = '" . $year . "' AND (BranchID = '" . $branch . "' OR DivisionID = '" . $divisi . "')
 					END ");
 
         if ($status)

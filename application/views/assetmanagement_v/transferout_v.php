@@ -266,7 +266,7 @@ table#table_gridItemProcess td:nth-child(2){
                  <th>Nama Asset</th>
                  <th>QTY</th>
                  <th>Image</th>
-                 <th>Kode QR</th>
+                 <th>Kode QRR</th>
 
              </tr>
          </thead>

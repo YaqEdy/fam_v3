@@ -52,6 +52,7 @@ Class Requestproc_v3_mdl extends CI_Model {
 	function get_ItemList($ItemType){
 		// $this->db->where('Is_trash',0);
 		$this->db->where('ItemTypeID',$ItemType);
+		$this->db->where('ZoneID',$this->session->userdata('ZoneID'));
 		$get = $this->db->get('VW_ITEM_LIST');
 		
 		return $get;
@@ -176,6 +177,7 @@ Class Requestproc_v3_mdl extends CI_Model {
 		
 		$VendorID = explode(",", $data['VendorID']);
 		$VendorPemenang = explode(",", $data['VendorPemenang']);
+		$HargaSebelumPenawaran = explode(",", $data['HargaSebelumPenawaran']);
 		$HargaSetelahPenawaran = explode(",", $data['HargaSetelahPenawaran']);
 		$VendorItemID = explode(",", $data['VendorItemID']);
 		$PPNVendor = explode(",", $data['PPNVendor']);
@@ -184,6 +186,7 @@ Class Requestproc_v3_mdl extends CI_Model {
 			$datain['VendorID'] = $VendorID[$i];
 			$datain['Pemenang'] = $VendorPemenang[$i];
 			$datain['ItemID'] = $VendorItemID[$i];
+			$datain['HargaVendorAwal'] = $HargaSebelumPenawaran[$i];
 			$datain['HargaVendor'] = $HargaSetelahPenawaran[$i];
 			$datain['PPN'] = $PPNVendor[$i];
 			$in_vendor_pr = $this->db->insert('TBL_REQUEST_VENDOR',$datain);
@@ -353,11 +356,14 @@ Class Requestproc_v3_mdl extends CI_Model {
 		return $up;
 	}
 	
-	function get_pic(){
+	function get_pic($RequestID){
+		$pengadaan = $this->db
+				->where('RequestID',$RequestID)
+				->get('VW_PR_OUT_REQ')->row();
+				
 		$get = $this->db
-				->where('user_groupid',5)
-				->where('is_trash',0)
-				->get('user');
+				->where('TYPE_DESC',$pengadaan->tipe_pengadaan)
+				->get('VW_PIC');
 		
 		return $get;
 	}

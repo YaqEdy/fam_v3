@@ -61,24 +61,36 @@ class master_flow extends CI_Controller {
          $data['dd_action'] = $this->global_m->tampil_data("SELECT flow_id, action FROM MS_FLOW");
          $data['dd_status_dari'] = $this->global_m->tampil_data("SELECT flow_id, status_dari FROM MS_FLOW");
          $data['dd_grup'] = $this->global_m->tampil_data("SELECT id, grup FROM MS_GRUP");
-         $data['dd_status'] = $this->global_m->tampil_data("SELECT id, status FROM MS_STATUS");
+         $data['dd_tipe'] = $this->global_m->tampil_data("SELECT ID_TYPE, TYPE_DESC FROM TBL_R_FLOW_TYPE");
 
 
-        $this->template->set('title', 'Master');
+        $this->template->set('title', 'HPS TIKET');
         $this->template->load('template/template_dataTable', 'master_v/flow/master_flow_tampil', $data);
     }
 
-    function simpan ($val){
+   function simpan ($val){
          // die('asd');
         $id = trim($this->input->post('id'));
         $status = trim($this->input->post('status'));
-        $status_ke = trim($this->input->post('status_ke'));
-        $grup_input = trim($this->input->post('grup_input'));
-        $status_dari = trim($this->input->post('status_dari'));
-        $nama_flow = trim($this->input->post('nama_flow'));
-        $action = trim($this->input->post('action'));
-        $input_status = trim($this->input->post('input_status'));
-        // print_r($_POST); die();
+        $id_grup = $this->global_m->getIdMax('id','MS_GRUP');
+        $grup = trim($this->input->post('status_dari'));
+        $status = trim($this->input->post('status_ke'));
+        $input_status = trim($this->input->post('status'));
+
+// data dari table flow
+
+        $id_flow_id = trim($this->input->post('id_flow_id'));
+        $id_nama_flow = trim($this->input->post('id_nama_flow'));
+        $id_status_dari = trim($this->input->post('id_status_dari'));
+        $id_aksi = trim($this->input->post('id_aksi'));
+        $id_status_ke = trim($this->input->post('id_status_ke'));
+        $id_tipe = trim($this->input->post('ID_TYPE'));
+        $id_min_hps = trim($this->input->post('id_min_hps'));
+        $id_max_hps = trim($this->input->post('id_max_hps'));
+
+
+      
+         // print_r($_POST); die();
 
 
         if($val == '1'){
@@ -86,20 +98,34 @@ class master_flow extends CI_Controller {
 
             $data = array(
 
-                'flow_id' => 1,
-                'nama_flow' => $nama_flow,
-                'status_dari' => $status_dari,
-                'status_ke' => $status_ke,
-                'action' => $action
+                // 'flow_id' => 1,
+                // 'nama_flow' => $nama_flow,
+                // 'status_dari' => $id_grup,
+                // 'status_ke' => $id,
+                // 'action' => $action,
                 // 'status' => 0 //aktif
+
+
+                'flow_id' => $id_flow_id,
+                'nama_flow' => $id_nama_flow,
+                'status_dari' => $id_status_dari,
+                'action' => $id_aksi,
+                'status_ke' => $id_status_ke,
+                'tipe' => $id_tipe,
+                'min_hps' => $id_min_hps,
+                'max_hps' => $id_max_hps,
         );
+            
+     
+        // print_r($data); die();
         $table = "MS_FLOW";
+
 
         }elseif($val =='2'){
 
             $data = array(
                'id' => $this->global_m->getIdMax('id','MS_GRUP'),
-               'grup' => $grup_input
+               'grup' => $grup
 
         );
         $table = "MS_GRUP";
@@ -140,7 +166,7 @@ class master_flow extends CI_Controller {
     }
 
     public function ajax_GridFLOW() {
-        $icolumn = array('id', 'flow_id', 'nama_flow', 'status_dari', 'action', 'status_ke');
+        $icolumn = array('id', 'flow_id', 'nama_flow', 'status_dari', 'action', 'status_ke', 'tipe', 'min_hps', 'max_hps');
 //        $icolumn = array('HpsID');
         $iwhere = array();
         // $iwhere = array(
@@ -154,7 +180,17 @@ class master_flow extends CI_Controller {
         $data = array();
         $no = $_POST['start'];
         foreach ($list as $idatatables) {
+            $flow_id = $idatatables->flow_id;
+            $nama_flow = $idatatables->nama_flow;
+            $status_dari = $idatatables->status_dari;
+            $action = $idatatables->action;
+            $status_ke = $idatatables->status_ke;
+            $tipe = $idatatables->tipe;
+            $min_hps = $idatatables->min_hps;
+            $max_hps = $idatatables->max_hps;
+            $kmp = $flow_id."#".$nama_flow."#".$status_dari."#".$action."#".$status_ke."#".$tipe."#".$min_hps."#".$max_hps;
 
+         
             $no++;
             $row = array();
             $row[] = $no;
@@ -163,8 +199,8 @@ class master_flow extends CI_Controller {
             $row[] = $idatatables->status_dari;
             $row[] = $idatatables->status_ke;
             $row[] = $idatatables->action;
-            $row[] = '<button title="Hapus" value="'.$idatatables->id.'" onclick="hapus_flow_(this.value)" 
-                                            type="button" class="btn btn-danger btn-xs">Delete</button>';
+            $row[] = '<button title="Ubah" value="'.$kmp.'" onclick="show_flow_(this.value)" type="button" class="btn btn-warning btn-xs" id="updateflow">Update</button> 
+                    <button title="Hapus" value="'.$idatatables->id.'" onclick="hapus_flow_(this.value)" type="button" class="btn btn-danger btn-xs">Delete</button>';
             // $row[] = '<button type="button" id="btnUpdate"  class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModalsha">View</button>';       
             // $row[] = $idatatables->id;
 
@@ -198,9 +234,9 @@ class master_flow extends CI_Controller {
         $no = $_POST['start'];
         foreach ($list as $idatatables) {
 
-            $no++;
+            
             $row = array();
-            $row[] = $no;
+            $row[] = $idatatables->id;
             $row[] = $idatatables->grup;
             $row[] = '<button title="Hapus" value="'.$idatatables->id.'" onclick="hapus_grup_(this.value)" 
                                             type="button" class="btn btn-danger btn-xs">Delete</button>';
@@ -350,6 +386,66 @@ class master_flow extends CI_Controller {
                 'act' => 1,
                 'tipePesan' => 'success',
                 'pesan' => 'File has been removed.'
+            );
+        }
+        $this->output->set_output(json_encode($array));
+    }
+
+
+     function edit_flow() {
+        // die('aa');
+        // print_r($_POST);die();
+       // print_r(trim($this->input->post('user_id'))) ; die();
+        $id_flow_id = trim($this->input->post('id_flow_id',TRUE));
+        $id_nama_flow = trim($this->input->post('id_nama_flow',TRUE));
+        $id_status_dari = trim($this->input->post('id_status_dari',TRUE));
+        $id_aksi = trim($this->input->post('id_aksi',TRUE));
+        $id_status_ke = trim($this->input->post('id_status_ke',TRUE));
+        $id_tipe= trim($this->input->post('ID_TYPE',TRUE));
+        $id_min_hps = trim($this->input->post('id_min_hps',TRUE));
+        $id_max_hps = trim($this->input->post('id_max_hps',TRUE));
+        
+
+
+       
+
+        // print_r($_POST); die();
+
+        // $id_kolom = array(
+
+        // 'user_id' => $data['user_id']
+
+        // );
+
+        $datax = array(
+            'flow_id' => $id_flow_id,
+            'nama_flow' => $id_nama_flow,
+            'status_dari' => $id_status_dari,
+            'action' => $id_aksi,
+            'status_ke' => $id_status_ke,
+            'tipe' => $id_tipe,
+            'min_hps' => $id_min_hps,
+            'max_hps' => $id_max_hps,
+            // 'ID' => $data['ID']
+          
+            );
+         // print_r($datax); die();
+           $table = "MS_FLOW";
+           $id_kolom = "flow_id";
+           $id_data = $id_flow_id;
+          $model = $this->global_m->ubah($table,$datax, $id_kolom,$id_data);
+          // redirect('atk/atk/home');
+           if ($model) {
+            $array = array(
+                'act' => 1,
+                'tipePesan' => 'success',
+                'pesan' => 'Data berhasil diubah.'
+            );
+        } else {
+            $array = array(
+                'act' => 0,
+                'tipePesan' => 'error',
+                'pesan' => 'Data gagal diubah.'
             );
         }
         $this->output->set_output(json_encode($array));

@@ -137,13 +137,12 @@ class sec_user extends CI_Controller {
         // die('asd');
         $icolumn = array('profile_id_sdm', 'profile_nip', 'profile_nama', 'profile_username', 'profile_email');
 //        $icolumn = array('HpsID');
-        $iwhere = array();
-        // $iwhere = array(
-        //     'ZoneID' => $this->input->post('sZone'),
-        //     $this->input->post('sSearch') => $_POST['search']['value']
-        // );
+//        $iwhere = array();
+         $iLike = array(
+             'profile_nama' => $_POST['search']['value']
+         );
         $iorder = array('idsdm' => 'asc');
-        $list = $this->datatables_custom->get_datatables('TBL_M_USER_FAM', $icolumn, $iorder, $iwhere);
+        $list = $this->datatables_custom->get_datatables('TBL_M_USER_FAM', $icolumn, $iorder,array(), $iLike);
         // print_r($list);
         // die('asd');
         $data = array();
@@ -361,8 +360,6 @@ class sec_user extends CI_Controller {
             'ZoneID' => $data['ZoneID'],
             'idsdm' => $data['idsdm']
         );
-        print_r($datax);
-        die();
         $table = "user";
         $id_kolom = "user_id = '" . $data['user_id'] . "'";
         $model = $this->global_m->ubah($table, $datax, $id_kolom);

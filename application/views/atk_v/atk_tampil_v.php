@@ -251,48 +251,54 @@
 </div>
 
     <!-- ===================================================================================================================== -->
- <div class="modal fade bs-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
+       <div class="modal fade bs-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
      <div class="modal-dialog modal-lg">
           <div class="modal-content">
               <div class="modal-header">
          <button type="button" class="close"  data-dismiss="modal" id="btnCloseModalDataBarang2">&times;</button>
                <h4 class="modal-title">Alat Tulis Kantor</h4>
-           </div>
-<div class="modal-body"> 
-<div class="row">
-    <div class="col-md-12">
-   &nbsp;&nbsp;<button class="btn btn-md btn btn-info" data-toggle="modal" data-target="#myModalAdd"><i class="fa glyphicon glyphicon-plus"></i>&nbsp;Add PR</button>
-</div> 
-</div>
-<br>
-    <div class="row">
-        <div class="col-md-12">
-            <div class="form-group col-md-3">
-                <label>Total HPS</label>
-                    <input type="text" readonly required="" name="total_hps" id="total_hps" onchange="" class="form-control">
-                </div>
+           </div>&nbsp;&nbsp;
+       <!--  <div class="col-md-12"> -->
+       <div class="row">
+       <div class="col-md-3">
+            <button 
+                class="btn btn-md btn btn-info" data-toggle="modal" data-target="#myModalAdd"><i class="fa glyphicon glyphicon-plus"></i>&nbsp;Add PR
+            </button>
+        </div>
+
+         <div class="col-md-12">
+                    <div class="form-group col-md-3">
+                        <label>Total HPS</label>
+                            <input type="text" readonly required="" name="total_hps" id="total_hps" onchange="" class="form-control">
+                    </div>
                     <div class="form-group col-md-3">
                         <label>Total Item</label>
                             <input type="text" readonly required="" name="total_item" id="total_item" onchange="" class="form-control">
-                        </div>
+                    </div>
                     <div class="form-group col-md-3">
                         <label>Total QTY</label>
                             <input type="text" readonly required="" name="total_qty" id="total_qty" onchange="" class="form-control">
-                        </div>
                     </div>
+            </div>
+            </div>
+
+
+<!-- <form role="form" method="post" class="cls_from_sec_room" id="id_formRoom"  enctype="multipart/form-data" > -->
+<div class="modal-body">
+    <div class="row">
         <div class="form-body">
             <div class="col-md-12">
                  <table class="table table-striped table-bordered table-hover text_kanan" id="table_grid_daftarPR">
-               <thead>
+                      <thead>
                     <tr>  <h4>Daftar PR</h4>
-                         <th class='row-2'>NO</th>    
+                         <th class='row-2'>No</th>    
                             <th class='row-md-3'>No PR</th>
                             <th class='row-md-3'>Tanggal Request</th>
                             <th class='row-md-6'>Type Request</th>
                             <th class='row-md-5'>Nama Kategori</th>
                             <th class='row-md-6'>Nama Project</th>
                             <th class='row-md-3'>Branch</th>
-                             <th class='row-md-3'>Divisi</th> 
+                             <th class='row-md-6'>Divisi</th> 
                     </tr>
                             </thead>
                             <tbody>                                           
@@ -302,19 +308,25 @@
                         </table>
                     </div>
                 </div>
-         <div class="form-body">
+            </div>         
+        </div>
+
+
+<div class="modal-body">
+    <div class="row">
+        <div class="form-body">
             <div class="col-md-12">
-                <table class="table table-striped table-bordered table-hover text_kanan" id="table_grid_daftarItemBarang">
+                 <table class="table table-striped table-bordered table-hover text_kanan" id="table_grid_daftarItemBarang">
                       <thead>
-                          <h4>Daftar Item Barang</h4>
-                    <tr>
-                         <!-- <th>No</th>     -->
-                            <th>Item Name</th>
-                            <th>Item Type</th>
-                            <th>QTY</th>
-                            <th>HPS</th>
-                            <th>No PR Div</th>
-                            <th>Aksi</th>
+                    <tr>  <h4>Daftar Item Barang</h4>
+                         <th class='row-2'>Item Name</th>    
+                            <th class='row-md-3'>Item Type</th>
+                            <th class='row-md-3'>QTY</th>
+                            <th class='row-md-6'>HPS</th>
+                            <th class='row-md-5'>No PR Div</th>
+                            <th class='row-md-6'>Aksi</th>
+                           <!--  <th class='row-md-3'>Branch</th>
+                             <th class='row-md-6'>Divisi</th>  -->
                     </tr>
                             </thead>
                             <tbody>                                           
@@ -322,20 +334,23 @@
                             <tfoot>
                             </tfoot>
                         </table>
-                        
-                     </div>
-                  </div>
-               </div>
-           </div>
-     <div class="modal-footer">
-         <button type="button" class="btn dark btn-outline" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>         
+        </div>
+  <div class="modal-footer">
+         <button 
+            type="button" class="btn dark btn-outline" data-dismiss="modal">Close
+         </button>
          <button type=" submit" class="btn btn-md btn-primary" onclick="teruskanPR()" name="" id="id_btnSimpan" ><i class="fa glyphicon glyphicon-arrow-right" ></i>&nbsp;Teruskan</button>
-      </div>
-     </div>
+  </div>
+  <!-- </form> -->
+</div>
    <!-- /.modal-content -->
 </div>
 <!-- /.modal-dialog -->
- </div>
+</div>
+
 
 <!-- ========================================= MODAL ADD ==================================================================== -->
 
@@ -344,7 +359,7 @@
           <div class="modal-content">
               <div class="modal-header">
          <button type="button" class="close"  data-dismiss="modal" id="btnCloseModalDataBarang3">&times;</button>
-               <h4 class="modal-title">Alat Tulis Kantor</h4>
+               <h4 class="modal-title">Daftar Alat Tulis Kantor</h4>
            </div>
 <!-- <form role="form" method="post" class="cls_from_sec_room" id="id_formRoom"  enctype="multipart/form-data" > -->
 <div class="modal-body">
@@ -386,18 +401,29 @@
 
 <!-- ================================================= End Modal ======================================================== -->
 
-<!-- ======================================================== Modal Update ======================================================== -->
-
 <div class="modal fade" id="myModalUpdate" tabindex="-1" role="dialog" aria-hidden="true">
      <div class="modal-dialog">
           <div class="modal-content">
               <div class="modal-header">
-         <button type="button" class="close"  data-dismiss="modal" id="btnCloseModalDataBarang3">&times;</button>
+         <button type="button" class="close"  data-dismiss="modal" id="btncloseupdate">&times;</button>
                <h4 class="modal-title">Update ATK</h4>
            </div>
-<!-- <form role="form" method="post" class="cls_from_sec_room" id="id_formRoom"  enctype="multipart/form-data" > -->
+<form action="<?php echo base_url('atk/atk/edit_user'); ?>" role="form" method="post" class="cls_from_sec_room" id="id_formRoomupdate"  enctype="multipart/form-data" >
 <div class="modal-body">
     <div class="row">
+    <!-- <input class="form-control hidden" enctype="multipart/form-data" type="text" id="id_data" name="id_data"/> -->
+
+           <input class="form-control" type="text" id="ID" name="ID" style="display: none;"  />
+
+       <!--      <div class="form-body">
+            <div class="col-md-8">
+                    <div class="form-group">
+                        <label>Item Name</label> <span class="required">*</span>
+                        <input required="required" class="form-control" type="text" id="ItemName" name="ItemName"/>
+                    </div>
+                </div>
+            </div> -->
+
         <div class="form-body">
             <div class="col-md-8">
                     <div class="form-group">
@@ -410,7 +436,8 @@
     </div>
  <div class="modal-footer">
       <!-- <button type="button" class="btn dark btn-outline" data-dismiss="modal">Close</button> -->
-           <button type="submit" name="btnSimpan" class="btn green" onclick="daftar_pr()" id="id_btnSimpan"  > <i class="fa fa-save">&nbsp;</i>Save</button>
+           <button type="button" name="btnSimpan" class="btn green"  onclick="edit_qty()" id="id_btnSimpan"  > <i class="fa fa-save">&nbsp;</i>Update</button>
+
     </div>
   <!-- </form> -->
 </div>
@@ -420,10 +447,68 @@
  </div>
 <!-- END PAGE CONTENT-->
 
+
+
+
+
 <?php $this->load->view('app.min.inc.php'); ?>
 <?php $this->load->view('atk_v/atk.js.php'); ?>
 <script>
     $('#request').dataTable();
     $('#up').dataTable();
+
+    function edit_qty(){
+        var ID = $('#ID').val();
+        var Qty = $('#Qty').val();
+
+         $.ajax({
+
+            url: "<?php echo base_url('atk/atk/edit_user'); ?>", // json datasource
+            type: 'POST',
+            data: {ID : ID,Qty : Qty},       
+            dataType: "JSON",
+            success: function (e) {
+                // alert(e);return false;
+                $('#btncloseupdate').click();
+                    UIToastr.init(e.tipePesan, e.pesan);
+              
+                    event.preventDefault(); 
+
+               
+            },
+            complete:function(e){
+                $('#table_grid_daftarItemBarang').DataTable().ajax.reload();
+            }
+        }); 
+    }   
+
+    function hapus_item(val){
+     console.log(val);
+
+
+        $('#myModalHapus').trigger("click");
+        // Qty
+      var r = confirm('Do you want to remove this file ?');
+        if (r == true) {
+             $.ajax({
+                url: "hapus",
+                type: "POST",
+                data: {ID : val},
+                dataType: "json",
+                success: function (data) {
+                    $('#table_grid_daftarItemBarang').DataTable().ajax.reload();
+                    // UIToastr.init(data.tipePesan, data.pesan);
+                }
+
+            });
+        }else{
+            return false;
+        }
+
+      }
+
+
+
+
 </script>
 

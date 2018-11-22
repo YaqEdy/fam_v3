@@ -27,8 +27,8 @@
                         <hr class="dotted">
                         <select onchange="get_list_approve(this.value)">
 							<?php
-								foreach($grup as $gr){
-									echo '<option value="'.$gr['id'].'">'.$gr['grup'].'</option>';
+								foreach($grup as $gr_key => $gr_value){
+									echo '<option value="'.$gr_key.'">'.$gr_value.'</option>';
 								}
 							?>
 						</select>

@@ -1,6 +1,14 @@
 /**
  * DECLARATION
  */
+function ajaxProgressBar() {
+    $(document).ajaxStart(function () {
+        $('.modal_bar').fadeIn('fast');
+    }).ajaxStop(function () {
+        $('.modal_bar').fadeOut('fast');
+    });
+}
+
 $("#id_btnSimpan").click(function () {
     $('#idTmpAksiBtn').val('1');
 });
@@ -12,8 +20,8 @@ $('#id_btnHapus').click(function () {
     $('#idTmpAksiBtn').val('3');
 });
 var tgltrans = $('#id_sessTgltrans').text();
-        tgltrans = tgltrans.trim();
-        $('.cls_tglhariini_static').val(tgltrans.trim());
+tgltrans = tgltrans.trim();
+$('.cls_tglhariini_static').val(tgltrans.trim());
 function tglTransStart() {
     var tgltrans = $('#id_sessTgltrans').text();
     tgltrans = tgltrans.trim();
@@ -31,47 +39,47 @@ function tglTransStart() {
     //==========================Tanggal 3 hari lalu===================================
     tglSekarang.setDate(tglSekarang.getDate() - 3);
     var tgl3HariLalu = tglSekarang;
-    
+
     var hari = tgl3HariLalu.getDate();
-     var bulan = tgl3HariLalu.getMonth();
-     var tahun = tgl3HariLalu.getFullYear();
-     
-     if (hari < 10) {
-     hari = '0' + hari
-     }
-     if (bulan < 10 && bulan > 0) {
-     bulan = '0' + bulan
-     } else if (bulan == 0) {
-     bulan = '12';
-     tahun = tahun - 1;
-     }
-     
-     tgl3HariLalu = hari + '-' + bulan + '-' + tahun;
-     $('.cls_3harilalu').val(tgl3HariLalu);
-     //==========================End Tanggal 3 hari lalu===================================
-     
-     //==========================Tanggal 3 hari kemudian===================================
+    var bulan = tgl3HariLalu.getMonth();
+    var tahun = tgl3HariLalu.getFullYear();
+
+    if (hari < 10) {
+        hari = '0' + hari
+    }
+    if (bulan < 10 && bulan > 0) {
+        bulan = '0' + bulan
+    } else if (bulan == 0) {
+        bulan = '12';
+        tahun = tahun - 1;
+    }
+
+    tgl3HariLalu = hari + '-' + bulan + '-' + tahun;
+    $('.cls_3harilalu').val(tgl3HariLalu);
+    //==========================End Tanggal 3 hari lalu===================================
+
+    //==========================Tanggal 3 hari kemudian===================================
     tglSekarangKemudian.setDate(tglSekarangKemudian.getDate() + 3);
     var tgl3HariKemudian = tglSekarangKemudian;
-    
+
     var hari = tgl3HariKemudian.getDate();
-     var bulan = tgl3HariKemudian.getMonth();
-     var tahun = tgl3HariKemudian.getFullYear();
-     
-     if (hari < 10) {
-     hari = '0' + hari
-     }
-     if (bulan < 10 && bulan > 0) {
-     bulan = '0' + bulan
-     } else if (bulan == 0) {
-     bulan = '12';
-     tahun = tahun - 1;
-     }
-     
-     tgl3HariKemudian = hari + '-' + bulan + '-' + tahun;
-     $('.cls_3harikemudian').val(tgl3HariKemudian);
-     //==========================End Tanggal 3 hari kemudian===================================
-     
+    var bulan = tgl3HariKemudian.getMonth();
+    var tahun = tgl3HariKemudian.getFullYear();
+
+    if (hari < 10) {
+        hari = '0' + hari
+    }
+    if (bulan < 10 && bulan > 0) {
+        bulan = '0' + bulan
+    } else if (bulan == 0) {
+        bulan = '12';
+        tahun = tahun - 1;
+    }
+
+    tgl3HariKemudian = hari + '-' + bulan + '-' + tahun;
+    $('.cls_3harikemudian').val(tgl3HariKemudian);
+    //==========================End Tanggal 3 hari kemudian===================================
+
 
     //==========================Tanggal bulan lalu===================================
     /*

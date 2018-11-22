@@ -16,7 +16,7 @@ class Purchase_request extends CI_Controller {
         $this->load->model('procurement/requestproc_mdl', 'Requestproc_mdl');
         $this->load->model('procurement/requestproc_v3_mdl', 'Requestproc_v3_mdl');
         $this->load->model('procurement/menu_mdl', 'Menu_mdl');
-        $this->load->model('datatables');
+        $this->load->model('datatables_v3', 'datatables');
         $this->load->model('datatables_custom');
     }
 
@@ -226,7 +226,17 @@ class Purchase_request extends CI_Controller {
         $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
         $data['menu_all'] = $this->user_m->get_menu_all(0);
         
-		$data['grup'] = $this->Requestproc_v3_mdl->getData('ms_grup')->result_array();
+		// $data['grup'] = $this->Requestproc_v3_mdl->getData('ms_grup')->result_array();
+		$data['grup'] = array(
+							'' => '',
+							2 => 'Kabag Divisi',
+							3 => 'Kadiv Divisi',
+							5 => 'PPI Kabag',
+							6 => 'PPI Kadiv',
+							13 => 'Direktur Keuangan',
+							14 => 'Jajaran Direksi',
+							15 => 'Direktur Utama'
+						);
 		
         $this->template->set('title', 'Approve');
 		$this->template->load('template/template_dataTable', 'procurement/purchase_request/list_approve', $data);
@@ -347,7 +357,7 @@ class Purchase_request extends CI_Controller {
 	
 	function get_list_all_request_after(){
 		$Status = $this->input->post('status');
-		// $Status = '6-1';
+		$grup = explode('-',$Status);
 		$get_list = $this->Requestproc_v3_mdl->get_list_all_request_after($Status)->result_array();
 		// print_r($get_list);die();
 		
@@ -355,7 +365,8 @@ class Purchase_request extends CI_Controller {
 		<table id="datatables_allrequest" class="datatables">
 			<thead>
 				<tr>
-                    <th>aaaaaNo PR</th>
+                    <th>No PR</th>
+                    <th>No PO</th>
                     <th>Request Date</th>
                     <th>Request Type</th>
                     <th>Request Category</th>
@@ -369,17 +380,37 @@ class Purchase_request extends CI_Controller {
 			<tbody>
 		';
 		foreach($get_list as $ls){
+			if($ls['status_po'] != null || $ls['status_po'] != ''){
+				$status = $ls['status_po'];
+				$status_desc = $ls['status_po_desc'];
+			}
+			else{
+				$status = $ls['status'];
+				$status_desc = $ls['status_request'];
+			}
 			echo '
 				<tr>
 					<td>PR-'.$ls['RequestID'].'</td>
+					<td>'.$ls['ID_PO'].'</td>
 					<td>'.date("d-m-Y", strtotime($ls['CreateDate'])).'</td>
 					<td>'.$ls['ReqTypeName'].'</td>
 					<td>'.$ls['ReqCategoryName'].'</td>
 					<td>'.$ls['ProjectName'].'</td>
 					<td>'.$ls['BRANCH_DESC'].'</td>
 					<td>'.$ls['DIV_DESC'].'</td>
-					<td>'.$ls['status_request'].'</td>
-					<td><a href="'.base_url().'procurement/purchase_request/appove_requestproc/'.$ls['RequestID'].'" class="btn btn-primary">Lihat</a></td>
+					<td>'.$status_desc.'</td>
+					<td>
+			';
+			$grup1 = explode('-',$status);
+			if($grup[0] == $grup1[0]){
+				echo '
+						<a href="'.base_url().'procurement/purchase_request/appove_requestproc/'.$ls['RequestID'].'" class="btn btn-primary">
+							Approval
+						</a>
+				';
+			}
+			echo '
+					</td>
 				</tr>
 			';
 		}
@@ -499,7 +530,8 @@ class Purchase_request extends CI_Controller {
 		$data['history_approval'] = $this->Requestproc_v3_mdl->get_history_approval($RequestID)->result_array();
 		$data['approve_pr'] = $this->Requestproc_v3_mdl->get_data_request($RequestID)->row();
 		$data['item'] = $this->Requestproc_v3_mdl->get_item($RequestID)->result_array();
-		$data['list_pic'] = $this->Requestproc_v3_mdl->get_pic()->result_array();
+		$data['list_pic'] = $this->Requestproc_v3_mdl->get_pic($RequestID)->result_array();
+		$data['vendor'] = $this->Requestproc_v3_mdl->get_vendor_pr($RequestID)->result_array();
 		
         $this->template->set('title', 'Approve');
 		$this->template->load('template/template_dataTable', 'procurement/purchase_request/appove_requestproc', $data);
@@ -577,7 +609,7 @@ class Purchase_request extends CI_Controller {
         $iwhere_not_in = array();
         $i_param_not_in = array();
         $icolumn = array('ItemID', 'ItemName', 'Image', 'AssetType', 'Price','ItemTypeName');
-        $iwhere = array();
+        $iwhere = array('ZoneID' => $this->session->userdata('ZoneID'));
         $iParam = explode(",", $this->input->get('sItemID'));
         $iParamDel = explode(",", $this->input->get('sItemIDDelete'));
 
@@ -847,7 +879,7 @@ class Purchase_request extends CI_Controller {
         
 		$data['approve_pr'] = $this->Requestproc_v3_mdl->get_data_request($RequestID)->row();
 		$data['item'] = $this->Requestproc_v3_mdl->get_item($RequestID)->result_array();
-		$data['list_pic'] = $this->Requestproc_v3_mdl->get_pic()->result_array();
+		$data['list_pic'] = $this->Requestproc_v3_mdl->get_pic($RequestID)->result_array();
 		
         $this->template->set('title', 'Approve');
 		$this->template->load('template/template_dataTable', 'procurement/purchase_request/pemilihan_vendor', $data);
@@ -930,19 +962,20 @@ class Purchase_request extends CI_Controller {
 							<option value=1>Pemenang</option>
 						</select>
 					';
-            $row[] = '<input type="text" id="pricevendor_' . $no . '" name="pricevendor_' . $no . '" class="form-control nomor">';
+            $row[] = '<input type="text" id="pricevendorawal_' . $no . '" name="pricevendorawal_' . $no . '" class="form-control nomor" value="0">';
+            $row[] = '<input type="text" id="pricevendor_' . $no . '" name="pricevendor_' . $no . '" class="form-control nomor" value="0">';
             
 			
 			$opt_item = '<select class="form-control select2" id="itemvendor_' . $no . '" name="itemvendor_' . $no . '[]" multiple="multiple">';
 			foreach($itembeli as $ite){
-				$opt_item .= '<option value='.$ite['ItemID'].'>'.$ite['ItemName'].'</option>';
+				$opt_item .= '<option value='.$ite['ItemID'].' selected>'.$ite['ItemName'].'</option>';
 			}
 			$opt_item .= '</select>';
 			// $opt_item = 'e';
 			$row[] = $opt_item;
             
 			$row[] = '
- 					  <input type="text" id="ppnvendor_' . $no . '" name="ppnvendor_' . $no . '" class="form-control nomor">
+ 					  <input type="text" id="ppnvendor_' . $no . '" name="ppnvendor_' . $no . '" class="form-control nomor" value="0">
 					  <input type="hidden" id="VendorID_'.$no.'"  name="VendorID_'.$no.'" value="'.$idatatables->VendorID.'">
 					  <input type="hidden" id="row_vendor"  name="row_vendor[]" value="'.$no.'">
 					';
@@ -990,14 +1023,17 @@ class Purchase_request extends CI_Controller {
 		$datavendor['RequestID'] = $this->input->post('RequestID');
 		$datavendor['VendorID'] = $this->input->post('VendorID');
 		$datavendor['VendorPemenang'] = $this->input->post('VendorPemenang');
+		$datavendor['HargaSebelumPenawaran'] = $this->input->post('HargaSebelumPenawaran');
 		$datavendor['HargaSetelahPenawaran'] = $this->input->post('HargaSetelahPenawaran');
 		$datavendor['VendorItemID'] = $this->input->post('VendorItemID');
 		$datavendor['PPNVendor'] = $this->input->post('PPNVendor');
 		$datavendor['row_vendor'] = $this->input->post('row_vendor');		
 		// print_r($datavendor);die();
-		$jns_pengadaan = $this->input->post('jns_pengadaan');
+		$jns_pengadaan = $this->input->post('JenisPengadaan');
 		if($jns_pengadaan != null){
-			$up_flow = $this->Requestproc_v3_mdl->update_flow($this->input->post('RequestID'),$jns_pengadaan);
+			$data_jen_p['JenisPengadaan'] = $jns_pengadaan;
+			$up_flow = $this->Requestproc_v3_mdl->update_request($this->input->post('RequestID'),$data_jen_p);
+			// echo $jns_pengadaan;die();
 		}
 		
 		$up_status = $this->Requestproc_v3_mdl->update_pr_action($data,$this->input->post('action'),$this->input->post('notes'));
@@ -1121,8 +1157,9 @@ class Purchase_request extends CI_Controller {
         
 		$data['approve_pr'] = $this->Requestproc_v3_mdl->get_data_request($RequestID)->row();
 		$data['item'] = $this->Requestproc_v3_mdl->get_item($RequestID)->result_array();
-		$data['list_pic'] = $this->Requestproc_v3_mdl->get_pic()->result_array();
+		$data['list_pic'] = $this->Requestproc_v3_mdl->get_pic($RequestID)->result_array();
 		$data['vendor_po'] = $this->Requestproc_v3_mdl->get_vendor_pr($RequestID)->result_array();
+		$data['vendor'] = $data['vendor_po'];
 		
         $this->template->set('title', 'Approve');
 		$this->template->load('template/template_dataTable', 'procurement/purchase_request/request_anggaran', $data);
@@ -1303,7 +1340,9 @@ class Purchase_request extends CI_Controller {
 														<option>- Pilih -</option>
 			';
 														foreach($opt_branch as $ky1=>$vl1){
-															echo '<option value="'.$ky1.'">'.$vl1.'<option>';
+															if($ky1 != null && $ky1!= ''){
+																echo '<option value="'.$ky1.'">'.$vl1.'<option>';
+															}
 														}
 			echo '
 													</select>
@@ -1382,15 +1421,15 @@ class Purchase_request extends CI_Controller {
                                         <label class="control-label col-sm-3">COA </label>
                                         <div class="col-md-7" id="coa-data">
                                             <div id="coa_'.$item_vendor->ItemID.'" class="form-control coa-data">
-												<span id="branch_pil_'.$item_vendor->ItemID.'">00000</span> -
-												<span id="account_pil_'.$item_vendor->ItemID.'">00000</span> -
-												<span id="subaccount_pil_'.$item_vendor->ItemID.'">00000</span> -
-												<span id="lob_pil_'.$item_vendor->ItemID.'">00000</span> -
-												<span id="div_pil_'.$item_vendor->ItemID.'">00000</span> -
-												<span id="dattype_pil_'.$item_vendor->ItemID.'">00000</span> -
-												<span id="project_pil_'.$item_vendor->ItemID.'">00000</span> -
-												<span id="fu1_pil_'.$item_vendor->ItemID.'">00000</span> -
-												<span id="fu2_pil_'.$item_vendor->ItemID.'">00000</span>
+												<span id="branch_pil_'.$item_vendor->ItemID.'">000000</span> -
+												<span id="account_pil_'.$item_vendor->ItemID.'">0000000</span> -
+												<span id="subaccount_pil_'.$item_vendor->ItemID.'">000000</span> -
+												<span id="lob_pil_'.$item_vendor->ItemID.'">00</span> -
+												<span id="div_pil_'.$item_vendor->ItemID.'">0000</span> -
+												<span id="bistype_pil_'.$item_vendor->ItemID.'">00</span> -
+												<span id="project_pil_'.$item_vendor->ItemID.'">0000</span> -
+												<span id="fu1_pil_'.$item_vendor->ItemID.'">0000</span> -
+												<span id="fu2_pil_'.$item_vendor->ItemID.'">0000</span>
 											</div>
 										</div>
                                     </div>

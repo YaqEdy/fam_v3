@@ -225,6 +225,13 @@ class atk extends CI_Controller {
         $data = array();
         $no = $_POST['start'];
         foreach ($list as $idatatables) {
+// print_r($idatatables);
+         $id = $idatatables->ID;
+         $qty = $idatatables->Qty;
+         // $ItemName = $idatatables->ItemName;
+        $gbg=$id."#".$qty;
+
+
 
             $no++;
             $row = array();
@@ -234,8 +241,9 @@ class atk extends CI_Controller {
             $row[] = $idatatables->Qty;
             $row[] = $idatatables->HargaHPS;
             $row[] = $idatatables->ID_PR_DIV; 
-            $row[] =   '<button type="button" id="btnUpdate"  class="btn btn-xs btn-warning btn-md" data-toggle="modal"  data-target="#myModalUpdate">Update</button> &nbsp;&nbsp;
-                        <button type="button" id="btnUpdate"  class="btn btn-xs btn-danger btn-md" onclick="hapus_item()" >Delete</button>';      
+            $row[] =   '<button value="'.$gbg.'" type="button" id="btnUpdate"  class="btn btn-xs btn-warning btn-md"
+             data-toggle="modal" onclick="show_qty(this.value)"  data-target="#myModalUpdate">Update</button> &nbsp;&nbsp;
+                        <button value="'.$id.'" type="button" id="btnUpdate"  class="btn btn-xs btn-danger btn-md" onclick="hapus_item(this.value)"  data-target="#myModalHapus">Delete</button>';      
 
 
             $data[] = $row;
@@ -253,16 +261,17 @@ class atk extends CI_Controller {
 
     }
 
-       function tampil_QTY() {
+     function tampil_QTY() {
             // die('asd');
-        $id = trim($this->input->post('id', true));
-        // print_r($idsm); die();
+        $ID = trim($this->input->post('ID', true));
+        // print_r($_POST); die('dsd');
         $sql = "select ID, Qty
                 FROM [TBL_T_ATK_PR_GROUP_TEMP]
-                WHERE ID=".$id;
+                WHERE ID =".$ID;
         $query = $this->db->query($sql)->result();
         $rows['data_res'] = $query;
         return $this->output->set_output(json_encode($rows));
+ // print_r($data['results']); die; 
     }
 
          public function ajax_GridPRDivisi() {
@@ -342,30 +351,163 @@ class atk extends CI_Controller {
         $this->output->set_output(json_encode($array));
     }
 
-     function hapus_itembarang () { //hapus
-        $id_data = trim($this->input->post('data'));
-//        print_r($id_data);die();
+    //  function hapus_itembarang() {
+    //     $this->CI = & get_instance();
+    //     $userId = $this->input->post('ID', TRUE);
+    //     $model = $this->atk_m->deleteUser($ID);
+    //     // print_r($_POST);die('dsd');
+    //     if ($model) {
+    //         $array = array(
+    //             'act' => 1,
+    //             'tipePesan' => 'success',
+    //             'pesan' => 'Data berhasil dihapus.'
+    //         );
+    //     } else {
+    //         $array = array(
+    //             'act' => 0,
+    //             'tipePesan' => 'error',
+    //             'pesan' => 'Data gagal dihapus.'
+    //         );
+    //     }
+    //     $this->output->set_output(json_encode($array));
+    // }
+
+//      function hapus_item () { //hapus
+//         $id_data = trim($this->input->post('data'));
+// //        print_r($id_data);die();
        
-        $table = "TBL_T_ATK_PR_GROUP_TEMP";
-        $id_kolom = "id";
+//         $table = "TBL_T_ATK_PR_GROUP_TEMP";
+//         $id_kolom = "ID";
       
         
-        $model = $this->global_m->deleteUser($table, $id_kolom, $id_data);
-        if ($model) {
+//         $model = $this->atk_m->deleteUser($table, $id_kolom, $id_data);
+//         if ($model) {
+//             $array = array(
+//                 'act' => 1,
+//                 'tipePesan' => 'success',
+//                 'pesan' => 'Data berhasil dinon-aktifkan.'
+//             );
+//         } else {
+//             $array = array(
+//                 'act' => 1,
+//                 'tipePesan' => 'success',
+//                 'pesan' => 'File has been removed.'
+//             );
+//         }
+//         $this->output->set_output(json_encode($array));
+//     }
+
+    function edit_user() {
+        // die('aa');
+       // print_r(trim($this->input->post('user_id'))) ; die();
+        $data['Qty'] = trim($this->input->post('Qty',TRUE));
+        $data['ID'] = trim($this->input->post('ID',TRUE));
+       
+
+        // print_r($_POST); die();
+
+        // $id_kolom = array(
+
+        // 'user_id' => $data['user_id']
+
+        // );
+
+        $datax = array(
+            'Qty' => $data['Qty']
+            // 'ID' => $data['ID']
+          
+            );
+         // print_r($datax); die();
+           $table = "TBL_T_ATK_PR_GROUP_TEMP";
+           $id_kolom = "ID";
+           $id_data = $data['ID'];
+          $model = $this->global_m->ubah($table,$datax, $id_kolom,$id_data);
+          // redirect('atk/atk/home');
+           if ($model) {
             $array = array(
                 'act' => 1,
                 'tipePesan' => 'success',
-                'pesan' => 'Data berhasil dinon-aktifkan.'
+                'pesan' => 'Data berhasil disimpan.'
             );
         } else {
             $array = array(
-                'act' => 1,
-                'tipePesan' => 'success',
-                'pesan' => 'File has been removed.'
+                'act' => 0,
+                'tipePesan' => 'error',
+                'pesan' => 'Data gagal disimpan.'
             );
         }
         $this->output->set_output(json_encode($array));
     }
+
+    
+
+    function ubah(){
+
+         $Qty = trim($this->input->post('Qty'));
+         $ID = trim($this->input->post('ID'));
+         // $itemname = trim($this->input->post('itemname'));
+
+         // print_r($_POST);
+
+         $datax = array(
+
+            'Qty' => $Qty,
+           // 'ID' => $ID,
+            // 'itemname' => $itemname,
+
+        );
+
+           // print_r($datax); die('asd');
+           // print_r($id_kolom);die();
+           $table = "TBL_T_ATK_PR_GROUP_TEMP";
+           $id_kolom = "ID";
+           // print_r($id_kolom);die();
+           $model = $this->global_m->ubah($table,$datax, $id_kolom,$ID);
+             if ($model) {
+             $array = array(
+                'act' => 1,
+                'tipePesan' => 'success',
+                'pesan' => 'File has been succsess to changed.'
+            );
+             } else {
+             $array = array(
+                'act' => 0,
+                'tipePesan' => 'error',
+                'pesan' => 'Data gagal diubah.'
+            );
+        }
+
+        $this->output->set_output(json_encode($array));
+        // redirect('atk/atk/home');
+
+    }
+
+    function hapus() {
+
+        $data['ID'] = trim($this->input->post('ID',TRUE));
+        
+        $this->CI = & get_instance();
+        $tabel = "TBL_T_ATK_PR_GROUP_TEMP";
+        $id_kolom = "ID";
+        $id_data = $data['ID'];
+        // $ID = $this->input->post('ID', TRUE);
+        $model = $this->global_m->deleteUser($tabel, $id_kolom, $id_data);
+        if ($model) {
+            $array = array(
+                'act' => 1,
+                'tipePesan' => 'success',
+                'pesan' => 'Data berhasil dihapus.'
+            );
+        } else {
+            $array = array(
+                'act' => 0,
+                'tipePesan' => 'error',
+                'pesan' => 'Data gagal dihapus.'
+            );
+        }
+        $this->output->set_output(json_encode($array));
+    }
+
 
 }
 

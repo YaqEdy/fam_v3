@@ -37,12 +37,12 @@ class datatables extends CI_Model {
 
         $i = 0;
 
-        // foreach ($this->column as $item) {
-            // if ($_POST['search']['value'])
-                // ($i === 0) ? $this->db->like($item, $_POST['search']['value']) : $this->db->or_like($item, $_POST['search']['value']);
-            // $column[$i] = $item;
-            // $i++;
-        // }
+         foreach ($this->column as $item) {
+             if ($_POST['search']['value'])
+                 ($i === 0) ? $this->db->like($item, $_POST['search']['value']) : $this->db->or_like($item, $_POST['search']['value']);
+             $column[$i] = $item;
+             $i++;
+         }
 
         if (isset($_POST['order'])) {
             $this->db->order_by($column[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
@@ -64,8 +64,8 @@ class datatables extends CI_Model {
         $this->param_not_in = $s_param_not_in;
         
         $this->_get_datatables_query();
-        // if ($_POST['length'] != -1)
-            // $this->db->limit($_POST['length'], $_POST['start']);
+         if ($_POST['length'] != -1)
+             $this->db->limit($_POST['length'], $_POST['start']);
         $query = $this->db->get();
         return $query->result();
     }

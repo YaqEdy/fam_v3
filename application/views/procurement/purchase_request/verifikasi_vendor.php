@@ -144,6 +144,7 @@
                                         <th>Name</th>     
                                         <th>Alamat</th>
                                         <th>Pemenang</th>
+                                        <th>Harga Sebelum Penawaran</th>
                                         <th>Harga Setelah Penawaran</th>
                                         <th>Item</th>
                                         <th>PPN %</th>
@@ -160,7 +161,8 @@
 										<td>'.$v['VendorName'].'</td>
 										<td>'.$v['VendorAddress'].'</td>
 										<td>'.$pemenang.'</td>
-										<td>'.$v['HargaVendor'].'</td>
+										<td align="right">Rp. '.number_format($v['HargaVendorAwal'],2,',','.').'</td>
+										<td align="right">Rp. '.number_format($v['HargaVendor'],2,',','.').'</td>
 										<td>'.$v['ItemName'].'</td>
 										<td>'.$v['PPN'].'</td>
 									</tr>

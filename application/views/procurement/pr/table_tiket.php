@@ -1,7 +1,7 @@
 <!-- BEGIN PAGE BREADCRUMB --> 
 
 <style type="text/css">
-    
+
 
 
     table#table_gridCategory th:nth-child(2){
@@ -34,113 +34,119 @@
                 </div>
             </div>
             <div class="portlet-body">
-                        <form method="post" action="<?php echo base_url('procurement/pr/savedata'); ?>">
-                            <div class="col-md-12">
-                                <div class="form-group col-md-6">
-                                    <label class="col-sm-6 control-label">Tanggal Request</label>
-                                    <div class="col-sm-6">
-                                        <input type="text" required="" name="tgl" class="form-control input-sm date-picker" data-date-format="dd/mm/yyyy">
-                                    </div>
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <label class="col-sm-6 control-label">Jumlah Barang</label>
-                                    <div class="col-sm-6">
-                                        <input type="number" required="" name="jml" class="form-control input-sm">
-                                    </div>
-                                </div>
+                <form method="post" action="<?php echo base_url('procurement/pr/savedata'); ?>">
+                    <div class="col-md-12">
+                        <div class="form-group col-md-6">
+                            <label class="col-sm-6 control-label">Tanggal Request</label>
+                            <div class="col-sm-6">
+                                <input type="text" required="" name="tgl" class="form-control input-sm date-picker" data-date-format="dd/mm/yyyy">
                             </div>
-                            <div class="col-md-12">
-                                <div class="form-group col-md-6">
-                                    <label class="col-sm-6 control-label">Divisi</label>
-                                    <div class="col-sm-6">
-                                        <input type="text" required="" name="divisi" class="form-control input-sm">
-                                    </div>
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <label class="col-sm-6 control-label">Spesifikasi</label>
-                                    <div class="col-sm-6">
-                                        <textarea class="form-control" name="spek" rows="3"></textarea>
-                                    </div>
-                                </div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="col-sm-6 control-label">Jumlah Barang</label>
+                            <div class="col-sm-6">
+                                <input type="number" required="" name="jml" class="form-control input-sm">
                             </div>
-                            <div class="col-md-12">
-                                <div class="form-group col-md-6">
-                                    <label class="col-sm-6 control-label">Nama Barang</label>
-                                    <div class="col-sm-6">
-                                        <input type="text" required="" name="nama" class="form-control input-sm">
-                                    </div>
-                                </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group col-md-6">
+                            <label class="col-sm-6 control-label">Divisi</label>
+                            <div class="col-sm-6">
+                                <!--<input type="text" required="" name="divisi" class="form-control input-sm">-->
+                                <select name="divisi" class="form-control input-sm select2me" required="">
+                                    <option></option>
+                                    <?php foreach ($divisi as $value) { ?>
+                                    <option value="<?php echo $value->FLEX_VALUE ?>"><?php echo $value->DIV_DESC ?></option>
+                                    <?php } ?>
+                                </select>
                             </div>
-                            <div class="col-md-12">
-                                <button class="btn btn blue" type="submit">Kirim</button>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="col-sm-6 control-label">Spesifikasi</label>
+                            <div class="col-sm-6">
+                                <textarea class="form-control" name="spek" rows="3"></textarea>
                             </div>
-                        </form>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <button id="id_Reload" style="display: none;"></button>
-                                </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group col-md-6">
+                            <label class="col-sm-6 control-label">Nama Barang</label>
+                            <div class="col-sm-6">
+                                <input type="text" required="" name="nama" class="form-control input-sm">
                             </div>
-                            <div class="row" style="margin-top: 2%;">
-                                <div class="col-md-12">
-
-                                    <table class="table table-striped table-bordered text_kanan"
-                                           id="idTablePo">
-                                        <thead>
-                                            <tr>                                     
-                                                <th>
-                                                    Tanggal Request
-                                                </th>
-                                                <th>
-                                                    Divisi Request
-                                                </th>
-                                                <th>
-                                                    Nama Barang
-                                                </th>
-                                                <th>
-                                                    Spesifikasi
-                                                </th>
-                                                <th>
-                                                    Jumlah Barang
-                                                </th>
-                                                <th>
-                                                    Status Tiket
-                                                </th>
-                                                <th>
-                                                    Aksi
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            
-                                        </tbody>
-                                        <tfoot>
-
-                                        </tfoot>
-                                    </table>
-                                </div>
-                                <!-- end col-12 -->
-                            </div>
-                            <!-- END ROW-->
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <button class="btn btn blue" type="submit">Kirim</button>
+                    </div>
+                </form>
+                <div class="row">
+                    <div class="col-md-12">
+                        <button id="id_Reload" style="display: none;"></button>
                     </div>
                 </div>
+                <div class="row" style="margin-top: 2%;">
+                    <div class="col-md-12">
 
+                        <table class="table table-striped table-bordered text_kanan"
+                               id="idTablePo">
+                            <thead>
+                                <tr>                                     
+                                    <th>
+                                        Tanggal Request
+                                    </th>
+                                    <th>
+                                        Divisi Request
+                                    </th>
+                                    <th>
+                                        Nama Barang
+                                    </th>
+                                    <th>
+                                        Spesifikasi
+                                    </th>
+                                    <th>
+                                        Jumlah Barang
+                                    </th>
+                                    <th>
+                                        Status Tiket
+                                    </th>
+                                    <th>
+                                        Aksi
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                            <tfoot>
+
+                            </tfoot>
+                        </table>
+                    </div>
+                    <!-- end col-12 -->
+                </div>
+                <!-- END ROW-->
             </div>
         </div>
-        <!-- END VALIDATION STATES-->
+
     </div>
+</div>
+<!-- END VALIDATION STATES-->
+</div>
 </div>
 
 
 <?php $this->load->view('app.min.inc.php'); ?>
 
 <script>
-    $(document).on('click', '.date-picker', function(){
-       $(this).datepicker({
+    $(document).on('click', '.date-picker', function () {
+        $(this).datepicker({
             orientation: "left",
             format: "dd/mm/yyyy",
             autoclose: true
         }).focus();
-       $(this).removeClass('datepicker');
+        $(this).removeClass('datepicker');
     });
     var TableManaged = function () {
         var initTable1 = function () {
@@ -208,7 +214,7 @@
 
             var tableWrapper = jQuery('#example_wrapper');
 
-           
+
 
             tableWrapper.find('.dataTables_length select').addClass("form-control input-xsmall input-inline"); // modify table per page dropdown
         }
@@ -227,11 +233,11 @@
     App.isAngularJsApp() === !1 && jQuery(document).ready(function () {
         UIBootbox.init();
         TableManaged.init();
-      
+
         $('#id_desc_usergroup').focus();
         $("#id_btnUbah").attr("disabled", "disabled");
         $("#id_btnHapus").attr("disabled", "disabled");
-        
+
     });
     $('#id_btnBatal').click(function () {
         btnStart();

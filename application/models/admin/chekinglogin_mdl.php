@@ -12,9 +12,9 @@ Class Chekinglogin_mdl extends CI_Model {
                                             from [user] a
                                             left join Mst_Zonasi mz on a.ZoneID = mz.ZoneID
                                             left join TBL_M_BRANCH mb on a.BranchID = mb.FLEX_VALUE
-                                            left join Mst_Position as mp on a.PositionID= mp.PositionName
+                                            left join Mst_Position as mp on a.PositionID= mp.PositionID
                                             left join sec_usergroup as su on a.user_groupid=su.usergroup_id
-                                            WHERE a.nik='" . $nik . "'");
+                                            WHERE a.nik='" . $nik . "' AND a.status=0");
         //$sqldata = $db2->query("SELECT * FROM Mst_Branch");  
         return $sqldata->result();
     }

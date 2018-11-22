@@ -113,6 +113,73 @@
 							  </tbody>
 							</table>
 							
+							<?php
+								if($approve_pr->JenisPengadaan != null && $approve_pr->JenisPengadaan != ''){
+							?>
+							<hr class="dotted">
+							<div class="col-md-12" style="margin-bottom:2em">
+								<div class="col-md-6">
+									<div class="col-sm-12">
+                                        <label class="control-label col-sm-4">Jenis Pengadaan </label>
+                                        <div class="col-sm-7">
+                                            <?=$approve_pr->JenisPengadaan?>
+                                        </div>
+                                    </div>
+								</div>
+								<div class="col-md-6">
+									<div class="col-sm-12">
+                                    </div>
+								</div>
+                            </div>
+							<hr class="dotted">
+							<?php }?>
+							
+							<?php
+								if(count($vendor) > 0){
+							?>
+							
+							<table class="table table-striped table-bordered table-hover text_kanan" id="table_gridVendorProcess">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>     
+                                        <th>Alamat</th>
+                                        <th>Pemenang</th>
+                                        <th>Harga Sebelum Penawaran</th>
+                                        <th>Harga Setelah Penawaran</th>
+                                        <th>Item</th>
+                                        <th>PPN %</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+									<?php
+										foreach($vendor as $v){
+											if($v['Pemenang'] == 1){$pemenang = 'Pemenang';}
+											else{$pemenang = 'Peserta';}
+											echo '
+									<tr>
+										<td>'.$v['VendorName'].'</td>
+										<td>'.$v['VendorAddress'].'</td>
+										<td>'.$pemenang.'</td>
+										<td align="right">Rp. '.number_format($v['HargaVendorAwal'],2,',','.').'</td>
+										<td align="right">Rp. '.number_format($v['HargaVendor'],2,',','.').'</td>
+										<td>'.$v['ItemName'].'</td>
+										<td>'.$v['PPN'].'</td>
+									</tr>
+											';
+										}
+									?>
+                                </tbody>
+                                <tfoot>
+
+                                </tfoot>
+                            </table>
+							
+							<?php
+								}
+							?>
+                            
+							
 							<form class="validator-form form-horizontal" id="fm_apppr" enctype="multipart/form-data" method="POST">
                                 <div class="validator-form form-horizontal" style="margin-top:2em">
                                     <?php
@@ -134,7 +201,7 @@
 												<option value="">- PIC PO -</option>
 												<?php
 													foreach($list_pic as $pic){
-														echo '<option value="'.$pic['user_id'].'">'.$pic['name'].'</option>';
+														echo '<option value="'.$pic['PIC'].'">'.$pic['profile_nama'].'</option>';
 													}
 												?>
 											</select>
@@ -203,6 +270,12 @@
 <script>	
 	$(document).ready( function () {
 		$('#item_table').DataTable({
+			"aaSorting": [],
+			"searching": false,
+			"paging": false,
+			"info": false
+		});
+		$('#table_gridVendorProcess').DataTable({
 			"aaSorting": [],
 			"searching": false,
 			"paging": false,

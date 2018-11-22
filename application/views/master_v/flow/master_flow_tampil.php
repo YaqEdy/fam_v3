@@ -1,6 +1,7 @@
 
 <div class="row">
     <div class="col-md-12">
+
         <!-- BEGIN VALIDATION STATES-->
         <div class="portlet light portlet-fit  bordered">
             <div class="portlet-body">
@@ -11,23 +12,28 @@
                     </div>
                     <div class="portlet-body">
                         <ul class="nav nav-pills">
-                            <li class="linav active" id="linav1">
+
+                         <li class="linav active" id="linav1">
                                 <a href="#tab_2_1" data-toggle="tab" id="navitab_2_1" class="anavitab">
                                     Flow </a>
                             </li>
-                            <li class="linav" id="linav2">
-                                <a href="#tab_2_2" data-toggle="tab" id="navitab_2_2" class="anavitab">
-                                    Group </a>
-                            </li>
-                            <li class="linav" id="linav2">
+                           
+                            <li class="linav " id="linav2">
                                 <a href="#tab_2_3" data-toggle="tab" id="navitab_2_3" class="anavitab">
                                     Status </a>
                             </li>
+                             <li class="linav " id="linav2">
+                                <a href="#tab_2_2" data-toggle="tab" id="navitab_2_2" class="anavitab">
+                                    Group </a>
+                            </li>
+
                         </ul>     
-                        <div class="tab-content"> 
+                        <div class="tab-content">
                             <div class="tab-pane fade active in" id="tab_2_1">
-                                <form role="form" method="post" class="cls_from_sec_room" 
-                                      id="id_formRoom_flow"  enctype="multipart/form-data" > 
+                                <form role="form" method="post" class="cls_from_sec_room" id="id_formRoom_flow"  enctype="multipart/form-data" > 
+
+                               
+
                                     <div class="scroller" style="height:810px; ">
                                         <div class="row">
                                             <div class="col-md-12">
@@ -40,36 +46,58 @@
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label>Flow ID</label> <span class="required">*</span>
-                                                        <input required="required" class="form-control" id="nama_flow" name="nama_flow" type="number" min="1" max="100" step="1" />
+                                                        <input required="required" class="form-control" id="id_flow_id" name="id_flow_id" type="number" min="1" max="100" step="1" />
                                                     </div>
-                                                       <div class="form-group">
-                                                        <label>Status dari</label>
+
+                                                    <div class="form-group">
+                                                        <label>Nama Flow ID</label> <span class="required">*</span>
+                                                        <input required="required" class="form-control" id="id_nama_flow" name="id_nama_flow" type="text" min="1" max="100" step="1" />
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label>Status Dari</label> <span class="required">*</span>
+                                                        <input required="required" class="form-control" id="id_status_dari" name="id_status_dari" type="text" min="1" max="100" step="1" />
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label >Aksi</label><span class="required">*</span>
+                                                            <select class="form-control" type="text" id="id_aksi" name="id_aksi" >
+                                                              <option value="" >--Select--</option>
+                                                              <option value="Approve">Approve</option>
+                                                              <option value="Reject">Reject</option>
+                                                            </select>
+                                                       
+                                                          <input  id="idTmpAksiBtn"  name="idTmpAksiBtn" data-required="1" class="form-control input-sm hidden" type="text"> 
+                                                    </div>
+
+                                                     <div class="form-group">
+                                                        <label>Status Ke</label> <span class="required">*</span>
+                                                        <input required="required" class="form-control" id="id_status_ke" name="id_status_ke" type="text" min="1" max="100" step="1" />
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label>Tipe</label>
                                                         <?php
                                                         $data = array();
                                                         $data[''] = '';
-                                                        foreach ($dd_status as $row) :
-                                                            $data[$row->id] = $row->status;
-                                                        endforeach;
-                                                        echo form_dropdown('status_dari', $data, '', 'id="id_status_x" class="form-control  input-sm select2me" required="required"');
+                                                         foreach ($dd_tipe as $k) :
+                                                            $data[$k->ID_TYPE] = $k->TYPE_DESC;
+                                                            endforeach;
+                                                            echo form_dropdown('ID_TYPE', $data, '', 'id="id_tipe" name="id_tipe" class="form-control" required');
                                                         ?>
                                                      </div>
+
                                                      <div class="form-group">
-                                                        <label>Status ke</label>
-                                                        <?php
-                                                        $data = array();
-                                                        $data[''] = '';
-                                                        foreach ($dd_status as $row) :
-                                                            $data[$row->id] = $row->status;
-                                                        endforeach;
-                                                        echo form_dropdown('status_ke', $data, '', 'id="id_status" class="form-control  input-sm select2me"');
-                                                        ?>
+                                                        <label>Min HPS</label> <span class="required">*</span>
+                                                        <input required="required" class="form-control" id="id_min_hps" name="id_min_hps" type="number" min="1" max="100" step="1" />
                                                     </div>
-                                               
+
                                                     <div class="form-group">
-                                                        <label>Aksi</label> <span >*</span>
-                                                        <input  class="form-control"
-                                                               type="text" id="action" name="action"/>
-                                                    </div>  
+                                                        <label>Max HPS</label> <span class="required">*</span>
+                                                        <input required="required" class="form-control" id="id_max_hps" name="id_max_hps" type="number" min="1" max="100" step="1" />
+                                                    </div>
+                                                
+                                                
                                                 </div>                                                 
                                             </div>
                                             <!-- HIDDEN INPUT -->
@@ -78,44 +106,29 @@
 
                                         </div>
                                         <!--END ROW 1 -->
-                                        <div class="row">
+                                       
+
+                                </form>    
+
+                                 <div class="row">
                                             <div class="col-md-12">
                                                 <div class="form-actions">
 
-                                                    <button name="btnSimpan" onclick="reload_()" type="submit" class="btn blue" id="id_btnSimpan">Simpan</button>
-                                                    <button name="btnUbah" onclick="" class="btn yellow" id="id_btnUbah">
-                                                        <!--<i cla
-                                                            ss="fa fa-edit"></i>--> Ubah
+                                                    <button name="btnSimpan" value="simpan"  class="btn blue" id="id_btnSimpan">
+                                                        <!--<i class="fa fa-check"></i>--> Simpan
+                                                    </button>
+                                                    <button name="btnflowUbah" class="btn yellow" id="id_btnflowUbah" >
+                                                        <!--<i class="fa fa-edit"></i>--> Ubah
                                                     </button>
 
-                                                    <button id="id_btnBatal" type="reset" class="btn default">Batal</button>
+                                                     <button id="id_btnBatalRoot" type="reset" class="btn default">Batal</button>
                                                 </div>
                                             </div>
 
                                         </div>
 
-                                </form>    
-
 
                                 <div class="col-md-12">&nbsp;</div>
-
-                                <!--       <div class="col-sm-4">
-                                          <div class="form-group" id="displaydivisi">
-                                              <label class="control-label col-sm-4">Zone Name</label>
-                                              <div class="col-sm-7">
-                                                  <div id="ddZone3"></div>
-                                              </div>
-                                          </div>
-                                      </div>
-                                      <div class="col-md-2">Search Param :</div>
-                                      <div class="col-md-2">
-                                          <select id="cat_itemclass" name="cat_itemclass" onchange="search(this.value)" class="form-control">
-                                              <option value="ItemName">Item Name</option>
-                                              <option value="ZoneName">Zone</option>
-                                          </select>
-                                      </div> -->
-
-
                                 <div class="col-md-12">
 
                                     <table class="table table-striped table-bordered table-hover text_kanan" id="table_gridflow">
@@ -142,83 +155,15 @@
                                 </div>
                                 <!-- end col-12 -->                   
                                 <!-- END ROW-->
-                                </form>
+                                <!-- </form> -->
                             </div>
                         </div>
-                        <!--=================================================== GROUP =========================================================-->
+                
 
-                        <div class="tab-pane fade active" id="tab_2_2">
-                            <form role="form" method="post" class="cls_from_sec_room" 
-                                  id="id_formRoom_grup"  enctype="multipart/form-data" > 
-                                <div class="scroller" style="height:810px; ">
-                                    <div class="scroller" style="height:810px; ">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <button id="id_Reload" style="display: none;"></button>
-                                            </div>
-                                        </div>   
-                                        <div class="row">
-                                            <input class="form-control hidden" type="text" id="id_data" name="id_data"/>
-                                            <!-- HIDDEN INPUT -->
-                                            <input type="text" id="idTmpAksiBtn" class="hidden">
-                                            <!-- END HIDDEN INPUT -->
+                    <!--=================================================== GROUP =========================================================-->
 
-                                        </div>
-
-
-                                        <div class="col-md-12">&nbsp;</div>
-                                        <div class="col-md-12">
-                                            <div class="row">
-                                                <input class="form-control hidden" type="text" id="id_data" name="id_data"/>
-                                                <div class="form-body">
-                                                    <div class="col-md-4">
-                                                        <div class="form-group">
-                                                            <label>Input Grup</label> <span class="required">*</span>
-                                                            <input required="required" class="form-control"
-                                                                   type="text" id="grup_input" name="grup_input"/>
-                                                        </div>
-                                                    </div>                                                 
-                                                </div>
-                                            </div>
-
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="form-actions">
-
-                                                        <button name="btnSimpan" target="_blank" class="btn blue" id="id_btnSimpan">
-                                                            <!--<i class="fa fa-check"></i>--> Simpan</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-12">&nbsp;</div>
-
-                                            <br>
-                                            <div class="col-md-12">
-                                                <table class="table table-striped table-bordered table-hover text_kanan" id="table_gridgroup">
-                                                    <thead>
-                                                        <tr>
-                                                            <th class='row-2'>ID</th>     
-                                                            <th class='row-md-3'>Group</th>
-                                                            <th>Opsi</th>
-                                          <!--                   <th></th> -->
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>                                        
-                                                    </tbody>
-                                                    <tfoot>
-                                                    </tfoot>
-                                                </table>
-                                            </div>
-                                        </div>
-                                        <!-- end col-12 -->                   
-                                        <!-- END ROW-->
-                                    </div>
-                            </form>
-                        </div>
-                    </div>
-                    <!-- =================================================== STATUS ==================================================== -->
-                    <div class="tab-pane fade active" id="tab_2_3">
+                   
+                    <div class="tab-pane fade" id="tab_2_2">
                         <form role="form" method="post" class="cls_from_sec_room" id="id_formRoom_STATUS"  enctype="multipart/form-data" > 
                             <div class="scroller" style="height:810px; ">
                                 <div class="row">
@@ -264,7 +209,7 @@
                                         </div>
                                     </div>
                                     <div class="col-md-12">&nbsp;</div>
-                                    <br>
+                                    
                                     <div class="col-md-12">
                                         <table class="table table-striped table-bordered table-hover text_kanan" id="table_gridstatus">
                                             <thead>
@@ -283,17 +228,92 @@
                                     </div>
                                 </div>
                                 <!-- end col-12 -->                   
-                                <!-- END ROW-->
+                              </div>  <!-- END ROW-->
                         </form>
                     </div>
 
+                     <!-- =================================================== STATUS ==================================================== -->
+
+                      <div class="tab-pane fade" id="tab_2_3">
+                            <form role="form" method="post" class="cls_from_sec_room" 
+                                  id="id_formRoom_grup"  enctype="multipart/form-data" > 
+                                <div class="scroller" style="height:810px; ">
+                                    <div class="scroller" style="height:810px; ">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <button id="id_Reload" style="display: none;"></button>
+                                            </div>
+                                        </div>   
+                                        <div class="row">
+                                            <input class="form-control hidden" type="text" id="id_data" name="id_data"/>
+                                            <!-- HIDDEN INPUT -->
+                                            <input type="text" id="idTmpAksiBtn" class="hidden">
+                                            <!-- END HIDDEN INPUT -->
+
+                                        </div>
 
 
+                                        <div class="col-md-12">&nbsp;</div>
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <input class="form-control hidden" type="text" id="id_data" name="id_data"/>
+                                                <div class="form-body">
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <label>Input Grup</label> <span class="required">*</span>
+                                                            <input required="required" class="form-control"
+                                                                   type="text" id="grup" name="grup"/>
+                                                        </div>
+                                                    </div>                                                 
+                                                </div>
+                                            </div>
 
-                    <!-- END VALIDATION STATES-->
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-actions">
+
+                                                        <button name="btnSimpan" target="_blank" class="btn blue" id="id_btnSimpan">
+                                                            <!--<i class="fa fa-check"></i>--> Simpan</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-12">&nbsp;</div>
+
+                                            
+                                            <div class="col-md-12">
+                                                <table class="table table-striped table-bordered table-hover text_kanan" id="table_gridgroup">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class='row-2'>ID</th>     
+                                                            <th class='row-md-3'>Group</th>
+                                                            <th>Opsi</th>
+                                     
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>                                        
+                                                    </tbody>
+                                                    <tfoot>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <!-- end col-12 -->                   
+                                        <!-- END ROW-->
+                                    </div>
+                                    </div>
+                            </form>
+                        </div>
+                      
 
 
-                    <!-- ============================================= javascript ============================================================== -->
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-                    <?php $this->load->view('app.min.inc.php'); ?>
-                    <?php $this->load->view('master_v/flow/master_flow.js.php'); ?>
+
+<?php $this->load->view('app.min.inc.php'); ?>
+<?php $this->load->view('master_v/flow/master_flow.js.php'); ?>

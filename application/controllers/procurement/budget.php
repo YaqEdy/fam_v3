@@ -149,7 +149,7 @@ class Budget extends CI_Controller {
 
             foreach ($arr_data as $key => $value) {
                 if (!empty($value["F"]) && $value["F"] != "-" && $value["F"] != "" && !empty($value["A"])) {
-                    $this->Budget_mdl->simpan($value["A"], $value["B"], $value["D"], $value["E"], $value["F"], $value["G"]);
+                    $this->Budget_mdl->simpan($value["A"], $value["C"], $value["D"], $value["E"], $value["F"]);
                 }
             }
 
@@ -174,13 +174,13 @@ class Budget extends CI_Controller {
 
         // $users = (array)$users[0];
         //set cell A1 content with some text
-        $objPHPExcel->getActiveSheet()->setCellValue('A1', 'COA');
-        $objPHPExcel->getActiveSheet()->setCellValue('B1', 'YEAR');
-        $objPHPExcel->getActiveSheet()->setCellValue('C1', 'Branch - (Divisi)');
-        $objPHPExcel->getActiveSheet()->setCellValue('D1', 'BranchID');
-        $objPHPExcel->getActiveSheet()->setCellValue('E1', 'DivisionID');
-        $objPHPExcel->getActiveSheet()->setCellValue('F1', 'BudgetValue');
-        $objPHPExcel->getActiveSheet()->setCellValue('G1', 'JenisBudget');
+//        $objPHPExcel->getActiveSheet()->setCellValue('A1', 'COA');
+        $objPHPExcel->getActiveSheet()->setCellValue('A1', 'YEAR');
+        $objPHPExcel->getActiveSheet()->setCellValue('B1', 'Branch - (Divisi)');
+        $objPHPExcel->getActiveSheet()->setCellValue('C1', 'BranchID');
+        $objPHPExcel->getActiveSheet()->setCellValue('D1', 'DivisionID');
+        $objPHPExcel->getActiveSheet()->setCellValue('E1', 'BudgetValue');
+        $objPHPExcel->getActiveSheet()->setCellValue('F1', 'JenisBudget');
 
         $objPHPExcel->getActiveSheet()->setCellValue('I1', 'LENGKAPI DATA HANYA DI BAGIAN COA, YEAR, BUDGET VALUE DAN JENIS BUDGET');
         $objPHPExcel->getActiveSheet()->setCellValue('I2', 'DILARANG MENGUBAH DATA SELAIN KOLOM YANG DISEBUTKAN DIATAS');
@@ -193,19 +193,19 @@ class Budget extends CI_Controller {
         $objPHPExcel->getActiveSheet()->getStyle('D1')->getFont()->setBold(true);
         $objPHPExcel->getActiveSheet()->getStyle('E1')->getFont()->setBold(true);
         $objPHPExcel->getActiveSheet()->getStyle('F1')->getFont()->setBold(true);
-        $objPHPExcel->getActiveSheet()->getStyle('G1')->getFont()->setBold(true);
+//        $objPHPExcel->getActiveSheet()->getStyle('G1')->getFont()->setBold(true);
         $data = $this->Budget_mdl->allBranch();
         $counter = 2;
         foreach ($data as $key) {
 
-            $objPHPExcel->getActiveSheet()->setCellValue('A' . $counter, " " . $key->COA);
-            $objPHPExcel->getActiveSheet()->setCellValue('B' . $counter, date("Y"));
-            $objPHPExcel->getActiveSheet()->setCellValue('C' . $counter, $key->BRANCH_DIV);
-            $objPHPExcel->getActiveSheet()->setCellValue('D' . $counter, $key->BRANCH_ID);
-            $objPHPExcel->getActiveSheet()->setCellValue('E' . $counter, $key->DIV_ID);
+//            $objPHPExcel->getActiveSheet()->setCellValue('A' . $counter, " " . $key->COA);
+            $objPHPExcel->getActiveSheet()->setCellValue('A' . $counter, date("Y"));
+            $objPHPExcel->getActiveSheet()->setCellValue('B' . $counter, $key->BRANCH_DIV);
+            $objPHPExcel->getActiveSheet()->setCellValue('C' . $counter, $key->BRANCH_ID);
+            $objPHPExcel->getActiveSheet()->setCellValue('D' . $counter, $key->DIV_ID);
+            $objPHPExcel->getActiveSheet()->setCellValue('E' . $counter, "");
             $objPHPExcel->getActiveSheet()->setCellValue('F' . $counter, "");
-            $objPHPExcel->getActiveSheet()->setCellValue('F' . $counter, "");
-            $objPHPExcel->getActiveSheet()->getStyle('A1:A' . $counter)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+//            $objPHPExcel->getActiveSheet()->getStyle('A1:A' . $counter)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
             $counter++;
         }
 

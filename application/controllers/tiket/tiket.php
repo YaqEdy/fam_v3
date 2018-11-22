@@ -47,6 +47,7 @@ class tiket extends CI_Controller {
         $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
         $data['menu_all'] = $this->user_m->get_menu_all(0);
         $data['dd_jns_budget'] = $this->global_m->tampil_data('SELECT ID_JNS_BUDGET,BUDGET_DESC FROM TBL_R_JNS_BUDGET');
+        $data['dd_vendor'] = $this->global_m->tampil_data("SELECT Raw_ID, VendorName FROM Mst_Vendor");
         // $data['dd_Division'] = $this->global_m->tampil_data("SELECT DivisionID, DivisionName FROM Mst_Division where Is_trash=0");
         // $data['dd_Branch'] = $this->global_m->tampil_data("SELECT BranchID, BranchName FROM Mst_Branch where Is_trash=0");
 //        print_r($this->global_m->tampil_data('SELECT * FROM TBL_R_JNS_BUDGET'));die();
@@ -70,6 +71,7 @@ class tiket extends CI_Controller {
         $atasnama = trim($this->input->post('atasnama'));
         $akomodasi = trim($this->input->post('akomodasi'));
         $ID_TIKET = $this->global_m->getIdMax('ID_TIKET','TBL_T_TIKET');
+        $note = trim($this->input->post('note'));
 
        //  echo "<pre>";
        // print_r($_POST);die();        
@@ -107,6 +109,7 @@ class tiket extends CI_Controller {
             'SPD_PATH' => $SPD,
             'TGL_PR' => $tanggal_pr,
             'AKOMODASI' => $akomodasi,
+            'note' => $note,
             'ASAL_BERANGKAT' => $asal_berangkat,
             'TUJUAN_BERANGKAT' => $tujuan_berangkat,
             'TGL_BERANGKAT' => $tanggal_berangkat,
@@ -138,7 +141,7 @@ class tiket extends CI_Controller {
 
         );
        //       echo "<pre>";
-       // print_r($data); die('asd');
+       // print_r($datax); 
 
             $model = $this->global_m->simpan('TBL_T_TIKET_DETAIL', $datax);
 
@@ -162,18 +165,6 @@ class tiket extends CI_Controller {
 
 }
       
-   
-
-        
-
- 
-
-
-       //  echo "<pre>";
-       // print_r($dataxz);die();
-
-     
-
 
      function hapus_itembarang () { //hapus
         $id_data = trim($this->input->post('data'));
@@ -199,6 +190,113 @@ class tiket extends CI_Controller {
         }
         $this->output->set_output(json_encode($array));
     }
+
+        public function ajax_GridPRTiket() {
+        $icolumn = array('ID_TIKET', 'ID_TIKET_DETAIL', 'TGL_PR', 'NO_SPD', 'SPD_PATH', 'AKOMODASI', 'AN_TIKET', 'JNS_IDENTITAS', 'NO_IDENTITAS', 'ASAL_BERANGKAT', 'TUJUAN_BERANGKAT', 'TGL_BERANGKAT', 'TGL_PULANG', 'KATEGORI');
+        $iwhere = array();
+        // $iwhere = array(
+        //     'ZoneID' => $this->input->post('sZone'),
+        //     $this->input->post('sSearch') => $_POST['search']['value']
+        // );
+        $iorder = array('ID_TIKET' => 'asc');
+        $list = $this->datatables_custom->get_datatables('VW_TIKET', $icolumn, $iorder, $iwhere);
+            // print_r($list);
+            // die();
+        $data = array();
+        $no = $_POST['start'];
+        foreach ($list as $idatatables) {
+
+            $no++;
+            $row = array();
+            // $row[] = '<input type="checkbox" name="check">';
+            $row[] = $no; 
+            $row[] = $idatatables->ID_TIKET_DETAIL;
+            $row[] = $idatatables->ID_TIKET;
+            $row[] = $idatatables->TGL_PR;
+            $row[] = $idatatables->NO_SPD;
+            $row[] = $idatatables->SPD_PATH;
+            $row[] = $idatatables->AKOMODASI;
+            $row[] = $idatatables->AN_TIKET;
+            $row[] = $idatatables->JNS_IDENTITAS;
+            $row[] = $idatatables->NO_IDENTITAS;
+            $row[] = $idatatables->ASAL_BERANGKAT;
+            $row[] = $idatatables->TUJUAN_BERANGKAT;
+            $row[] = $idatatables->KATEGORI;
+            $row[] = $idatatables->TGL_BERANGKAT;
+            $row[] = $idatatables->TGL_PULANG;
+            // $row[] = '<button type="button" id="btnUpdate"  class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModalsha">View</button>';       
+            
+            
+
+
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->datatables_custom->count_all(),
+            "recordsFiltered" => $this->datatables_custom->count_filtered(),
+            "data" => $data,
+        );
+        //output to json format
+        echo json_encode($output);
+    }
+
+        public function Pilih_tiketPopUp() {
+        $icolumn = array('ID_TIKET_DETAIL', 'TGL_PR', 'NO_SPD', 'SPD_PATH', 'AKOMODASI', 'AN_TIKET', 'JNS_IDENTITAS', 'NO_IDENTITAS', 'ASAL_BERANGKAT', 'TUJUAN_BERANGKAT', 'TGL_BERANGKAT', 'TGL_PULANG', 'KATEGORI');
+        $iwhere = array();
+        $ID_TIKET_DETAIL =  explode(',', $this->input->post('sID_TIKET'));
+        $iorder = array('ID_TIKET_DETAIL' => 'asc');
+        // print_r($ID_TIKET_DETAIL); die();
+        $list = $this->datatables_custom->get_datatables('VW_TIKET', $icolumn, $iorder, array(),array(),$ID_TIKET_DETAIL,'ID_TIKET_DETAIL');
+            // print_r($list);
+            // die();
+        $data = array();
+        $no = $_POST['start'];
+        foreach ($list as $idatatables) {
+
+            $no++;
+            $row = array();
+            // $row[] = '<input type="checkbox" name="check">';
+            // $row[] = $no; 
+            $row[] = $idatatables->AKOMODASI;
+            $row[] = $idatatables->AN_TIKET;
+            $row[] = $idatatables->JNS_IDENTITAS;
+            $row[] = $idatatables->NO_IDENTITAS;
+            $row[] = $idatatables->ASAL_BERANGKAT;
+            $row[] = $idatatables->TUJUAN_BERANGKAT;
+            $row[] = $idatatables->KATEGORI;
+            $row[] = $idatatables->TGL_BERANGKAT;
+            $row[] = $idatatables->TGL_PULANG;
+            $row[] = $idatatables->ID_TIKET_DETAIL;
+            // $row[] = $idatatables->TGL_PR;
+            // $row[] = $idatatables->NO_SPD;
+            // $row[] = $idatatables->SPD_PATH;
+            // $row[] = $idatatables->AKOMODASI;
+            
+            
+            
+            
+            
+            
+            // $row[] = '<button type="button" id="btnUpdate"  class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModalsha">View</button>';       
+            
+            
+
+
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->datatables_custom->count_all(),
+            "recordsFiltered" => $this->datatables_custom->count_filtered(),
+            "data" => $data,
+        );
+        //output to json format
+        echo json_encode($output);
+    }
+
 
 }
 

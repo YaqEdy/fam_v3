@@ -6,6 +6,7 @@ if (!defined('BASEPATH'))
 class master_pr_m extends CI_Model {
 
 	public function getList() {
+                $this->db->order_by("TANGGAL", "DESC");
 		return $this->db->get('TBL_T_TIKET_HPS')->result();
 	}
 

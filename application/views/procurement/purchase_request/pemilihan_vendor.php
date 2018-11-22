@@ -126,9 +126,9 @@
                                     <label class="control-label col-sm-3">Jenis Pengadaan </label>
                                     <div class="col-md-7">
                                         <select id="JenisPengadaan" name="JenisPengadaan" class="form-control">
-                                            <option value="Langsung">Penunjukan Langsung</option>
-                                            <option value="Tertutup">Lelang Tertutup</option>
-                                            <option value="Terbuka">Lelang Terbuka</option>
+                                            <option value="Penunjukan Langsung">Penunjukan Langsung</option>
+                                            <option value="Lelang Tertutup">Lelang Tertutup</option>
+                                            <option value="Lelang Terbuka">Lelang Terbuka</option>
                                         </select>
                                     </div>
                                 </div>
@@ -139,13 +139,14 @@
                                     <table class="table table-striped table-bordered table-hover text_kanan" id="table_gridVendorProcess">
                                         <thead>
                                             <tr>
-                                                <th>Name</th>     
-                                                <th>Alamat</th>
-                                                <th>Pemenang</th>
-                                                <th>Harga Setelah Penawaran</th>
-                                                <th>Item</th>
-                                                <th>PPN %</th>
-                                                <th>Action</th>
+                                                <th width="10%">Name</th>     
+                                                <th width="10%">Alamat</th>
+                                                <th width="11%">Pemenang</th>
+                                                <th width="">Harga Sebelum Penawaran</th>
+                                                <th width="">Harga Setelah Penawaran</th>
+                                                <th width="10%">Item</th>
+                                                <th width="7%">PPN %</th>
+                                                <th width="8%">Action</th>
 
                                             </tr>
                                         </thead>
@@ -284,7 +285,7 @@
         // var VendorPemenang = document.getElementById('VendorPemenang').value;
         // var HargaVendor = document.getElementById('HargaVendor').value;
         // var ppn = document.getElementById('ppn').value;
-        var VendorID = VendorPemenang = HargaSetelahPenawaran = VendorItemID = PPNVendor = '';
+        var VendorID = VendorPemenang = HargaSetelahPenawaran = HargaSebelumPenawaran = VendorItemID = PPNVendor = '';
         // var row_vendor = document.getElementById('row_vendor').value;
         // var row_vendor = document.querySelector('#row_vendor');
         // var row_vendor = document.getElementsByName("row_vendor").value;
@@ -296,9 +297,10 @@
         for (i = 1; i <= row_vendor; i++) {
             VendorID = VendorID + document.getElementById('VendorID_' + i).value + ',';
             VendorPemenang = VendorPemenang + document.getElementById('pemenang_' + i).value + ',';
+            HargaSebelumPenawaran = HargaSebelumPenawaran + document.getElementById('pricevendorawal_' + i).value + ',';
             HargaSetelahPenawaran = HargaSetelahPenawaran + document.getElementById('pricevendor_' + i).value + ',';
             VendorItemID = VendorItemID + document.getElementById('itemvendor_' + i).value + ',';
-            PPNVendor = PPNVendor + document.getElementById('itemvendor_' + i).value + ',';
+            PPNVendor = PPNVendor + document.getElementById('ppnvendor_' + i).value + ',';
         }
         console.log(row_vendor);
 
@@ -311,6 +313,7 @@
             JenisPengadaan: JenisPengadaan,
             VendorID: VendorID,
             VendorPemenang: VendorPemenang,
+            HargaSebelumPenawaran: HargaSebelumPenawaran,
             HargaSetelahPenawaran: HargaSetelahPenawaran,
             VendorItemID: VendorItemID,
             PPNVendor: PPNVendor,
