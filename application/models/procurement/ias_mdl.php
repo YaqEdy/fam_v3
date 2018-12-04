@@ -72,23 +72,21 @@ Class Ias_mdl extends CI_Model {
         $querydata->close();
     }
 
-    function get_ias($id){
+    function get_ias($id) {
         $this->db->where('ID_PO', $id);
         return $this->db->get('VW_IAS')->row();
     }
 
-    function get_all_ias($id){
+    function get_all_ias($id) {
         $this->db->where('ID_PO_DETAIL', $id);
         return $this->db->get('TBL_T_IAS')->result();
     }
 
-    function get_var()
-    {
+    function get_var() {
         return $this->db->get('TBL_R_VARIABEL')->result();
     }
 
-    function get_doc()
-    {
+    function get_doc() {
         return $this->db->get('TBL_R_DOC')->result();
     }
 
@@ -220,48 +218,88 @@ Class Ias_mdl extends CI_Model {
             $this->session->set_flashdata('msg', 'Error! Budget Failed Insert Data');
     }
 
-    function save_ias($data)
-    {
-        return $this->db->insert('TBL_T_IAS', $data);
+    function save_ias($data) {
+        $this->db->trans_begin();
+        $model = $this->db->insert('TBL_T_IAS', $data);
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            return false;
+        } else {
+            $this->db->trans_commit();
+            return true;
+        }
     }
 
-    function save_ias_doc($data)
-    {
+    function save_ias_doc($data) {
         return $this->db->insert('TBL_T_IAS_DOC', $data);
     }
 
-    function save_penilaian($data)
-    {
+    function save_penilaian($data) {
         return $this->db->insert('TBL_T_PENILAIAN_VENDOR', $data);
     }
 
-    function get_dpp($id)
-    {
+    function get_persen_ppn($id) {
         $this->db->where('ID_PO_DETAIL', $id);
         return $this->db->get('TBL_T_PO_DTL_TOTAL')->row();
     }
 
-    function get_termin($id)
-    {
+    function get_dpp($id) {
+//        inv Dpp = total(po) * termin 
+//        $TotalDppPO = $this->db->query("select sum(TOTAL) as TOTAL from TBL_T_PO_DTL_TOTAL WHERE ID_PO_DETAIL =" . $id)->row()->TOTAL;
+//        $CountIas = $this->db->query("SELECT COUNT(ID_PO_DETAIL)+1 COUNT_ FROM TBL_T_IAS WHERE ID_PO_DETAIL=" . $id)->row()->COUNT_;
+//        $NILAITermin = $this->db->query("SELECT NILAI as TOTAL FROM TBL_T_TERMIN WHERE ID_PO_DETAIL=" . $id . " AND TERMIN=" . $CountIas . " ORDER BY TERMIN DESC")->row();
+
+        $TotalDppPO = $this->db->query("select sum(SUB_TOTAL) as TOTAL from TBL_T_PO_DTL_TOTAL WHERE ID_PO_DETAIL =" . $id)->row()->TOTAL;
+        $CountIas = $this->db->query("SELECT COUNT(ID_PO_DETAIL)+1 COUNT_ FROM TBL_T_IAS WHERE ID_PO_DETAIL=" . $id)->row()->COUNT_;
+        $NILAITermin = $this->db->query("SELECT ".$TotalDppPO."*PERSENTASE/100 as TOTAL FROM TBL_T_TERMIN WHERE ID_PO_DETAIL=" . $id . " AND TERMIN=" . $CountIas . " ORDER BY TERMIN DESC")->row();
+
+        return $NILAITermin;
+    }
+
+    function get_ppn($id) {
+//        inv PPN = total(po) * termin * %ppn(po)
+//        $TotalDppPO = $this->db->query("select sum(TOTAL) as TOTAL from TBL_T_PO_DTL_TOTAL WHERE ID_PO_DETAIL =" . $id)->row()->TOTAL;
+//        $CountIas = $this->db->query("SELECT COUNT(ID_PO_DETAIL)+1 COUNT_ FROM TBL_T_IAS WHERE ID_PO_DETAIL=" . $id)->row()->COUNT_;
+//        $NILAITermin = $this->db->query("SELECT A.NILAI*B.PERSEN_PPN/100 as PPN FROM TBL_T_TERMIN AS A INNER JOIN TBL_T_PO_DTL_TOTAL AS B ON A.ID_PO_DETAIL=B.ID_PO_DETAIL WHERE A.ID_PO_DETAIL=" . $id . " AND A.TERMIN=" . $CountIas . " ORDER BY A.TERMIN DESC")->row();
+
+        $TotalDppPO = $this->db->query("select sum(PPN) as TOTAL from TBL_T_PO_DTL_TOTAL WHERE ID_PO_DETAIL =" . $id)->row()->TOTAL;
+        $CountIas = $this->db->query("SELECT COUNT(ID_PO_DETAIL)+1 COUNT_ FROM TBL_T_IAS WHERE ID_PO_DETAIL=" . $id)->row()->COUNT_;
+        $NILAITermin = $this->db->query("SELECT ".$TotalDppPO."*PERSENTASE/100 as PPN FROM TBL_T_TERMIN WHERE ID_PO_DETAIL=" . $id . " AND TERMIN=" . $CountIas . " ORDER BY TERMIN DESC")->row();
+
+        return $NILAITermin;
+    }
+
+        function get_pph($id) {
+//        inv PPH =  termin * %ppn(po)
+        $TotalDppPO = $this->db->query("select sum(TOTAL) as TOTAL from TBL_T_PO_DTL_TOTAL WHERE ID_PO_DETAIL =" . $id)->row()->TOTAL;
+        $CountIas = $this->db->query("SELECT COUNT(ID_PO_DETAIL)+1 COUNT_ FROM TBL_T_IAS WHERE ID_PO_DETAIL=" . $id)->row()->COUNT_;
+        $PPH = $this->db->query("SELECT B.PPH*B.PERSEN_PPN/100 as PPH FROM TBL_T_TERMIN AS A INNER JOIN TBL_T_PO_DTL_TOTAL AS B ON A.ID_PO_DETAIL=B.ID_PO_DETAIL WHERE A.ID_PO_DETAIL=" . $id . " AND A.TERMIN=" . $CountIas . " ORDER BY A.TERMIN DESC")->row();
+        return $PPH;
+    }
+
+        function get_po_dtl($id) {
+        $this->db->where('ID_PO_DETAIL', $id);
+        return $this->db->get('TBL_T_PO_DTL_TOTAL')->row();
+
+    }
+    
+    function get_termin($id) {
         $this->db->where('ID_TERMIN', $id);
         return $this->db->get('TBL_T_TERMIN')->row();
     }
 
-    function get_all_termin($id)
-    {
+    function get_all_termin($id) {
         $this->db->where('ID_PO_DETAIL', $id);
         return $this->db->get('TBL_T_TERMIN')->result();
     }
 
-    public function get_quant($id)
-    {
+    public function get_quant($id) {
         $query = "select sum(QTY) as quant from TBL_T_TERIMA_BARANG WHERE ID_PO_DETAIL = $id";
         $get = $this->db->query($query);
         return $get->row();
     }
 
-    public function count_termin($id)
-    {
+    public function count_termin($id) {
         $query = "select count(ID_PO_DETAIL) as jml from TBL_T_TERMIN WHERE ID_PO_DETAIL = $id";
         $get = $this->db->query($query);
         return $get->row();

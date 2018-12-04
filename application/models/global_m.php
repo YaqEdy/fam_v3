@@ -19,10 +19,10 @@ class Global_m extends CI_Model {
     }
 
     public function simpan_v2($tabel, $data) {
-       $this->db->query("SET IDENTITY_INSERT [dbo].[$tabel] ON");
+        $this->db->query("SET IDENTITY_INSERT [dbo].[$tabel] ON");
         $this->db->trans_begin();
         $this->db->insert($tabel, $data);
-       $this->db->query("SET IDENTITY_INSERT [dbo].[$tabel] OFF");
+        $this->db->query("SET IDENTITY_INSERT [dbo].[$tabel] OFF");
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
             return false;
@@ -31,7 +31,7 @@ class Global_m extends CI_Model {
             return true;
         }
     }
-    
+
     public function simpan2table($tabel1, $data1, $tabel1, $data1) {
         $this->db->trans_begin();
         $model = $this->db->insert($tabel, $data);
@@ -186,6 +186,27 @@ class Global_m extends CI_Model {
         $sql = "SELECT id, flow_id, nama_flow, status_dari, action, status_ke
                 FROM dbo.MS_FLOW
                 WHERE action = 'approve' AND status_dari='" . $status_dari . "'";
+        $query = $this->db->query($sql);
+        $hasil = $query->result();
+        $ireturn = $hasil[0]->status_ke;
+        return $ireturn;
+    }
+
+    public function getFlowId($id_pr) {
+        $sql = "SELECT Top 1 flow_id
+                FROM dbo.TBL_REQUEST
+                WHERE RequestID = '" . $id_pr . "'";
+        $query = $this->db->query($sql);
+        $hasil = $query->result();
+        $ireturn = $hasil[0]->flow_id;
+        return $ireturn;
+    }
+
+    public function getNextFlow($id_pr,$status_dari) {
+        $flowid=  $this->getFlowId($id_pr);
+        $sql = "SELECT Top 1 id, flow_id, nama_flow, status_dari, action, status_ke
+                FROM dbo.MS_FLOW
+                WHERE action = 'approve' AND status_dari='" . $status_dari . "' AND flow_id='" . $flowid . "'";
         $query = $this->db->query($sql);
         $hasil = $query->result();
         $ireturn = $hasil[0]->status_ke;

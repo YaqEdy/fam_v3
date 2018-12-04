@@ -18,6 +18,7 @@ class Hps extends CI_Controller {
             $this->load->model('global_m');
             $this->load->model('procurement/hps_mdl', 'hps');
             $this->load->model('datatables_custom');
+            $this->load->model('datatables');
         }
     }
 
@@ -74,7 +75,7 @@ class Hps extends CI_Controller {
                 // $this->input->post('sSearch') => $_POST['search']['value']
         );
         $iorder = array('HpsID' => 'asc');
-        $list = $this->datatables_custom->get_datatables('VW_M_HPS', $icolumn, $iorder, $iwhere);
+        $list = $this->datatables->get_datatables('VW_M_HPS', $icolumn, $iorder, $iwhere);
         // print_r($list); die ();
         $data = array();
         $no = $_POST['start'];
@@ -98,8 +99,8 @@ class Hps extends CI_Controller {
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->datatables_custom->count_all(),
-            "recordsFiltered" => $this->datatables_custom->count_filtered(),
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
             "data" => $data,
         );
         //output to json format

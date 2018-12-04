@@ -37,7 +37,7 @@ class transferin extends CI_Controller {
     }
 
     function home() {
-        $menuId = $this->home_m->get_menu_id('assetmanagement/transferout/home');
+        $menuId = $this->home_m->get_menu_id('operational/transferin/home');
         $data['menu_id'] = $menuId[0]->menu_id;
         $data['menu_parent'] = $menuId[0]->parent;
         $data['menu_nama'] = $menuId[0]->menu_nama;
@@ -434,24 +434,28 @@ function savedatatransfer (){
 
     $By = $this->session->userdata('user_id');
 
-    $data=array(
-        'ID_ASSET'=>$ID_ASSET,
-        'TGL_PENGIRIMAN'=>$tgl_pengirim,
-        'RESI'=>$resi,
-        'BRANCH'=>$id_branch,
-        'DIV'=>$division,
-        'CREATE_BY'=>$By,
-        'KOTA' => $kota,
-        'LOKASI' => $lokasi,
-        'SUB_LOKASI' => $sublokasi,
-        'DIV_TUJUAN' => $tujuan,
-        'STATUS_TRANS' => 1
-    ); 
-       // print_r($PARAMS); die();
+    $exp = explode(",", $ID_ASSET);
 
-        // $this->db->query("zsp_Create_PR_Group ?,?",$PARAMS);
-    $tabel = 'TBL_T_ASSETS';
-    $model = $this->global_m->simpan($tabel, $data);
+    $count = sizeof($exp);
+    
+    for($i=0;$i<$count;$i++){
+        $data=array(
+            'ID_ASSET'=> $exp[$i],//$ID_ASSET,
+            'TGL_PENGIRIMAN'=>$tgl_pengirim,
+            'RESI'=>$resi,
+            'BRANCH'=>$id_branch,
+            'DIV'=>$division,
+            'CREATE_BY'=>$By,
+            'KOTA' => $kota,
+            'LOKASI' => $lokasi,
+            'SUB_LOKASI' => $sublokasi,
+            'DIV_TUJUAN' => $tujuan,
+            'STATUS_TRANS' => 1
+        ); 
+        $tabel = 'TBL_T_ASSETS';
+        $model = $this->global_m->simpan($tabel, $data);
+    }
+    
     if ($model) {
         $array = array(
             'act' => 1,

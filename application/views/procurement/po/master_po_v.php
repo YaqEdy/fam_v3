@@ -13,7 +13,7 @@
 input {
   padding: 10px;
   width: 100%;
-  font-size: 17px;
+  font-size: 14px;
   font-family: Raleway;
   border: 1px solid #aaaaaa;
 }
@@ -32,8 +32,8 @@ button {
   background-color: #4CAF50;
   color: #ffffff;
   border: none;
-  padding: 10px 20px;
-  font-size: 17px;
+  padding: 10px 15px;
+  font-size: 14px;
   font-family: Raleway;
   cursor: pointer;
 }
@@ -575,11 +575,11 @@ button:hover {
                     </div>
                     <div class="form-group m-form__group col-md-4">
                         <label for="exampleInputtext1">Disc</label>
-                        <input type="number" name="disc" class="form-control m-input" id="disc<?php echo $l?>" aria-describedby="textHelp" placeholder="Disc">
+                        <input type="number" name="disc" class="form-control m-input" id="disc<?php echo $l?>" aria-describedby="textHelp" placeholder="Disc" value="0">
                     </div>
                     <div class="form-group m-form__group col-md-4">
                         <label for="exampleInputtext1">PPH</label>
-                        <input type="number" name="pph" class="form-control m-input" id="pph<?php echo $l?>" aria-describedby="textHelp" placeholder="PPH">
+                        <input type="number" name="pph" class="form-control m-input" id="pph<?php echo $l?>" aria-describedby="textHelp" placeholder="PPH" value="0">
                     </div>
                     <div class="form-group m-form__group col-md-4">
                         <label for="exampleInputtext1">Total</label>
@@ -589,55 +589,32 @@ button:hover {
                 <input type="hidden" name="id_pr" value="<?php echo $po->RequestID?>">
                 <input type="hidden" name="id_vendor" value="<?php echo trim($vendor->VendorID)?>">
                 <input type="hidden" name="redirect" value="ada">
+                
+                <!--batas-->
+
+                <!--end batas-->
+
+                <div class="form-group m-form__group m--margin-top-10">
                 <?php if(trim($po->ReqTypeID) == '3'){ ?>
-                <div class="form-group m-form__group m--margin-top-10">
                         <h5 class="m-portlet__head-text"><strong>Sewa Barang dan Bangunan</strong></h5>
-                </div>
-                <div class="m-portlet__body col-md-12">
-                <?php $i=1;
-                foreach ($item as $list){?>
-                    <input type="hidden" name="itemid[]" value="<?php echo $list->ItemID?>">
-                    <div class="form-group m-form__group col-md-2">
-                        <label for="exampleInputtext1">Barang/Bangunan</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" value="<?php echo $list->ItemName?>" name="barang[]" placeholder="Barang/Bangunan" readonly>
-                    </div>
-                    <div class="form-group m-form__group col-md-1">
-                        <label for="exampleInputtext1">Qty</label>
-                        <input type="number" min="0" class="form-control m-input" id="qty<?php echo $i?>" value="<?php echo $list->Qty?>" name="qty[]" placeholder="Qty">
-                    </div>
-                    <div class="form-group m-form__group col-md-2">
-                        <label for="exampleInputtext1">Periode Sewa</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" name="sewa" placeholder="Periode Sewa" required>
-                    </div>
-                    <div class="form-group m-form__group col-md-2">
-                        <label for="exampleInputtext1">Jenis Periode</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" name="jenis" placeholder="Jenis Periode" required>
-                    </div>
-                    <div class="form-group m-form__group col-md-1">
-                        <label for="exampleInputtext1">Notifikasi</label>
-                        <input type="text" class="form-control m-input" id="exampleInputtext1" name="notif" placeholder="Notifikasi" required>
-                    </div>
-                    <div class="form-group m-form__group col-md-2">
-                        <label for="exampleInputtext1">Harga Satuan</label>
-                        <input type="number" min="0" class="form-control m-input" id="satuan<?php echo $i?>" value="<?php echo $list->HargaHPS?>" name="satuan[]" placeholder="Harga Satuan">
-                    </div>
-                    <div class="form-group m-form__group col-md-2">
-                        <label for="exampleInputtext1">Harga</label>
-                        <input type="text" class="form-control m-input total" id="total<?php echo $i?>" value="<?php echo $list->total?>" name="hargatotal[]" placeholder="Harga">
-                    </div>
-                <?php $i++;
-            }?>
-                </div>
-            <?php }else{ ?>
-                <div class="form-group m-form__group m--margin-top-10">
+                <?php }else{ ?>
                         <h5 class="m-portlet__head-text"><strong>Detail Barang Dan Harga</strong></h5>
+                <?php } ?>
                 </div>
-                <div class="m-portlet__body col-md-12">
-                <table class="table table-bordered">
+          <div class="row">
+            <div class="col-xs-12">
+                <table class="table table-bordered table-hover" >
                         <thead>
                             <tr>
                                 <th>Nama Barang</th>
                                 <th>QTY</th>
+                                 <!--Sewa-->
+                                <?php if(trim($po->ReqTypeID) == '3'){ ?>
+                                <th>Jenis Periode</th>                                
+                                <th>Start Periode</th>                                
+                                <th>End Periode</th>                                
+                                <th>Notif</th>                                
+                                <?php } ?>
                                 <th>Harga Satuan</th>
                                 <th>Harga</th>
                                 <th>Hapus</th>
@@ -647,18 +624,26 @@ button:hover {
                         <?php $i = 1;
                         foreach ($item as $list){?>
                             <tr id="row<?php echo $i.$l;?>">
-                                <td><input type="hidden" name="itemid[]" value="<?php echo $list->ItemID?>"><input type="text" name="barang[]" value="<?php echo $list->ItemName?>"></td>
+                                <td><input type="hidden" name="itemid[]" value="<?php echo $list->ItemID?>">
+                                    <input type="text" name="barang[]" value="<?php echo $list->ItemName?>"></td>
                                 <td><input class="brg<?php echo $l;?>" type="number" name="qty[]" id="qty<?php echo $i?>" value="<?php echo $list->Qty?>"></td>
+                                <!--Sewa-->
+                                <?php if(trim($po->ReqTypeID) != '3'){$ihidden="hidden";}else{$ihidden="";}?>
+                                    <td class="<?php echo $ihidden ?>"><input class="" type="text" name="jns_periode[]" id="jns_periode<?php echo $i?>" value="<?php echo $list->JNS_PERIODE?>"></td>
+                                    <td class="<?php echo $ihidden ?>"><input class="" type="text" name="start_periode[]" id="start_periode<?php echo $i?>" value="<?php echo $list->START_PERIODE?>"></td>
+                                    <td class="<?php echo $ihidden ?>"><input class="" type="text" name="end_periode[]" id="end_periode<?php echo $i?>" value="<?php echo $list->END_PERIODE?>"></td>
+                                    <td class="<?php echo $ihidden ?>"><input class="date-picker" data-date-format="dd/mm/yyyy" type="text" name="notif[]" id="notif<?php echo $i?>" value="<?php echo $list->NOTIF?>"></td>
+                                                                
                                 <td><input type="number" name="satuan[]" class="satuan<?php echo $l;?>" id="satuan<?php echo $i?>" value="<?php echo $list->HargaHPS?>"></td>
                                 <td><input type="number" name="hargatotal[]" class="total<?php echo $l;?>" id="total<?php echo $i?>" value="<?php echo $list->total?>"></td>
                                 <td><button onclick="dltRow('<?php echo $i;?>', '<?php echo $l;?>')">Delete</button></td>
                             </tr>
-                        <?php $i++;
-                    }?>
+                        <?php $i++; }?>
                         </tbody>
                     </table>
                 </div>
-            <?php }?>
+                </div>
+            
                 <div class="form-group m-form__group m--margin-top-10 col-md-12">
                     <div class="col-md-4">
                         <h5 class="m-portlet__head-text"><strong>Termin</strong></h5>
@@ -735,7 +720,7 @@ button:hover {
 <script>
 var $ = jQuery.noConflict();
 $( document ).ready(function() {
-
+ComponentsDateTimePickers.init();
     for (var l = 1; l <= $(".tanda").length; l++){
         $("#detail"+l).change(function() {
             var kelas = $(this).attr('id');
@@ -772,6 +757,7 @@ $( document ).ready(function() {
         $('#ppn'+l).val(sum*0.1);
         $('#jmlbrg'+l).val(brg);
         $('#jnsbrg'+l).val($('.brg'+l).length);
+        $('#totalall'+l).val((sum*0.1)+sum);
     }
 });
 var currentTab = 0; // Current tab is set to be the first tab (0)
@@ -894,7 +880,8 @@ function add_termin(e){
     $("input[name='persentase[]']").on("keyup", function(){
         var kelas = $(this).attr('class');
         var form = kelas.substring(kelas.length-1, kelas.length);
-        var total = $('#hargatotal'+form).val();
+//        var total = $('#hargatotal'+form).val();
+        var total = $('#totalall'+form).val();
         var percent = ($(this).val())/100;
         var id = $(this).attr('id');
         var lastid = id.substring(id.length-1, id.length);
@@ -968,7 +955,8 @@ function submit(){
     $("input[name='persentase[]']").on("keyup", function() {
         var kelas = $(this).attr('class');
         var form = kelas.substring(kelas.length-1, kelas.length);
-        var total = $('#hargatotal'+form).val();
+//        var total = $('#hargatotal'+form).val();
+        var total = $('#totalall'+form).val();
         var percent = ($(this).val())/100;
         var id = $(this).attr('id');
         var lastid = id.substring(id.length-1, id.length);

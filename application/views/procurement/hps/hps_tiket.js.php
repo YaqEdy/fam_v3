@@ -19,6 +19,11 @@
         iSearch = e;
     }
 
+    function closebtn() {
+
+        $('#tutupmodalnyadong').trigger('click');
+    }
+
 
 
 
@@ -47,7 +52,8 @@
                 }
             },
             complete:function(e){
-                $('#idGridAnggotaKel').DataTable().ajax.reload();
+                $('#table_gridHPS').DataTable().ajax.reload();
+                $('#btnCloseModalDataBarang').trigger('click');
             }
         });       
     });
@@ -180,33 +186,7 @@
     }
 
 
-//     function dd_Zone(a) {
 
-//         $.ajax({
-//             url: "<?php echo base_url("/procurement/hps_tiket/ddZone"); ?>?sParam=" + a, // json datasource
-//             dataType: "JSON", // what to expect back from the PHP script, if anything
-//             type: 'post',
-//             cache: false,
-// //            data: {sBranchID: $("#dd_id_branch").val()},
-//             success: function (e) {
-//                 if (a == "B") {
-//                     $("#ddZone2").empty();
-//                     $("#ddZone2").append(e);
-//                 } else if (a == "A") {
-//                     $("#ddZone3").empty();
-//                     $("#ddZone3").append(e);
-//                 } else {
-//                     $("#ddZone").empty();
-//                     $("#ddZone").append(e);
-//                 }
-//             },
-//             complete: function (e) {
-//                 if (a != "A" || a != "B") {
-//                     $("#dd_id_zone").val(a);
-//                 }
-//             }
-//         });
-//     }
 
 
        $("#id_btnSimpan").click(function () {

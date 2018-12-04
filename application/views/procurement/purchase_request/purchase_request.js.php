@@ -7,6 +7,11 @@
     var iItemID = "";
     jQuery(document).ready(function () {
         loadGridOutRequest();
+		$('.date-picker').datepicker({
+			orientation: "left",
+			format: "dd/mm/yyyy",
+			autoclose: true
+		});
     });
     // btnStart();
 	
@@ -14,6 +19,13 @@
 	function check_JenisPR(a){
 		if(a=="Tambahan" || a=="Ulang"){
 			$("#PR_rev").show();
+		}
+		// else if(a=="Sewa"){
+			// $("#PR_sewa").show();
+		// }
+		else{
+			$("#PR_rev").hide();
+			// $("#PR_sewa").hide();
 		}
 	}
 	function delete_pr(a){
@@ -100,6 +112,14 @@
                 $('#load_reqcategory').html(jawaban);
             },
         });
+		if(RequestID == 3){
+			$("#PR_sewa").show();
+			$("#PR_sewa_tgl").show();
+		}
+		else{
+			$("#PR_sewa").hide();
+			$("#PR_sewa_tgl").hide();
+		}
     }
 
     function itemList() {

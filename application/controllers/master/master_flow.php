@@ -18,6 +18,7 @@ class master_flow extends CI_Controller {
             $this->load->model('global_m');
             // $this->load->model('procurement/hps_tiket_mdl', 'hps');
             $this->load->model('datatables_custom');
+            $this->load->model('datatables');
         }
     // }
 
@@ -60,8 +61,9 @@ class master_flow extends CI_Controller {
          $data['dd_status_ke'] = $this->global_m->tampil_data("SELECT flow_id, status_ke FROM MS_FLOW");
          $data['dd_action'] = $this->global_m->tampil_data("SELECT flow_id, action FROM MS_FLOW");
          $data['dd_status_dari'] = $this->global_m->tampil_data("SELECT flow_id, status_dari FROM MS_FLOW");
-         $data['dd_grup'] = $this->global_m->tampil_data("SELECT id, grup FROM MS_GRUP");
+         $data['dd_grup'] = $this->global_m->tampil_data("SELECT id, grup FROM MS_GRUP where id !=0");
          $data['dd_tipe'] = $this->global_m->tampil_data("SELECT ID_TYPE, TYPE_DESC FROM TBL_R_FLOW_TYPE");
+         $data['dd_status'] = $this->global_m->tampil_data("SELECT id, status FROM MS_STATUS");
 
 
         $this->template->set('title', 'HPS TIKET');
@@ -73,25 +75,31 @@ class master_flow extends CI_Controller {
         $id = trim($this->input->post('id'));
         $status = trim($this->input->post('status'));
         $id_grup = $this->global_m->getIdMax('id','MS_GRUP');
-        $grup = trim($this->input->post('status_dari'));
+        $grup = trim($this->input->post('grup'));
         $status = trim($this->input->post('status_ke'));
-        $input_status = trim($this->input->post('status'));
+
+
+        $input_status = trim($this->input->post('input_status'));
+        $id_id = trim($this->input->post('id_id'));
+        $grup_status = trim($this->input->post('grup_status'));
 
 // data dari table flow
+        // print_r($grup_status);die();
+
+
 
         $id_flow_id = trim($this->input->post('id_flow_id'));
         $id_nama_flow = trim($this->input->post('id_nama_flow'));
-        $id_status_dari = trim($this->input->post('id_status_dari'));
+        $id_status_dari = trim($this->input->post('id'));
         $id_aksi = trim($this->input->post('id_aksi'));
-        $id_status_ke = trim($this->input->post('id_status_ke'));
+        $id_status_ke = trim($this->input->post('id'));
         $id_tipe = trim($this->input->post('ID_TYPE'));
         $id_min_hps = trim($this->input->post('id_min_hps'));
         $id_max_hps = trim($this->input->post('id_max_hps'));
 
 
-      
-         // print_r($_POST); die();
-
+      // print_r($grup_status);die();
+        
 
         if($val == '1'){
 
@@ -125,19 +133,23 @@ class master_flow extends CI_Controller {
 
             $data = array(
                'id' => $this->global_m->getIdMax('id','MS_GRUP'),
-               'grup' => $grup
+               'grup' => $grup,
+
 
         );
+           
         $table = "MS_GRUP";
 
         }else{
-            // print_r($id); die();
+           ;
              $data = array(
-
-               'id' => $this->global_m->tampil_data('select [dbo].[xfn_StatusID]('.$id.') as id')[0]->id,
+               
+               'id' => $this->global_m->tampil_data('select [dbo].[xfn_StatusID]('.$grup_status.') as id')[0]->id,
                'status' => $input_status
 
         );
+             // print_r($data);die();
+
         $table = "MS_STATUS";
 
         }
@@ -151,14 +163,14 @@ class master_flow extends CI_Controller {
             $array = array(
                 'act' => 1,
                 'tipePesan' => 'success',
-                'pesan' => 'File has been saved.'
+                'pesan' => 'Data  Berhasil DiSimpan.'
 
             );
         } else {
             $array = array(
                 'act' => 0,
                 'tipePesan' => 'error',
-                'pesan' => 'Data gagal disimpan.'
+                'pesan' => 'Data  gagal disimpan.'
 
             );
         }
@@ -174,7 +186,7 @@ class master_flow extends CI_Controller {
         //     $this->input->post('sSearch') => $_POST['search']['value']
         // );
         $iorder = array('id' => 'asc');
-        $list = $this->datatables_custom->get_datatables('MS_FLOW', $icolumn, $iorder, $iwhere);
+        $list = $this->datatables->get_datatables('MS_FLOW', $icolumn, $iorder, $iwhere);
             // print_r($list);
             // die();
         $data = array();
@@ -197,9 +209,14 @@ class master_flow extends CI_Controller {
             $row[] = $idatatables->flow_id;
             $row[] = $idatatables->nama_flow;
             $row[] = $idatatables->status_dari;
-            $row[] = $idatatables->status_ke;
             $row[] = $idatatables->action;
-            $row[] = '<button title="Ubah" value="'.$kmp.'" onclick="show_flow_(this.value)" type="button" class="btn btn-warning btn-xs" id="updateflow">Update</button> 
+            $row[] = $idatatables->status_ke;
+            $row[] = $idatatables->tipe;
+            $row[] = $idatatables->min_hps;
+            $row[] = $idatatables->max_hps;
+            
+            $row[] = '<button title="Ubah" value="'.$kmp.'" onclick="show_flow_(this.value)" type="button" class="btn btn-warning btn-xs" id="updateflow">Update</button>
+           
                     <button title="Hapus" value="'.$idatatables->id.'" onclick="hapus_flow_(this.value)" type="button" class="btn btn-danger btn-xs">Delete</button>';
             // $row[] = '<button type="button" id="btnUpdate"  class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModalsha">View</button>';       
             // $row[] = $idatatables->id;
@@ -210,8 +227,8 @@ class master_flow extends CI_Controller {
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->datatables_custom->count_all(),
-            "recordsFiltered" => $this->datatables_custom->count_filtered(),
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
             "data" => $data,
         );
         //output to json format
@@ -227,19 +244,24 @@ class master_flow extends CI_Controller {
         //     $this->input->post('sSearch') => $_POST['search']['value']
         // );
         $iorder = array('id' => 'asc');
-        $list = $this->datatables_custom->get_datatables('MS_GRUP', $icolumn, $iorder, $iwhere);
+        $list = $this->datatables->get_datatables('MS_GRUP', $icolumn, $iorder, $iwhere);
             // print_r($list);
             // die();
         $data = array();
         $no = $_POST['start'];
         foreach ($list as $idatatables) {
+            $id = $idatatables->id;
+            $grup = $idatatables->grup;
+            $grp = $id."#".$grup;
 
             
             $row = array();
             $row[] = $idatatables->id;
             $row[] = $idatatables->grup;
-            $row[] = '<button title="Hapus" value="'.$idatatables->id.'" onclick="hapus_grup_(this.value)" 
-                                            type="button" class="btn btn-danger btn-xs">Delete</button>';
+            $row[] = '<button title="Ubah" value="'.$grp.'" onclick="show_grup_(this.value)" type="button" class="btn btn-warning btn-xs" 
+                        id="updategrup">Update</button>
+                      <button title="Hapus" value="'.$idatatables->id.'" onclick="hapus_grup_(this.value)" 
+                        type="button" class="btn btn-danger btn-xs">Delete</button>';
             // $row[] = '<button type="button" id="btnUpdate"  class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModalsha">View</button>';       
             $row[] = $idatatables->id;
 
@@ -249,8 +271,8 @@ class master_flow extends CI_Controller {
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->datatables_custom->count_all(),
-            "recordsFiltered" => $this->datatables_custom->count_filtered(),
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
             "data" => $data,
         );
         //output to json format
@@ -258,7 +280,7 @@ class master_flow extends CI_Controller {
     }
 
  public function ajax_GridSTATUS() {
-        $icolumn = array('id', 'status');
+        $icolumn = array('pid','id', 'status');
 //        $icolumn = array('HpsID');
         $iwhere = array();
         // $iwhere = array(
@@ -266,20 +288,27 @@ class master_flow extends CI_Controller {
         //     $this->input->post('sSearch') => $_POST['search']['value']
         // );
         $iorder = array('id' => 'asc');
-        $list = $this->datatables_custom->get_datatables('MS_STATUS', $icolumn, $iorder, $iwhere);
+        $list = $this->datatables->get_datatables('MS_STATUS', $icolumn, $iorder, $iwhere);
             // print_r($list);
             // die();
         $data = array();
         $no = $_POST['start'];
         foreach ($list as $idatatables) {
+            $pid = $idatatables->pid;
+            $id = $idatatables->id;
+            $status = $idatatables->status;
+            $sts = $pid."#".$id."#".$status;
+
 
             $no++;
             $row = array();
             $row[] = $no;
             $row[] = $idatatables->id;
             $row[] = $idatatables->status;
-            $row[] = '<button title="Hapus" value="'.$idatatables->id.'" onclick="hapus_status_(this.value)" 
-                                            type="button" class="btn btn-danger btn-xs">Delete</button>';
+            $row[] = '<button title="Ubah" value="'.$sts.'" onclick="show_status_(this.value)" type="button" class="btn btn-warning btn-xs" 
+                        id="updatestatus">Update</button>
+                     <button title="Hapus" value="'.$idatatables->id.'" onclick="hapus_status_(this.value)" 
+                        type="button" class="btn btn-danger btn-xs">Delete</button>';
             // $row[] = '<button type="button" id="btnUpdate"  class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModalsha">View</button>';       
             
 
@@ -289,8 +318,8 @@ class master_flow extends CI_Controller {
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->datatables_custom->count_all(),
-            "recordsFiltered" => $this->datatables_custom->count_filtered(),
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
             "data" => $data,
         );
         //output to json format
@@ -398,24 +427,14 @@ class master_flow extends CI_Controller {
        // print_r(trim($this->input->post('user_id'))) ; die();
         $id_flow_id = trim($this->input->post('id_flow_id',TRUE));
         $id_nama_flow = trim($this->input->post('id_nama_flow',TRUE));
-        $id_status_dari = trim($this->input->post('id_status_dari',TRUE));
+        $id_status_dari = trim($this->input->post('id',TRUE));
         $id_aksi = trim($this->input->post('id_aksi',TRUE));
-        $id_status_ke = trim($this->input->post('id_status_ke',TRUE));
+        $id_status_ke = trim($this->input->post('id',TRUE));
         $id_tipe= trim($this->input->post('ID_TYPE',TRUE));
         $id_min_hps = trim($this->input->post('id_min_hps',TRUE));
         $id_max_hps = trim($this->input->post('id_max_hps',TRUE));
         
 
-
-       
-
-        // print_r($_POST); die();
-
-        // $id_kolom = array(
-
-        // 'user_id' => $data['user_id']
-
-        // );
 
         $datax = array(
             'flow_id' => $id_flow_id,
@@ -451,6 +470,83 @@ class master_flow extends CI_Controller {
         $this->output->set_output(json_encode($array));
     }
 
+
+    function edit_grup(){
+        // print_r('dds');
+
+        $id_group = trim($this->input->post('id_group',TRUE));
+        $grup = trim($this->input->post('grup',TRUE));
+
+        // print_r($_POST);
+         $datax = array(
+           
+         
+            'grup' => $grup,
+           
+            );
+
+            print_r($datax);die();
+           $table = "MS_GRUP";
+           $id_kolom = "id";
+           $id_data = $id_group;
+
+          $model = $this->global_m->ubah($table,$datax, $id_kolom,$id_data);
+          // redirect('atk/atk/home');
+           if ($model) {
+            $array = array(
+                'act' => 1,
+                'tipePesan' => 'success',
+                'pesan' => 'Data berhasil diubah.'
+            );
+        } else {
+            $array = array(
+                'act' => 0,
+                'tipePesan' => 'error',
+                'pesan' => 'Data gagal diubah.'
+            );
+        }
+        $this->output->set_output(json_encode($array));
+    }
+
+
+    function edit_status(){
+        // print_r('saa');
+        $id_id = trim($this->input->post('id_id',TRUE));
+        $id_grup_status = trim($this->input->post('grup_status',TRUE));
+        $input_status = trim($this->input->post('input_status',TRUE));
+
+        // print_r($_POST);die();
+
+         $datax = array(
+            // 'pid' => $this->input->post('id_id'),
+            // 'id' => $this->global_m->tampil_data('select [dbo].[xfn_StatusID]('.$id_grup_status.') as id')[0]->id,
+            // 'id' => $this->input->post('grup_status'),
+            'status' => $input_status
+           
+            );
+
+            // print_r($datax);die();
+           $table = "MS_STATUS";
+           $id_kolom = "pid";
+           $id_data = $id_id;
+
+          $model = $this->global_m->ubah($table,$datax, $id_kolom,$id_data);
+          // redirect('atk/atk/home');
+           if ($model) {
+            $array = array(
+                'act' => 1,
+                'tipePesan' => 'success',
+                'pesan' => 'Data berhasil diubah.'
+            );
+        } else {
+            $array = array(
+                'act' => 0,
+                'tipePesan' => 'error',
+                'pesan' => 'Data gagal diubah.'
+            );
+        }
+        $this->output->set_output(json_encode($array));
+    }
 
 }
 

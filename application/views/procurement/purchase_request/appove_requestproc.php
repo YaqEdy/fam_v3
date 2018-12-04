@@ -242,6 +242,8 @@
                                         <div class="col-sm-7">
                                             <div id="prosessloading"/>
 											<input type="hidden" id="RequestID" name="RequestID" value="<?=$approve_pr->RequestID?>">
+											<input type="hidden" id="ID_PO" name="ID_PO" value="<?=$approve_pr->ID_PO?>">
+											<input type="hidden" id="status_po" name="status_po" value="<?=$approve_pr->status_po?>">
 											<input type="hidden" id="flow_id" name="flow_id" value="<?=$approve_pr->flow_id?>">
 											<input type="hidden" id="status" name="status" value="<?=$approve_pr->status?>">
 											<!--
@@ -294,6 +296,8 @@
 		var status = document.getElementById('status').value;
 		var notes = document.getElementById('notes').value;
 		var pic_po = document.getElementById('pic_po').value;
+		var ID_PO = document.getElementById('ID_PO').value;
+		var status_po = document.getElementById('status_po').value;
 		var jns_pengadaan = document.getElementById('jns_pengadaan').value;
         $.post('<?= base_url("/procurement/purchase_request/app_requestproc");?>', {
 			action:action,
@@ -302,6 +306,8 @@
 			status:status,
 			notes:notes,
 			pic_po:pic_po,
+			ID_PO:ID_PO,
+			status_po:status_po,
 			jns_pengadaan:jns_pengadaan
 		},
 		function(data){

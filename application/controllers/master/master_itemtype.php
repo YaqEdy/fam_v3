@@ -125,11 +125,12 @@ function home() {
             0 => 'ItemTypeID',
             1 => 'IClassName',
             2 => 'TypeCode',
-            3 => 'ItemTypeName'
+            3 => 'ItemTypeName',
+            4 => 'UmurFiskal'
            
         );
         
-        $sql = " SELECT Mst_ItemType.IClassID,Mst_ItemType.ItemTypeID,Mst_ItemClass.IClassName,Mst_ItemType.ItemTypeName,Mst_ItemType.TypeCode,Mst_ItemType.Status 
+        $sql = " SELECT Mst_ItemType.IClassID,Mst_ItemType.ItemTypeID,Mst_ItemClass.IClassName,Mst_ItemType.ItemTypeName,Mst_ItemType.TypeCode,Mst_ItemType.Status,Mst_ItemType.UmurFiskal 
         FROM Mst_ItemType
         LEFT JOIN Mst_ItemClass ON Mst_ItemType.IClassID = Mst_ItemClass.IClassID where Mst_ItemType.Status like '%".$iStatus."%'"; 
         $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
@@ -172,6 +173,7 @@ function home() {
             $nestedData[] = $row["IClassName"];
             $nestedData[] = $row["ItemTypeName"];
             $nestedData[] = $row["TypeCode"];
+            $nestedData[] = $row["UmurFiskal"];
 
         if($row["Status"]==0)
             {
@@ -235,6 +237,7 @@ function home() {
         $IClassID = trim(element('IClassID',$i_list));
         $TypeCode = trim(element('TypeCode',$i_list));
         $ItemTypeName = trim(element('ItemTypeName',$i_list));
+        $umurviskal = trim(element('umurviskal',$i_list));
         $iStatus = trim(element('Status',$i_list));
         
         if(element('ItemTypeID',$i_list)=="Generate"){
@@ -244,6 +247,7 @@ function home() {
             'IClassID' => $IClassID,
             'TypeCode' => $TypeCode,
             'ItemTypeName' => $ItemTypeName,
+            'UmurFiskal' => $umurviskal,
             'Status' => $iStatus,
             'CreateBy' => $id_kyw,
             'CreateDate' => date('Y-m-d H:i:s'),
@@ -256,6 +260,7 @@ function home() {
             'IClassID' => $IClassID,
             'TypeCode' => $TypeCode,
             'ItemTypeName' => $ItemTypeName,
+            'UmurFiskal' => $umurviskal,
             'UpdateBy' => $id_kyw,
             'UpdateDate' => date('Y-m-d H:i:s'),
             

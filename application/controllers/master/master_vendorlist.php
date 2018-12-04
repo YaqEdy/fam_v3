@@ -1,113 +1,5 @@
 <?php
 
-// if (!defined('BASEPATH'))
-//     exit('No direct script access allowed');
-
-// class master_vendorlist extends CI_Controller {
-
-//     function __construct() {
-//         parent::__construct();
-//         if ($this->session->userdata("is_login") === FALSE) {
-//             $this->sso->log_sso();
-//         } else {
-//             session_start();
-//             $this->load->model('home_m');
-//             $this->load->model('admin/konfigurasi_menu_status_user_m');
-// //        $this->load->model('zsessions_m');
-//             $this->load->model('global_m');
-//             $this->load->model('master_m/master_vendorlist_m');
-//             $this->load->model('datatables_custom');
-//         }
-
-//     }
-
-//     public function index() {
-//         if ($this->auth->is_logged_in() == false) {
-//             $this->login();
-//         } else {
-//             $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
-
-//             $this->template->set('title', 'Home');
-//             $this->template->load('template/template1', 'global/index', $data);
-//         }
-
-
-//     }
-
-
-
-
-
-//  function getfamvendor() {
-//         // die("j");
-//     //   $jsonarr=[ 
-//     //     'table'=>'PNM_FAM_SUPPLIERS_STG'
-//     // ];
-//     // $curlurl="http://192.168.10.241/OCI/index.php/api/v1/fam/get_all";
-
-//     // $ch = curl_init($curlurl);
-//     // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-//     // curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($jsonarr));
-//     // $responsejson = curl_exec($ch);
-//     // curl_close($ch);
-
-//     // $response=json_decode($responsejson,true);
-//     $data['data'] = [];
-// // print_r($response['data']);die();
-
-//     $no = 1;
-//     // $data['data'] = array();
-//     foreach ( $response['data'] as $row) {
-//         // echo "<pre>";
-//         // print_r($response['data']);
-
-//         $cek=$this->global_m->tampil_data("SELECT COUNT(*) as JML FROM Mst_Vendor WHERE VendorID='".$row['VendorID']."'")[0]->JML;
-
-//         $data['data'][] = array(
-//             // 'no'=>$no,
-//             'VENDOR_NAME'=>$row['VendorName'],
-//             'ALT_VENDOR_NAME'=>$row['VendorAlias'],
-//             'NPWP' => $row['NPWP'],
-//             'ADDRESS1' => $row['VendorAddress'],
-//             'CITY' => $row['IdKabupaten'],
-//             'PROVINCE' => $row['IdProvinsi'],
-//             'COUNTRY' => $row['ID_Country'],
-//             'BRANCH' => $row['ID_Branch'],
-//             'ACCOUNT_LIABILITY' => $row['AccountLiability'],
-//             'ACCOUNT_PREPAYMENT' => $row['AccountPrepayment'],
-//             'CURRENCY' => $row['Currency'],
-//             'TERMS' => $row['Terms'],
-//             'NOMOR_REK_VENDOR1' => $row['NomorRekening'],
-//             'NAMA_REKENING1' => $row['NamaRekening'],
-//             'NAMA_BANK1' => $row['NamaBank'],
-//             'NOMOR_REK_VENDOR2' => $row['NomorRekening2'],
-//             'NAMA_REKENING2' => $row['NamaRekening2'],
-//             'NAMA_BANK2' => $row['NamaBank2'],
-//             'NOMOR_REK_VENDOR3' => $row['NomorRekening3'],
-//             'NAMA_REKENING3' => $row['NamaRekening3'],
-//             'NAMA_BANK3' => $row['NamaBank3'],
-
-//         );
-
-
-
-// // array_push($data['data'], $array);
-
-// // $no++;
-//         // if($cek==0){
-
-//         //     $model=$this->global_m->simpan('TBL_M_LOCATION',$data);
-//         // }else{
-//         //     $model=$this->global_m->ubah('TBL_M_LOCATION',$data,'LOCATION_ID',$row['LOCATION_ID']);    
-//         // }
-//     }
-//     // var_dump($data);
-//     // exit();
-
-//    echo json_encode($model);
-// }
-
-
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
@@ -166,30 +58,6 @@ class master_vendorlist extends CI_Controller {
         $this->template->load('template/template_dataTable', 'master_v/master_vendorlist_v', $data);
     }
 
-// function home() {
-//         $menuId = $this->home_m->get_menu_id('master/master_vendorlist/home');
-//         $data['menu_id'] = $menuId[0]->menu_id;
-//         $data['menu_parent'] = $menuId[0]->parent;
-//         $data['menu_nama'] = $menuId[0]->menu_nama;
-//         $data['menu_header'] = $menuId[0]->menu_header;
-//         $this->auth->restrict($data['menu_id']);
-//         $this->auth->cek_menu($data['menu_id']);
-//         $data['group_user'] = $this->konfigurasi_menu_status_user_m->get_status_user();
-//         $data['item_classprov'] = $this->global_m->tampil_provinsi();
-//         $data['item_country'] = $this->global_m->tampil_country();
-//         $data['item_branch'] = $this->global_m->tampil_branch();
-//         //$data['level_user'] = $this->sec_user_m->get_level_user();
-
-//         $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
-//         $data['menu_all'] = $this->user_m->get_menu_all(0);
-// //            $data['karyawan'] = $this->global_m->tampil_id_desk('master_karyawan', 'id_kyw', 'nama_kyw', 'id_kyw');
-// //            $data['goluser'] = $this->global_m->tampil_id_desk('sec_gol_user', 'goluser_id', 'goluser_desc', 'goluser_id');
-// //            $data['statususer'] = $this->global_m->tampil_id_desk('sec_status_user', 'statususer_id', 'statususer_desc', 'statususer_id');
-
-//         $this->template->set('title', 'Vendor List');
-//         $this->template->load('template/template_dataTable', 'master_v/master_vendorlist_v', $data);
-//     }
-
 
     function get_server_side() {
         $requestData = $_REQUEST;
@@ -239,19 +107,16 @@ class master_vendorlist extends CI_Controller {
          34 => 'NamaProvinsi',
          35 => 'NamaKabupaten',
          36 => 'CountryName',
-         37 => 'BRANCH_DESC'
-         
-
-
-
+         37 => 'BRANCH_DESC',
+         38 => 'City',
+      
 
          // 34 => 'allRek'
 
 
-
      );
 
-        $sql = "select a.Raw_ID, a.VendorID, a.VendorName, a.NamaRekening2, a.NamaBank2, a.NomorRekening2, a.NamaRekening3,  a.NamaBank3, a.NomorRekening3, a.ID_Country, a.ID_Branch, a.PKP, b.FLEX_VALUE, b.BRANCH_DESC, a.AFILIASI, a.NPWP, c.NamaProvinsi, 
+        $sql = "select a.Raw_ID, a.VendorID, a.VendorName, a.City, a.NamaRekening2, a.NamaBank2, a.NomorRekening2, a.NamaRekening3,  a.NamaBank3, a.NomorRekening3, a.ID_Country, a.ID_Branch, a.PKP, b.FLEX_VALUE, b.BRANCH_DESC, a.AFILIASI, a.NPWP, c.NamaProvinsi, 
         d.NamaKabupaten, a.Terms, a.Currency, a.NomorRekening, a.NamaRekening, a.NamaBank, a.Image,
         a.Performance, a.VendorAlias, a.AlamatNPWP, a.AlamatSupplier,a.VendorAddress,a.IdProvinsi, a.IdKabupaten, 
         a.ID_Country,a.MasaBerlakuTDP, e.CountryName,  a.Status, a.AccountLiability, a.AccountPrepayment, a.CreateDate
@@ -315,7 +180,7 @@ class master_vendorlist extends CI_Controller {
         $nestedData[] = $row["AFILIASI"];
         $nestedData[] = $row["NPWP"]; 
         $nestedData[] = $row["NamaProvinsi"];
-        $nestedData[] = $row["NamaKabupaten"];
+        $nestedData[] = $row["City"];
         $nestedData[] = $row["CountryName"];
         $nestedData[] = $row["ID_Branch"];
 
@@ -353,7 +218,7 @@ class master_vendorlist extends CI_Controller {
         }
 
         $nestedData[] = $row["IdProvinsi"]; 
-        $nestedData[] = $row["IdKabupaten"];
+        $nestedData[] = $row["ID_Branch"];
         $nestedData[] = $row["ID_Country"];
         $nestedData[] = $row["ID_Branch"];
         
@@ -447,7 +312,7 @@ function getfamvendor() {
             'ALT_VENDOR_NAME'=>$row['VendorAlias'],
             'NPWP' => $row['NPWP'],
             'ADDRESS1' => $row['VendorAddress'],
-            'CITY' => $row['IdKabupaten'],
+            'City' => $row['city'],
             'PROVINCE' => $row['IdProvinsi'],
             'COUNTRY' => $row['ID_Country'],
             'BRANCH' => $row['ID_Branch'],
@@ -498,7 +363,7 @@ public function ajax_UpdateCategory(){
     $AFILIASI = trim(element('AFILIASI',$i_list));
     $NPWP = trim(element('NPWP',$i_list));
     $NamaProvinsi = trim (element('IdProvinsi',$i_list)); 
-    $NamaKabupaten = trim(element('IdKabupaten',$i_list));
+    $City = trim(element('id_ID_Branch_city',$i_list));
     $IdCountry = trim (element('IdCountry',$i_list)); 
     $ID_Branch = trim (element('ID_Branch',$i_list));
     $AccountLiability = trim (element('AccountLiability',$i_list));
@@ -530,7 +395,7 @@ public function ajax_UpdateCategory(){
         'NPWP' => $NPWP,
         'JoinDate' => date('Y-m-d'),
         'IdProvinsi' => $NamaProvinsi,
-        'IdKabupaten' => $NamaKabupaten,
+        'ID_Branch' => $NamaKabupaten,
         'ID_Country' => $IdCountry,
         'ID_Branch' => $ID_Branch,
         'AccountLiability' => $AccountLiability,
@@ -564,7 +429,7 @@ public function ajax_UpdateCategory(){
         'AFILIASI' => $AFILIASI,
         'NPWP' => $NPWP,
         'IdProvinsi' => $NamaProvinsi,
-        'IdKabupaten' => $NamaKabupaten,
+        'City' => $City,
         'ID_Country' => $CountryName,
         'ID_Branch' => $BRANCH_DESC,
         'AccountLiability' => $AccountLiability,
@@ -624,7 +489,6 @@ echo json_encode($notifikasi);
 
 
 
-
 public function ajax_UpdateImage(){
 $iBranch=explode(',', trim($this->input->get('sBranch')));
 
@@ -636,14 +500,14 @@ $iBranch=explode(',', trim($this->input->get('sBranch')));
     $id_kyw=(int)$this->session->userdata('id_kyw');
 
     $Raw_ID = trim($this->input->post('Raw_ID'));
-
     $VendorID = trim($this->input->post('VendorID'));
-    $VendorName = trim($this->input->post('VendorName'));
+    $VendorName = strtoupper(trim(($this->input->post('VendorName'))));
+
     $VendorAlias = trim($this->input->post('VendorAlias'));
     $AFILIASI = trim($this->input->post('AFILIASI'));
     $NPWP = trim($this->input->post('NPWP'));
     $NamaProvinsi = trim($this->input->post('IdProvinsi'));
-    $NamaKabupaten = trim($this->input->post('IdKabupaten'));
+    $City = strtoupper(trim(($this->input->post('city'))));
     $CountryName = trim($this->input->post('ID_Country'));
     $ID_Branch = trim($this->input->get('sBranch'));
     $AccountLiability = trim($this->input->post('AccountLiability'));
@@ -673,6 +537,7 @@ $iBranch=explode(',', trim($this->input->get('sBranch')));
 
     if($Raw_ID =="Generate"){
        // echo $VendorName;
+        
 
         if(!$this->upload->do_upload("Image")){
             $error = array('error' => $this->upload->display_errors());
@@ -693,7 +558,7 @@ $iBranch=explode(',', trim($this->input->get('sBranch')));
                 'NPWP' => $NPWP,
                 'JoinDate' => date('Y-m-d'),
                 'IdProvinsi' => $NamaProvinsi,
-                'IdKabupaten' => $NamaKabupaten,
+                'City' => $City,
                 'ID_Country' => $CountryName,
                 'ID_Branch' => $ID_Branch,
                 'AccountLiability' => $AccountLiability,
@@ -722,11 +587,13 @@ $iBranch=explode(',', trim($this->input->get('sBranch')));
                 
             );
 
+            // echo $vendorname; exit();
+
               // print_r($data); die();  
 
 
             $model = $this->global_m->simpan('Mst_Vendor', $data);
-            $this->api_m->insert_update_vendor(0,$iBranch,$NamaKabupaten,$NamaProvinsi);
+            $this->api_m->insert_update_vendor(0,$iBranch,$City,$NamaProvinsi);
             if ($model) {
                 $msg = 'Data Berhasil Disimpan';
                 $notifikasi = Array(
@@ -780,7 +647,7 @@ $iBranch=explode(',', trim($this->input->get('sBranch')));
             'NPWP' => $NPWP,
             'JoinDate' => date('Y-m-d'),
             'IdProvinsi' => $NamaProvinsi,
-            'IdKabupaten' => $NamaKabupaten,
+            'City' => $City,
             'ID_Country' => $CountryName,
             'ID_Branch' => $ID_Branch,
             'AccountLiability' => $AccountLiability,
@@ -818,7 +685,7 @@ $iBranch=explode(',', trim($this->input->get('sBranch')));
         'NPWP' => $NPWP,
         'JoinDate' => date('Y-m-d'),
         'IdProvinsi' => $NamaProvinsi,
-        'IdKabupaten' => $NamaKabupaten,
+        'City' => $City,
         'ID_Country' => $CountryName,
         'ID_Branch' => $ID_Branch,
         'AccountLiability' => $AccountLiability,
@@ -847,7 +714,7 @@ $iBranch=explode(',', trim($this->input->get('sBranch')));
 }
 
 $model = $this->global_m->ubah('Mst_Vendor', $data,'Raw_ID',$Raw_ID);
-$this->api_m->insert_update_vendor(1,$iBranch,$NamaKabupaten,$NamaProvinsi);
+$this->api_m->insert_update_vendor(1,$iBranch,$City,$NamaProvinsi);
 if ($model) {
     $msg = 'Data Berhasil DiUpdate';
     $notifikasi = Array(
@@ -996,7 +863,7 @@ public function getUserInfo() {
                'AFILIASI' => trim($row->AFILIASI),
                'NPWP' => trim($row->NPWP),
                'NamaProvinsi' => trim($row->NamaProvinsi),
-               'NamaKabupaten' => trim($row->NamaKabupaten),
+               'City' => trim($row->City),
                'CountryName' => trim($row->CountryName),
                'BRANCH_DESC' => trim($row->BRANCH_DESC),
                'AccountLiability' => trim($row->AccountLiability),

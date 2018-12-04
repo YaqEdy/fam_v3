@@ -212,59 +212,82 @@
         iStatus=e;
         $('#table_gridCategory').DataTable().ajax.reload();
     }
+
+
     $('#table_gridCategory').on('click', '#btnAktiv', function () {
+//        alert('test');
         var iclosestRow = $(this).closest('tr');
         var idata = dataTable.row(iclosestRow).data();
-
-        var i_clsUpdate={
-            ReqTypeID:idata[1],
-            Status: 1
+        console.log(idata);
+        var i_clsUpdate = {
+           ReqTypeID:idata[1], 
+           ReqTypeName:idata[2],
+            Is_trash: 1
         }
-        $.ajax({
-          type: "POST",
-          cache:false,
-          dataType: "JSON",
-      url: "<?php echo base_url("/master/master_requesttype/ajax_UpdateStatusCategory"); ?>", // json datasource
-      data: { sTbl: i_clsUpdate },
-      success: function (e) {
-        // console.log(e);
-        if(e.msgType==true){
-            alert("Apakah Ingin Di Aktifkan");
-            $('#mdl_Update').modal('hide');            
-            $('#table_gridCategory').DataTable().ajax.reload();
-        }else{
-          alert(e.msgTitle);
-      }
-  }
-});
+        bootbox.confirm("Apakah anda yakin meng-aktifkan data " + idata[1] + "?", function (o) {
+            if (o == true) {
+                $.ajax({
+                    type: "POST",
+                    cache: false,
+                    dataType: "JSON",
+                    url: "<?php echo base_url("/master/master_requesttype/ajax_UpdateStatusCategory"); ?>", // json datasource
+                    data: {sTbl: i_clsUpdate},
+                    success: function (e) {
+                        // console.log(e);
+                        if (e.msgType == true) {
+                            bootbox.alert({
+                                message: e.msg,
+                                backdrop: true
+                            });
+                            $('#mdl_Update').modal('hide');
+                            $('#table_gridCategory').DataTable().ajax.reload();
+                        } else {
+                            alert(e.msgTitle);
+                        }
+                    }
+                });
+            }
+        });
     });
 
     $('#table_gridCategory').on('click', '#btnDeactivate', function () {
         var iclosestRow = $(this).closest('tr');
         var idata = dataTable.row(iclosestRow).data();
 
-        var i_clsUpdate={
-            ReqTypeID:idata[1],
-            Status: 0
+        var i_clsUpdate = {
+           ReqTypeID:idata[1], 
+           ReqTypeName:idata[2],
+            Is_trash: 0
         }
-        $.ajax({
-          type: "POST",
-          cache:false,
-          dataType: "JSON",
-      url: "<?php echo base_url("/master/master_requesttype/ajax_UpdateStatusCategory"); ?>", // json datasource
-      data: { sTbl: i_clsUpdate },
-      success: function (e) {
-        // console.log(e);
-        if(e.msgType==true){
-            alert("Apakah Ingin di Non Aktifkan");
-            $('#mdl_Update').modal('hide');            
-            $('#table_gridCategory').DataTable().ajax.reload();
-        }else{
-          alert(e.msgTitle);
-      }
-  }
-});
+
+        bootbox.confirm("Apakah anda yakin meng-nonaktifkan data " + idata[1] + "?", function (o) {
+            if (o == true) {
+                $.ajax({
+                    type: "POST",
+                    cache: false,
+                    dataType: "JSON",
+                    url: "<?php echo base_url("/master/master_requesttype/ajax_UpdateStatusCategory"); ?>", // json datasource
+                    data: {sTbl: i_clsUpdate},
+                    success: function (e) {
+                        // console.log(e);
+                        if (e.msgType == true) {
+                            bootbox.alert({
+                                message: e.msg,
+                                backdrop: true
+                            });
+                            $('#mdl_Update').modal('hide');
+                            $('#table_gridCategory').DataTable().ajax.reload();
+                        } else {
+                            alert(e.msgTitle);
+                        }
+                    }
+                });
+            }
+        });
     });
+
+
+
 
    function clickUpdate(){
     var i_clsUpdate={

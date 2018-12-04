@@ -78,8 +78,8 @@ class hibah extends CI_Controller {
                 'NO' => $key+1,
                 'HIBAH_DESC' => trim($row->HIBAH_DESC),
                 'QTY' => trim($row->QTY),
-                'HIBAH_DARI' => trim($row->HIBAH_DARI),
-                'NOTE' => trim($row->NOTE),
+                'ASAL_HIBAH' => trim($row->ASAL_HIBAH),
+                'KONDISI' => trim($row->KONDISI),
                 'IMAGE_PATH' => trim($row->IMAGE_PATH),
                 'ID_HIBAH' => trim($row->ID_HIBAH),
                 'IS_TRASH' => $status,
@@ -154,17 +154,26 @@ class hibah extends CI_Controller {
         $target_dir = "uploads/hibah/";
         $name_file = $_FILES["file_upload"]["name"];
         $path = $target_dir.$name_file;
+        $tgl = trim($this->input->post('tgl_hibah'));
+
+        $tgl_hibah = date("Y-m-d",strtotime($tgl));
+        // die($tgl);
         if ($TmpAksiBtn <= 0) { //simpan
             $data = array(
                 'HIBAH_DESC' => trim($this->input->post('HIBAH_DESC')),
                 'QTY' => trim($this->input->post('QTY')),
                 'BRANCH' => $this->session->userdata('BranchID'),
                 'DIV' => $this->session->userdata('DivisionID'),
-                'NOTE' => trim($this->input->post('NOTE')),
-                'HIBAH_DARI' => trim($this->input->post('HIBAH_DARI')),
+                // 'NOTE' => trim($this->input->post('NOTE')),
+                'ASAL_HIBAH' => trim($this->input->post('HIBAH_DARI')),
                 'IMAGE_PATH' => $path,
+                'SAFE_VALUE' =>  trim($this->input->post('save_val')),
+                // 'TGL_HIBAH' =>  trim($this->input->post('tgl_hibah')),
+                'TGL_HIBAH' => $tgl_hibah,
+                'KONDISI' =>  trim($this->input->post('kondisi')),
                 'CREATE_BY' => $user,
                 'CREATE_DATE' => $date,
+
             );
         } else { // EDIT
             $data = array(
@@ -179,7 +188,7 @@ class hibah extends CI_Controller {
                 'UPDATE_DATE' => $date,
             );
         }
-//        print_r($data);die();
+       // print_r($data);die();
         $target_dir = "uploads/hibah/";
         $name_file = $_FILES["file_upload"];
         $uploads = $this->upload_kuy($target_dir,$name_file);

@@ -4,10 +4,10 @@
 <!-- END PAGE HEADER-->
 <!-- BEGIN PAGE CONTENT-->
 <!-- KONTEN DI SINI YA -->
- 	<div class="row">
- 		   
+    <div class="row">
+           
 
- 	</div>
+    </div>
 
 
 <div class="row">
@@ -132,7 +132,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                        	
+                                            
 
                                         </tbody>
                                         <tfoot>
@@ -412,7 +412,7 @@
             <div class="modal-content width="2000px"">
                 <div class="modal-responsive">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <button type="button" class="close" id="tutupmodalnyadong" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title">HPS</h4>
                 <div class="modal-body">
                       <div class="row">

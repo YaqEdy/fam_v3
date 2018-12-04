@@ -18,6 +18,7 @@ class hps_tiket extends CI_Controller {
             $this->load->model('global_m');
             $this->load->model('procurement/hps_tiket_mdl', 'hps');
             $this->load->model('datatables_custom');
+            $this->load->model('datatables');
         }
     }
 
@@ -274,7 +275,7 @@ class hps_tiket extends CI_Controller {
         //     $this->input->post('sSearch') => $_POST['search']['value']
         // );
         $iorder = array('id_tiket_hps' => 'asc');
-        $list = $this->datatables_custom->get_datatables('TBL_T_TIKET_HPS', $icolumn, $iorder, $iwhere);
+        $list = $this->datatables->get_datatables('TBL_T_TIKET_HPS', $icolumn, $iorder, $iwhere);
             // print_r($list);
             // die();
         $data = array();
@@ -302,8 +303,8 @@ class hps_tiket extends CI_Controller {
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->datatables_custom->count_all(),
-            "recordsFiltered" => $this->datatables_custom->count_filtered(),
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
             "data" => $data,
         );
         //output to json format
@@ -319,7 +320,7 @@ class hps_tiket extends CI_Controller {
         //     $this->input->post('sSearch') => $_POST['search']['value']
         // );
         $iorder = array('id_tiket_hps' => 'asc');
-        $list = $this->datatables_custom->get_datatables('Mst_HPS', $icolumn, $iorder, $iwhere);
+        $list = $this->datatables->get_datatables('Mst_HPS', $icolumn, $iorder, $iwhere);
 
         $data = array();
         $no = $_POST['start'];
@@ -344,8 +345,8 @@ class hps_tiket extends CI_Controller {
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->datatables_custom->count_all(),
-            "recordsFiltered" => $this->datatables_custom->count_filtered(),
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
             "data" => $data,
         );
         //output to json format

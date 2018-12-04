@@ -15,6 +15,7 @@ class tiket extends CI_Controller {
             $this->load->model('home_m');
             $this->load->model('admin/konfigurasi_menu_status_user_m');
             $this->load->model('global_m');
+            $this->load->model('tiket/tiket_m');
 //            $this->load->model('procurement/ias_mdl');
 //            $this->load->model('procurement/cek_barang_mdl');
             $this->load->model('datatables_custom');
@@ -43,21 +44,81 @@ class tiket extends CI_Controller {
         $this->auth->cek_menu($data['menu_id']);
         $data['group_user'] = $this->konfigurasi_menu_status_user_m->get_status_user();
         //$data['level_user'] = $this->sec_user_m->get_level_user();
-
         $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
         $data['menu_all'] = $this->user_m->get_menu_all(0);
-        $data['dd_jns_budget'] = $this->global_m->tampil_data('SELECT ID_JNS_BUDGET,BUDGET_DESC FROM TBL_R_JNS_BUDGET');
+        $data['dd_jns_budget'] = $this->global_m->tampil_data('SELECT ID_JNS_BUDGET, BUDGET_DESC FROM TBL_R_JNS_BUDGET');
         $data['dd_vendor'] = $this->global_m->tampil_data("SELECT Raw_ID, VendorName FROM Mst_Vendor");
-        // $data['dd_Division'] = $this->global_m->tampil_data("SELECT DivisionID, DivisionName FROM Mst_Division where Is_trash=0");
-        // $data['dd_Branch'] = $this->global_m->tampil_data("SELECT BranchID, BranchName FROM Mst_Branch where Is_trash=0");
-//        print_r($this->global_m->tampil_data('SELECT * FROM TBL_R_JNS_BUDGET'));die();
 
         $this->template->set('title', 'Tiket');
         $this->template->load('template/template_dataTable', 'tiket/tiket_v', $data);
     }
 
+        function simpan_spd() {
+            // die('asd');
+            $ID_TIKET = $this->global_m->getIdMax('ID_TIKET','TBL_T_TIKET');
+            $this->load->library('upload');
+        $config['upload_path'] = './uploads/tiket/'; //path folder
+        $config['max_size'] = '0'; //maksimum besar file 5M
+        $config['allowed_types'] = '*'; //type yang dapat diakses bisa anda sesuaikan
+        $atflag = 'T';
+        $atwaktuupdate = date("Y/m/d H:i:s");
+
+        $files = $_FILES;
+        $nilai = 0;
+
+        for ($i = 0; $i < count($_FILES['Image']['name']); $i++) {
+            $namafile = $files['Image']['name'][$i];
+            $ext = pathinfo($namafile, PATHINFO_EXTENSION);
+            $namafileasli = explode(".", strrev($namafile));
+            $nama_file_baru = $this->global_m->generateRandomString();
+            $nama_file_baru2 = $nama_file_baru . "." . $ext;
+            $namafile = $nama_file_baru2;
+            $_FILES['userfile']['name'] = $nama_file_baru2;
+            $_FILES['userfile']['type'] = $files['Image']['type'][$i];
+            $_FILES['userfile']['tmp_name'] = $files['Image']['tmp_name'][$i];
+            $_FILES['userfile']['error'] = $files['Image']['error'][$i];
+            $_FILES['userfile']['size'] = $files['Image']['size'][$i];
+
+            $this->upload->initialize($config);
+            if ($this->upload->do_upload('userfile')) {
+            $data = $this->upload->data();
+            $Image = $data['file_name'];
+
+             $data = array(
+                // 'ID_TIKET' => $ID_TIKET,
+                'SPD_PATH' => 'uploads/tiket/'.$Image,
+                'UPDATE_DATE' => date("Y/m/d H:i:s"),
+                'UPDATE_BY' => $this->session->userdata('user_id')
+
+            );
+               // print_r($data); die();
+                $table = 'TBL_T_TIKET';
+                $id_kolom = 'ID_TIKET';
+                // $id_data = $tik_explode[$i];
+                $model = $this->global_m->ubah($table, $data, $id_kolom);
+             // $model = $this->global_m->ubah('TBL_T_TIKET', $data);
+
+
+        if ($model) {
+            $array = array(
+                'act' => 1,
+                'tipePesan' => 'success',
+                'pesan' => 'File has been saved.'
+            );
+        } else {
+            $array = array(
+                'act' => 0,
+                'tipePesan' => 'error',
+                'pesan' => 'Data gagal disimpan.'
+            );
+        }
+            $this->output->set_output(json_encode($array));
+         }
+     }
+ }
+
         function simpan($icount) {
-                     // die('asd');
+       // die('asd');
         
         $NO_SPD = trim($this->input->post('NO_SPD'));
         $SPD = trim($this->input->post('SPD'));
@@ -72,7 +133,6 @@ class tiket extends CI_Controller {
         $akomodasi = trim($this->input->post('akomodasi'));
         $ID_TIKET = $this->global_m->getIdMax('ID_TIKET','TBL_T_TIKET');
         $note = trim($this->input->post('note'));
-
        //  echo "<pre>";
        // print_r($_POST);die();        
         $this->load->library('upload');
@@ -116,17 +176,15 @@ class tiket extends CI_Controller {
             'ASAL_PULANG' => $asal_pulang,
             'TUJUAN_PULANG' => $tujuan_pulang,
             'TGL_PULANG' => $tanggal_pulang,
+            'STATUS_TIKET' => 0,
             'SPD_PATH' => 'uploads/tiket/'.$Image,
             'CREATE_DATE' => date('Y-m-d h:i:s'),
             'CREATE_BY' => $this->session->userdata('user_id')
 
         );
-       //    echo "<pre>";
-       // print_r($data);
         $model = $this->global_m->simpan('TBL_T_TIKET', $data);
     }
 
-            // $dataxz = array();
         for($i=1;$i<=$icount;$i++){
             // print_r($i); die();
         $datax = array(
@@ -142,7 +200,6 @@ class tiket extends CI_Controller {
         );
        //       echo "<pre>";
        // print_r($datax); 
-
             $model = $this->global_m->simpan('TBL_T_TIKET_DETAIL', $datax);
 
 
@@ -159,17 +216,14 @@ class tiket extends CI_Controller {
                 'pesan' => 'Data gagal disimpan.'
             );
         }
-        $this->output->set_output(json_encode($array));
+            $this->output->set_output(json_encode($array));
+        }
     }
 }
-
-}
       
-
      function hapus_itembarang () { //hapus
         $id_data = trim($this->input->post('data'));
 //        print_r($id_data);die();
-       
         $table = "TBL_T_ATK_PR_GROUP_TEMP";
         $id_kolom = "id";
       
@@ -192,43 +246,173 @@ class tiket extends CI_Controller {
     }
 
         public function ajax_GridPRTiket() {
-        $icolumn = array('ID_TIKET', 'ID_TIKET_DETAIL', 'TGL_PR', 'NO_SPD', 'SPD_PATH', 'AKOMODASI', 'AN_TIKET', 'JNS_IDENTITAS', 'NO_IDENTITAS', 'ASAL_BERANGKAT', 'TUJUAN_BERANGKAT', 'TGL_BERANGKAT', 'TGL_PULANG', 'KATEGORI');
-        $iwhere = array();
-        // $iwhere = array(
-        //     'ZoneID' => $this->input->post('sZone'),
-        //     $this->input->post('sSearch') => $_POST['search']['value']
-        // );
+        $icolumn = array('ID_TIKET', 'NOTE', 'TGL_PR', 'NO_SPD', 'SPD_PATH', 'AKOMODASI', 'ASAL_BERANGKAT', 'TUJUAN_BERANGKAT', 'TGL_BERANGKAT', 'TGL_PULANG');
+        $iwhere = array('STATUS_TIKET' => '0');
+
         $iorder = array('ID_TIKET' => 'asc');
-        $list = $this->datatables_custom->get_datatables('VW_TIKET', $icolumn, $iorder, $iwhere);
+        $list = $this->datatables_custom->get_datatables('TBL_T_TIKET', $icolumn, $iorder, $iwhere);
             // print_r($list);
             // die();
+        $data = array();
+        $no = $_POST['start'];
+        foreach ($list as $idatatables) {
+             if (strlen(trim($idatatables->SPD_PATH)) > 0){
+                $str1 = 'Tersedia'; 
+            } else {
+                $str1 = '<b><i>SPD Belum di unggah</i></b>';
+            }
+            // $no++;
+            $row = array();
+             // $row[] = $no; 
+            // $row[] = $idatatables->ID_TIKET_DETAIL;
+            $row[] = $idatatables->ID_TIKET;
+            $row[] = $idatatables->ID_TIKET;
+            $row[] = $idatatables->ID_TIKET;
+            $row[] = date('d-m-Y', strtotime($idatatables->TGL_PR) ); 
+            $row[] = $idatatables->NO_SPD;
+            $row[] = $str1;
+            $row[] = $idatatables->AKOMODASI;
+            $row[] = $idatatables->NOTE;
+            $row[] = $idatatables->ASAL_BERANGKAT;
+            $row[] = $idatatables->TUJUAN_BERANGKAT;
+            $row[] = date('d-m-Y', strtotime($idatatables->TGL_BERANGKAT) ); 
+            $row[] = date('d-m-Y', strtotime($idatatables->TGL_PULANG) ); 
+            $data[] = $row;
+        }
+
+
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->datatables_custom->count_all(),
+            "recordsFiltered" => $this->datatables_custom->count_filtered(),
+            "data" => $data,
+        );
+        //output to json format
+        echo json_encode($output);
+    }
+
+        public function Pilih_tiketPopUp() {
+        $id = $this->input->post('sID_TIKET',true);
+        $icolumn = array('ID_TIKET','ID_KRY', 'STATUS_TIKET', 'AN_TIKET', 'JNS_IDENTITAS', 'NO_IDENTITAS' );
+        $iwhere = array('STATUS_TIKET IN' => $id );
+        $ID_TIKET_DETAIL =  explode(',', $this->input->post('sID_TIKET'));
+        $iorder = array('ID_TIKET' => 'asc');
+        // print_r($_POST); die();
+        $list = $this->datatables_custom->get_datatables('TBL_T_TIKET_DETAIL', $icolumn, $iorder, array(),array(),$ID_TIKET_DETAIL,'ID_TIKET');
+//         echo "<pre>";
+//             print_r($this->db->last_query());
+//             die();
         $data = array();
         $no = $_POST['start'];
         foreach ($list as $idatatables) {
 
             $no++;
             $row = array();
-            // $row[] = '<input type="checkbox" name="check">';
-            $row[] = $no; 
-            $row[] = $idatatables->ID_TIKET_DETAIL;
+            $row[] = $idatatables->AN_TIKET;
+            $row[] = $idatatables->JNS_IDENTITAS;
+            $row[] = $idatatables->NO_IDENTITAS;
+            $row[] = $idatatables->ID_KRY;
+            $data[] = $row;
+        }
+
+        $output = array(
+            "STATUS_TIKET" => 1,
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->datatables_custom->count_all(),
+            "recordsFiltered" => $this->datatables_custom->count_filtered(),
+            "data" => $data,
+        );
+        //output to json format
+        echo json_encode($output);
+    }
+
+        public function ajax_Grid_Etiket() {
+        $icolumn = array('ID_TIKET', 'NOTE', 'ID_TIKET_DETAIL', 'TGL_PR', 'NO_SPD', 'SPD_PATH', 'AKOMODASI', 'AN_TIKET', 'JNS_IDENTITAS', 'NO_IDENTITAS', 'TIKET_PATH', 'ASAL_BERANGKAT', 'TUJUAN_BERANGKAT', 'TGL_KIRIM', 'TRAVEL', 'TGL_BERANGKAT', 'TGL_PULANG', 'STATUS_TIKET', 'KATEGORI');
+        $iwhere = array('STATUS_TIKET' => '1');
+
+        $iorder = array('ID_TIKET_DETAIL' => 'desc');
+        $list = $this->datatables_custom->get_datatables('VW_TIKET', $icolumn, $iorder, $iwhere);
+            // print_r($list);
+            // die();
+        $data = array();
+        $no = $_POST['start'];
+        foreach ($list as $idatatables) {
+            if (strlen(trim($idatatables->SPD_PATH)) > 0){
+                $str1 = 'Tersedia'; 
+            } else {
+                $str1 = '<b><i>SPD Belum di unggah</i></b>';
+            }
+
+             if (strlen(trim($idatatables->TIKET_PATH)) > 0){
+                $str2 = 'Tersedia'; 
+            } else {
+                $str2 = '<b><i>E-Tiket belum di unggah</i></b>';
+            }
+
+            $no++;
+            $row = array();
             $row[] = $idatatables->ID_TIKET;
-            $row[] = $idatatables->TGL_PR;
+            $row[] =  date('d-m-Y', strtotime($idatatables->TGL_PR)); 
+            // $row[] = $idatatables->ID_TIKET;
             $row[] = $idatatables->NO_SPD;
-            $row[] = $idatatables->SPD_PATH;
-            $row[] = $idatatables->AKOMODASI;
+            $row[] = $str1;
             $row[] = $idatatables->AN_TIKET;
             $row[] = $idatatables->JNS_IDENTITAS;
             $row[] = $idatatables->NO_IDENTITAS;
             $row[] = $idatatables->ASAL_BERANGKAT;
             $row[] = $idatatables->TUJUAN_BERANGKAT;
             $row[] = $idatatables->KATEGORI;
-            $row[] = $idatatables->TGL_BERANGKAT;
-            $row[] = $idatatables->TGL_PULANG;
-            // $row[] = '<button type="button" id="btnUpdate"  class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModalsha">View</button>';       
-            
-            
+            $row[] = date('d-m-Y', strtotime($idatatables->TGL_BERANGKAT)); 
+            $row[] = date('d-m-Y', strtotime($idatatables->TGL_PULANG)); 
+            $row[] = $idatatables->AKOMODASI;
+            $row[] = date('d-m-Y', strtotime($idatatables->TGL_KIRIM)); 
+            $row[] = $idatatables->TRAVEL;
+            $row[] = $str2;
+            // $row[] = $idatatables->NOTE;            
+            $row[] = '<a href="#" data-toggle="modal" onclick="editDataSPD('.$idatatables->ID_TIKET.')" data-target="#myModaluploadSPD" class="btn btn-xs btn-primary">SPD</a> <a href="#" data-toggle="modal" onclick="editData('.$idatatables->ID_TIKET_DETAIL.')"   data-target="#myModalUploadEtiket" class="btn btn-xs btn-primary">Upload E-Tiket</a>';
+            $data[] = $row;
+        }
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->datatables_custom->count_all(),
+            "recordsFiltered" => $this->datatables_custom->count_filtered(),
+            "data" => $data,
+        );
+        //output to json format
+        echo json_encode($output);
+    }
 
+      public function ajax_GridAddPRtoInv() {
+        $icolumn = array('ID_TIKET', 'NOTE', 'TGL_PR', 'NO_SPD', 'SPD_PATH', 'AKOMODASI', 'ASAL_BERANGKAT', 'TUJUAN_BERANGKAT', 'TGL_BERANGKAT', 'TGL_PULANG');
+        $iwhere = array('STATUS_TIKET' => '1');
 
+        $iorder = array('ID_TIKET' => 'asc');
+        $list = $this->datatables_custom->get_datatables('TBL_T_TIKET', $icolumn, $iorder, $iwhere);
+            // print_r($list);
+            // die();
+        $data = array();
+        $no = $_POST['start'];
+        foreach ($list as $idatatables) {
+            if (strlen(trim($idatatables->SPD_PATH)) > 0){
+                $str1 = 'Tersedia'; 
+            } else {
+                $str1 = '<b><i>SPD Belum di unggah</i></b>';
+            }
+
+            $no++;
+            $row = array();
+             // $row[] = $no; 
+            $row[] = $idatatables->ID_TIKET;
+            $row[] = date('d-m-Y', strtotime($idatatables->TGL_PR)); 
+            $row[] = $idatatables->NO_SPD;
+            $row[] = $str1;
+            $row[] = $idatatables->AKOMODASI;
+            $row[] = $idatatables->ASAL_BERANGKAT;
+            $row[] = $idatatables->TUJUAN_BERANGKAT;
+            $row[] = date('d-m-Y', strtotime($idatatables->TGL_BERANGKAT)); 
+            $row[] = date('d-m-Y', strtotime($idatatables->TGL_PULANG)); 
+
+            $row[] =  '<button class="btn btn blue" href="#" onclick="pilihtermin('.$idatatables->ID_TIKET.')"  data-toggle="modal"  data-target="#myModalInvoice">Pilih</button>';
             $data[] = $row;
         }
 
@@ -242,13 +426,52 @@ class tiket extends CI_Controller {
         echo json_encode($output);
     }
 
-        public function Pilih_tiketPopUp() {
-        $icolumn = array('ID_TIKET_DETAIL', 'TGL_PR', 'NO_SPD', 'SPD_PATH', 'AKOMODASI', 'AN_TIKET', 'JNS_IDENTITAS', 'NO_IDENTITAS', 'ASAL_BERANGKAT', 'TUJUAN_BERANGKAT', 'TGL_BERANGKAT', 'TGL_PULANG', 'KATEGORI');
-        $iwhere = array();
+       public function Pilih_tiketPopUpInvoice() {
+
+         $id = $this->input->post('sID_TIKET',true);
+        $icolumn = array('ID_TIKET','ID_KRY', 'STATUS_TIKET', 'AN_TIKET', 'CREATE_DATE', 'JNS_IDENTITAS', 'NO_IDENTITAS' );
+        $iwhere = array('STATUS_TIKET IN' => $id );
         $ID_TIKET_DETAIL =  explode(',', $this->input->post('sID_TIKET'));
-        $iorder = array('ID_TIKET_DETAIL' => 'asc');
-        // print_r($ID_TIKET_DETAIL); die();
-        $list = $this->datatables_custom->get_datatables('VW_TIKET', $icolumn, $iorder, array(),array(),$ID_TIKET_DETAIL,'ID_TIKET_DETAIL');
+        $iorder = array('ID_TIKET' => 'asc');
+        // print_r($_POST); die();
+        $list = $this->datatables_custom->get_datatables('TBL_T_TIKET_DETAIL', $icolumn, $iorder, array(),array(),$ID_TIKET_DETAIL,'ID_TIKET');
+        // echo "<pre>";
+        //     print_r($this->db->last_query());
+        //     die();
+        $data = array();
+        $no = $_POST['start'];
+        foreach ($list as $idatatables) {
+
+            $no++;
+            $row = array();
+            // $row[] = $idatatables->ID_TIKET;
+            $row[] = $idatatables->ID_TIKET;
+            $row[] = date('d-m-Y', strtotime($idatatables->CREATE_DATE)); 
+            $row[] = $idatatables->AN_TIKET;
+            $row[] = $idatatables->JNS_IDENTITAS;
+            $row[] = $idatatables->NO_IDENTITAS;
+            $row[] = $idatatables->ID_KRY;
+            $data[] = $row;
+        }
+
+        $output = array(
+            "STATUS_TIKET" => 1,
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->datatables_custom->count_all(),
+            "recordsFiltered" => $this->datatables_custom->count_filtered(),
+            "data" => $data,
+        );
+        //output to json format
+        echo json_encode($output);
+
+    }
+
+          public function ajax_Grid_InvoicePembayaran() {
+        $icolumn = array('ID_TIKET', 'ID_TERMIN', 'TERMIN', 'PERSENTASE', 'NILAI', 'STATUS', 'TGL_JATUH_TEMPO');
+        $iwhere = array('STATUS' => '0');
+
+        $iorder = array('ID_TERMIN' => 'asc');
+        $list = $this->datatables_custom->get_datatables('TBL_T_TIKET_TERMIN', $icolumn, $iorder, $iwhere);
             // print_r($list);
             // die();
         $data = array();
@@ -257,33 +480,13 @@ class tiket extends CI_Controller {
 
             $no++;
             $row = array();
-            // $row[] = '<input type="checkbox" name="check">';
-            // $row[] = $no; 
-            $row[] = $idatatables->AKOMODASI;
-            $row[] = $idatatables->AN_TIKET;
-            $row[] = $idatatables->JNS_IDENTITAS;
-            $row[] = $idatatables->NO_IDENTITAS;
-            $row[] = $idatatables->ASAL_BERANGKAT;
-            $row[] = $idatatables->TUJUAN_BERANGKAT;
-            $row[] = $idatatables->KATEGORI;
-            $row[] = $idatatables->TGL_BERANGKAT;
-            $row[] = $idatatables->TGL_PULANG;
-            $row[] = $idatatables->ID_TIKET_DETAIL;
-            // $row[] = $idatatables->TGL_PR;
-            // $row[] = $idatatables->NO_SPD;
-            // $row[] = $idatatables->SPD_PATH;
-            // $row[] = $idatatables->AKOMODASI;
-            
-            
-            
-            
-            
-            
-            // $row[] = '<button type="button" id="btnUpdate"  class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModalsha">View</button>';       
-            
-            
-
-
+             // $row[] = $no; 
+            $row[] = $idatatables->ID_TIKET;
+            $row[] = 'Termin'.'&nbsp;'.$idatatables->TERMIN;
+            $row[] = $idatatables->PERSENTASE.'%';
+            $row[] = 'Rp.'.number_format(($idatatables->NILAI), 2);
+            $row[] = date('d-m-Y', strtotime($idatatables->TGL_JATUH_TEMPO)); 
+            $row[] =  '<button class="btn btn blue" href="#" onclick="editpayment('.$idatatables->ID_TERMIN.')"  data-toggle="modal"  data-target="#ModalInputInvoice">BAYAR INVOICE</button>';
             $data[] = $row;
         }
 
@@ -295,6 +498,448 @@ class tiket extends CI_Controller {
         );
         //output to json format
         echo json_encode($output);
+    }
+
+              public function ajax_Grid_Payment() {
+        $icolumn = array('ID_TIKET','ID_TIKET_INVOICE', 'NILAI_DIBAYARKAN', 'CREATE_DATE');
+        $iwhere = array();
+
+        $iorder = array('ID_TIKET_INVOICE' => 'asc');
+        $list = $this->datatables_custom->get_datatables('TBL_T_TIKET_INVOICE', $icolumn, $iorder, $iwhere);
+            // print_r($list);
+            // die();
+        $data = array();
+        $no = $_POST['start'];
+        foreach ($list as $idatatables) {
+
+            $no++;
+            $row = array();
+            $row[] = $idatatables->ID_TIKET;
+            $row[] = date('d-m-Y', strtotime($idatatables->CREATE_DATE)); 
+            $row[] = 'Rp.'.number_format(($idatatables->NILAI_DIBAYARKAN), 2);
+            $row[] = 'TERBAYAR';
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->datatables_custom->count_all(),
+            "recordsFiltered" => $this->datatables_custom->count_filtered(),
+            "data" => $data,
+        );
+        //output to json format
+        echo json_encode($output);
+    }
+
+   public function downloadTiket() {
+        // die('asd');
+        $data ['ID_TIKET2'] =  explode(',', $this->input->get('sID_TIKET'));
+        $data ['STATUS_TIKET'] = trim($this->input->get('STATUS_TIKET'));
+        $data ['Raw_ID'] = trim($this->input->post('Raw_ID'));
+        // print_r($data);die();
+
+        // $Raw_ID = trim($this->input->post('Raw_ID'));
+        // print_r(); die();
+
+
+        $ID_TIKET =  $this->input->get('sID_TIKET');
+        $Tgl_kirim =  $this->input->get('sTgl_kirim');
+        $Vendor =  $this->input->get('sVendor');
+        $this->load->helper('download');
+        $this->load->library('Excel/phpexcel');
+        // print_r($Tgl_kirim); 
+        // print_r($Vendor); die();
+        //membuat objek
+        $objPHPExcel = new PHPExcel();
+        //activate worksheet number 1
+         $objPHPExcel->setActiveSheetIndex(0);
+        //name the worksheet
+        $objPHPExcel->getActiveSheet()->setTitle('PR Tiket');
+
+        // $users = (array)$users[0];
+        //set cell A1 content with some text
+        // $objPHPExcel->getActiveSheet()->setCellValue('A6', 'PR');
+        $objPHPExcel->getActiveSheet()->setCellValue('B1', 'DAFTAR PR');
+
+        $objPHPExcel->getActiveSheet()->setCellValue('B3', 'TANGGAL KIRIM');
+        $objPHPExcel->getActiveSheet()->setCellValue('B4', 'VENDOR');
+        // $objPHPExcel->getActiveSheet()->setCellValue('C3',  $date('Y-m-d h:i:s'));
+        $objPHPExcel->getActiveSheet()->setCellValue('C3',  date('Y-m-d h:i:s'));
+        $objPHPExcel->getActiveSheet()->setCellValue('C4', $Vendor);
+        // $objPHPExcel->getActiveSheet()->getStyle('C3')->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+
+        $objPHPExcel->getActiveSheet()->setCellValue('B6', 'AKOMODASI');
+        $objPHPExcel->getActiveSheet()->setCellValue('C6', 'AN TIKET');
+        $objPHPExcel->getActiveSheet()->setCellValue('D6', 'GENDER');
+        $objPHPExcel->getActiveSheet()->setCellValue('E6', 'NIP');
+        $objPHPExcel->getActiveSheet()->setCellValue('F6', 'JENIS IDENTITAS');
+        $objPHPExcel->getActiveSheet()->setCellValue('G6', 'NO IDENTITAS');
+        $objPHPExcel->getActiveSheet()->setCellValue('H6', 'ASAL');
+        $objPHPExcel->getActiveSheet()->setCellValue('I6', 'TUJUAN');
+        $objPHPExcel->getActiveSheet()->setCellValue('J6', 'KATEGORI PERJALANAN');
+        $objPHPExcel->getActiveSheet()->setCellValue('K6', 'TANGGAL BERANGKAT');
+        $objPHPExcel->getActiveSheet()->setCellValue('L6', 'MASKAPAI');
+        $objPHPExcel->getActiveSheet()->setCellValue('M6', 'TANGGAL PULANG');
+        $objPHPExcel->getActiveSheet()->setCellValue('N6', 'MASKAPAI');
+        // print_r( $objPHPExcel); die();
+
+    
+        $data = $this->tiket_m->getAllTiket($ID_TIKET);
+        $counter = 7;
+        // $counter1 = 3;
+        // for($i=1;$i<=$icount;$i++){
+        foreach ($data as $key) {
+            // $objPHPExcel->getActiveSheet()->setCellValue('C'. $counter1, $key->VendorName);
+            $objPHPExcel->getActiveSheet()->setCellValue('A'. $counter, $key->ID_TIKET);
+            $objPHPExcel->getActiveSheet()->setCellValue('B'. $counter, $key->AKOMODASI);
+            $objPHPExcel->getActiveSheet()->setCellValue('C'. $counter, $key->AN_TIKET);
+            $objPHPExcel->getActiveSheet()->setCellValue('E'. $counter, '');
+            $objPHPExcel->getActiveSheet()->setCellValue('E'. $counter, '');
+            $objPHPExcel->getActiveSheet()->setCellValue('F'. $counter, $key->JNS_IDENTITAS);
+            $objPHPExcel->getActiveSheet()->setCellValue('G'. $counter, $key->NO_IDENTITAS);
+            $objPHPExcel->getActiveSheet()->setCellValue('H'. $counter, $key->ASAL_BERANGKAT);
+            $objPHPExcel->getActiveSheet()->setCellValue('I'. $counter, $key->TUJUAN_BERANGKAT);
+            $objPHPExcel->getActiveSheet()->setCellValue('J'. $counter, $key->KATEGORI);
+            $objPHPExcel->getActiveSheet()->setCellValue('K'. $counter, $key->TGL_BERANGKAT);
+            $objPHPExcel->getActiveSheet()->setCellValue('L'. $counter, $key->NOTE);
+            $objPHPExcel->getActiveSheet()->setCellValue('M'. $counter, $key->TGL_PULANG);
+            $objPHPExcel->getActiveSheet()->setCellValue('N'. $counter, $key->NOTE);
+            $objPHPExcel->getActiveSheet()->getStyle('G1:G' . $counter)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
+            $counter++;
+
+
+
+            // $objPHPExcel->getActiveSheet()->setCellValue('E' . $counter, '-');
+        //     $counter++;
+        // }
+    }
+
+        // //make the font become bold
+        $objPHPExcel->getActiveSheet()->getStyle('B1')->getFont()->setBold(true);
+        $objPHPExcel->getActiveSheet()->getStyle('B3')->getFont()->setBold(true);
+        $objPHPExcel->getActiveSheet()->getStyle('B4')->getFont()->setBold(true);
+        $objPHPExcel->getActiveSheet()->getStyle('B6')->getFont()->setBold(true);
+        $objPHPExcel->getActiveSheet()->getStyle('C6')->getFont()->setBold(true);
+        $objPHPExcel->getActiveSheet()->getStyle('D6')->getFont()->setBold(true);
+        $objPHPExcel->getActiveSheet()->getStyle('E6')->getFont()->setBold(true);
+        $objPHPExcel->getActiveSheet()->getStyle('F6')->getFont()->setBold(true);
+        $objPHPExcel->getActiveSheet()->getStyle('G6')->getFont()->setBold(true);
+        $objPHPExcel->getActiveSheet()->getStyle('H6')->getFont()->setBold(true);
+        $objPHPExcel->getActiveSheet()->getStyle('I6')->getFont()->setBold(true);
+        $objPHPExcel->getActiveSheet()->getStyle('J6')->getFont()->setBold(true);
+        $objPHPExcel->getActiveSheet()->getStyle('K6')->getFont()->setBold(true);
+        $objPHPExcel->getActiveSheet()->getStyle('L6')->getFont()->setBold(true);
+        $objPHPExcel->getActiveSheet()->getStyle('M6')->getFont()->setBold(true);
+        $objPHPExcel->getActiveSheet()->getStyle('N6')->getFont()->setBold(true);
+
+        ob_end_clean();
+
+        
+
+        //Header
+        $filename = "list_PR_Tiket.xlsx";
+        header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+        header("Content-type: application/vnd.ms-excel");
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header("Pragma: no-cache");
+        header("Expires: 0");
+
+        //Save ke .xlsx, kalau ingin .xls, ubah 'Excel2007' menjadi 'Excel5'
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+
+
+        //Download
+        $objWriter->save("php://output");
+
+         $ID_TIKET =  explode(',', $this->input->get('sID_TIKET'));
+        foreach ($ID_TIKET as $val) {
+            $data = array( 
+                // 'TGL_KIRIM' => date("d-m-Y", strtotime($Tgl_kirim)), 
+                'TGL_KIRIM' => date('Y-m-d h:i:s'),
+                'TRAVEL' => $Vendor,
+                'STATUS_TIKET' => 1,
+                'UPDATE_DATE' => date("Y/m/d H:i:s"),
+                'UPDATE_BY' => $this->session->userdata('user_id')
+            );
+            $model = $this->global_m->ubah('TBL_T_TIKET', $data ,'ID_TIKET' ,$val);
+
+             $idata = array( 
+
+                        'STATUS_TIKET' => 1,
+                        'UPDATE_DATE' => date("Y/m/d H:i:s"),
+                        'UPDATE_BY' => $this->session->userdata('user_id')
+                    );
+            $model = $this->global_m->ubah('TBL_T_TIKET_DETAIL', $idata ,'ID_TIKET' ,$val);
+        } 
+
+     }
+
+
+
+        function simpan_invoice (){
+         // die('asd');  
+        $NILAI = trim($this->input->post('NILAI'));
+        $ID_TIKET2 = trim($this->input->post('ID_TIKET2'));    
+
+        $data = array(
+
+            'ID_TIKET' => $ID_TIKET2,
+            'NILAI_DIBAYARKAN' => $NILAI,
+            'CREATE_DATE' => date('Y-m-d h:i:s'),
+            'CREATE_BY' =>  $this->session->userdata('user_id'),
+           // 'status' => 0 //aktif
+        );
+         // print_r($data);
+        $table = "TBL_T_TIKET_INVOICE";
+        $model = $this->global_m->simpan($table, $data);
+        // print_r($_POST); die();
+
+        $ID_TERMIN = trim($this->input->post('ID_TERMIN'));   
+
+       $datax = array(
+                // 'ID_TERMIN' => $ID_TERMIN,
+                'STATUS' =>1,
+                'UPDATE_DATE' => date("Y/m/d H:i:s"),
+                'UPDATE_BY' => $this->session->userdata('user_id')
+
+            );
+       // print_r($datax); die();
+       $model = $this->global_m->ubah('TBL_T_TIKET_TERMIN', $datax, 'ID_TERMIN', $ID_TERMIN );
+
+        if ($model) {
+            $array = array(
+                'act' => 1,
+                'tipePesan' => 'success',
+                'pesan' => 'File has been saved.'
+
+            );
+        } else {
+            $array = array(
+                'act' => 0,
+                'tipePesan' => 'error',
+                'pesan' => 'Data gagal disimpan.'
+
+            );
+        }
+        $this->output->set_output(json_encode($array));
+    }
+
+     function simpan_termin(){
+         // die('asd');
+        // $ID_TIKET = $this->global_m->getIdMax('ID_TIKET','TBL_T_TIKET');
+        $ID_TIKET = trim($this->input->get('ID_TIKET'));
+        $pay = trim($this->input->post('pay'));
+        $payment = trim($this->input->post('payment'));
+        $pay_term = trim($this->input->post('pay_term'));
+        $status = trim($this->input->post('status'));
+        $jml = trim($this->input->post('jml'));
+
+        // print_r($_POST); die();
+        // for($ii=1;$ii<=$icounting;$ii++){
+
+            if ($jml > 0) {
+        for ($i=1; $i <=$jml ; $i++) { 
+            $pay=$_POST['pay'.$i];
+            if (isset($pay)) {
+                $nilpay=$_POST['nilpay'.$i];
+                $tglpay=$_POST['tglpay'.$i];
+                $datax[] = array(
+                    'ID_TIKET' => $ID_TIKET,
+                    'TGL_JATUH_TEMPO' =>  $tglpay,
+                    'NILAI' => str_replace(',', '', $nilpay),
+                    'PERSENTASE'=>$pay,
+                    'TERMIN'=>$i,
+                    'STATUS' => 0,
+                    'CREATE_DATE' => date('Y-m-d h:i:s'),
+                    'CREATE_BY' =>  $this->session->userdata('user_id')
+                 );
+                // $table = "TBL_T_TIKET_TERMIN";
+                // $model = $this->global_m->simpan('TBL_T_TIKET_TERMIN', $datax); 
+            }
+        }
+    }
+            $data = array(
+                'STATUS_TIKET' => 2,
+                'UPDATE_DATE' => date("Y/m/d H:i:s"),
+                'UPDATE_BY' => $this->session->userdata('user_id')
+            );
+
+            $model = $this->tiket_m->simpanubah($datax,$data,$ID_TIKET);
+            // $model = $this->global_m->ubah('TBL_T_TIKET', $data ,'ID_TIKET',$ID_TIKET);
+
+
+
+        if ($model) {
+            $array = array(
+                'act' => 1,
+                'tipePesan' => 'success',
+                'pesan' => 'File has been saved.'
+            );
+        } else {
+            $array = array(
+                'act' => 0,
+                'tipePesan' => 'error',
+                'pesan' => 'Data gagal disimpan.'
+            );
+        }
+            $this->output->set_output(json_encode($array));
+        // }
+    }
+
+    function tampil_data() {
+
+        $ID_TIKET_DETAIL = trim($this->input->post('ID_TIKET_DETAIL', true));
+        $sql = "select ID_TIKET_DETAIL
+        FROM TBL_T_TIKET_DETAIL
+        WHERE ID_TIKET_DETAIL='$ID_TIKET_DETAIL'";
+        $query = $this->db->query($sql)->result();
+        $rows['data_res'] = $query;
+        return $this->output->set_output(json_encode($rows));
+    }
+
+    function tampil_data_spd() {
+            // die('asd');
+        $ID_TIKET = trim($this->input->post('ID_TIKET', true));
+        $sql = "select ID_TIKET
+        FROM TBL_T_TIKET
+        WHERE ID_TIKET='$ID_TIKET'";
+        $query = $this->db->query($sql)->result();
+        $rows['data_res'] = $query;
+        return $this->output->set_output(json_encode($rows));
+    }
+
+      function tampil_payment() {
+
+        $ID_TERMIN = trim($this->input->post('ID_TERMIN', true));
+        // $ID_TIKET = trim($this->input->post('ID_TIKET', true));
+        $sql = "select ID_TERMIN, NILAI, ID_TIKET, STATUS
+        FROM TBL_T_TIKET_TERMIN
+        WHERE ID_TERMIN='$ID_TERMIN'";
+        // die($sql);
+        $query = $this->db->query($sql)->result();
+        $rows['data_res'] = $query;
+        return $this->output->set_output(json_encode($rows));
+    }
+
+
+        function edit_uploadEtiket() {
+            // die('ads');
+       // print_r(trim($this->input->post('user_id'))) ; die();
+        $data['Image_Etiket'] = trim($this->input->post('Image_Etiket'));
+        $data['ID_TIKET'] = trim($this->input->post('ID_TIKET'));
+
+        // print_r($data); die();
+
+        $datax = array(
+            'Image_Etiket' => $data['TIKET_PATH'],
+            'update_date' => date('Y-m-d h:i:s')
+            );
+         // print_r($datax); die();
+          $table = "TBL_T_TIKET_DETAIL";
+          $id_kolom = "ID_TIKET = '".$data['ID_TIKET']."'";
+          $model = $this->global_m->ubah($table,$datax, $id_kolom);
+
+             if ($model) {
+             $array = array(
+                'act' => 1,
+                'tipePesan' => 'success',
+                'pesan' => 'File has been succsess to changed.'
+            );
+             } else {
+             $array = array(
+                'act' => 0,
+                'tipePesan' => 'error',
+                'pesan' => 'Data gagal diubah.'
+            );
+        }
+
+        $this->output->set_output(json_encode($array));
+
+    }
+
+
+    public function ubah_etiket() {
+        $this->load->helper('form', 'url');
+        $ID_TIKET_DETAIL = $_POST['ID_TIKET_DETAIL'];
+        $fileName = md5(date('Y-m-d H:i:s'));
+        $path = 'uploads/e_tiket/';
+
+        $config = array(
+            'upload_path' => './' . $path,
+            'file_name' => $fileName,
+            'overwrite' => true,
+            'allowed_types' => '*',
+            // 'allowed_types'=>'gif|jpg|png|jpeg|xlsx',
+            'max_size' => 0,
+            'max_width' => 0,
+            'max_height' => 0
+        );
+
+        $this->load->library('upload', $config);
+        $this->upload->initialize($config);
+
+        if (!$this->upload->do_upload('fileUpload')) {
+            $result = array('istatus' => false, 'iremarks' => $this->upload->display_errors());
+        } else {
+            $resultUpload = $this->upload->data();
+                $data = array(
+              
+                    'TIKET_PATH' =>  $path . $fileName . $resultUpload['file_ext'],
+                    'UPDATE_BY' => $this->session->userdata('id_user'),
+                    'UPDATE_DATE' => date('Y-m-d H:i:s')
+                );
+                $result = $this->global_m->ubah('TBL_T_TIKET_DETAIL', $data, 'ID_TIKET_DETAIL', $ID_TIKET_DETAIL);
+            
+
+            if ($result) {
+                $result = array('istatus' => true, 'iremarks' => 'Upload Success.!'); //, 'body'=>'Data Berhasil Disimpan');
+            } else {
+                $result = array('istatus' => false, 'iremarks' => 'Gagal');
+            }
+        }
+        echo json_encode($result);
+    }
+
+         public function ubah_SPD() {
+        $this->load->helper('form', 'url');
+        $ID_TIKET = $_POST['ID_TIKET'];
+        $fileName = md5(date('Y-m-d H:i:s'));
+        $path = 'uploads/tiket/';
+
+        $config = array(
+            'upload_path' => './' . $path,
+            'file_name' => $fileName,
+            'overwrite' => true,
+            'allowed_types' => '*',
+            // 'allowed_types'=>'gif|jpg|png|jpeg|xlsx',
+            'max_size' => 0,
+            'max_width' => 0,
+            'max_height' => 0
+        );
+
+        $this->load->library('upload', $config);
+        $this->upload->initialize($config);
+
+        if (!$this->upload->do_upload('fileUpload')) {
+            $result = array('istatus' => false, 'iremarks' => $this->upload->display_errors());
+        } else {
+            $resultUpload = $this->upload->data();
+                $data = array(
+              
+                    'SPD_PATH' =>  $path . $fileName . $resultUpload['file_ext'],
+                    'UPDATE_BY' => $this->session->userdata('id_user'),
+                    'UPDATE_DATE' => date('Y-m-d H:i:s')
+                );
+                $result = $this->global_m->ubah('TBL_T_TIKET', $data, 'ID_TIKET', $ID_TIKET);
+            
+
+            if ($result) {
+                $result = array('istatus' => true, 'iremarks' => 'Upload Success.!'); //, 'body'=>'Data Berhasil Disimpan');
+            } else {
+                $result = array('istatus' => false, 'iremarks' => 'Gagal');
+            }
+        }
+        echo json_encode($result);
     }
 
 

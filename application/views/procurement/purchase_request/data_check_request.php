@@ -118,7 +118,8 @@
                                     <div class="form-group">
                                         <label class="control-label col-sm-3">Document Request </label>
                                         <div class="col-md-7">
-                                            <a href="#" class="btn btn-success"><i class="fa fa-download"></i></a>
+                                            <a href="<?=$path_doc?>" class="btn btn-success"><i class="fa fa-download"></i></a>
+											
 										</div>
                                     </div>
                                     <div class="form-group">

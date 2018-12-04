@@ -97,7 +97,7 @@
                             <div class="col-md-12">
                                 <div class="form-group col-md-3">
                                     <label>Tahun</label>
-                                    <input type="text" requered="" name="tahun" id="id_tahun" onchange="onTahun(this.value)" class="form-control input-sm date-picker" data-date-format="yyyy">
+                                    <input type="text" requered="" name="tahun" id="id_tahun" onchange="onTahun(this.value)" class="form-control input-sm date-picker" data-date-format="yyyy" value="<?php echo date("Y") ?>">
                                 </div>
                             </div>
                             <div class="col-md-12">

@@ -20,7 +20,11 @@ class Budget extends CI_Controller {
             $this->load->model('datatables_custom');
         }
     }
-
+    public function print_qr() {
+        $idAssets=$this->input->get('sId');
+        $data['qr_code'] = $this->global_m->tampil_data("SELECT * FROM VW_ASSETS_QRCODE WHERE ID_ASSET IN (".$idAssets.")");
+        $this->load->view('procurement/budget/print_qr_c',$data);
+    }
     public function index() {
         if ($this->auth->is_logged_in() == false) {
             $this->login();

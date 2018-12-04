@@ -257,6 +257,7 @@ class sec_user extends CI_Controller {
         // print_r($_POST); die();
 
         $data = array(
+            'idsdm' => $idsdm,
             'nik' => $nik,
             'user_name' => $user_name,
             'name' => $name,

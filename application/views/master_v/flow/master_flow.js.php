@@ -10,6 +10,11 @@
         // alert('dsd');
         $('#id_btnflowUbah').attr('disabled',true);
         $('#id_btnSimpan').attr('disabled',false);
+        $('#id_btnflowUbahgroup').attr('disabled',true);
+        $('#id_btnSimpangroup').attr('disabled',false);
+        $('#id_btnubahstatus').attr('disabled',true);
+        $('#id_btnSimpanstatus').attr('disabled',false);
+
 
         loadGridGroup();
 //        dd_Zone("A");
@@ -46,38 +51,40 @@
         iSearch = e;
     }
 
-function simpan(){
-    var r = confirm('Do you want to save this file ?');
-    if (r == true) {
-        $.ajax({
-            url: "simpan/1", // json datasource
-            type: 'POST',
-            data: new FormData(this),
-            async: false,
-            cache: false,
-            contentType: false,
-            processData: false,
-            dataType: "JSON",
-            success: function (e) {
-                if(e.act){
-                    UIToastr.init(e.tipePesan, e.pesan);
-                    iPID=e.iPid;
-                    $("#id_btnBatal22").trigger('click');
-                }else{
-                    UIToastr.init(e.tipePesan, e.pesan);
-                }
-            },
-        }); 
-        event.preventDefault(); 
-    } else {//if(r)
-        return false;
-    }
-}
+// function simpan(){
+//     alert('1212');
+//     var r = confirm('Do you want to save this file ?');
+//     if (r == true) {
+//         $.ajax({
+//             url: "simpan/1", // json datasource
+//             type: 'POST',
+//             data: new FormData(this),
+//             async: false,
+//             cache: false,
+//             contentType: false,
+//             processData: false,
+//             dataType: "JSON",
+//             success: function (e) {
+//                 if(e.act){
+//                     UIToastr.init(e.tipePesan, e.pesan);
+//                     iPID=e.iPid;
+//                     $("#id_btnBatal22").trigger('click');
+//                 }else{
+//                     UIToastr.init(e.tipePesan, e.pesan);
+//                 }
+//             },
+//         }); 
+//         event.preventDefault(); 
+//     } else {//if(r)
+//         return false;
+//     }
+// }
 
     $('#id_formRoom_flow').submit(function (event) {
+        // alert('dsds')
         $nilai = $('#idTmpAksiBtn').val();
         if($nilai == '1'){
-            var r = confirm('Do you want to save this file ?');
+            var r = confirm('Do you want to save this flow ?');
                 if (r == true) {
                     $.ajax({
                         url: "simpan/1", // json datasource
@@ -104,7 +111,7 @@ function simpan(){
                 }
         }
         if($nilai == '2'){
-            var r = confirm('Do you want to update this file ?');
+            var r = confirm('Do you want to update this flow ?');
                 if (r == true) {
                     $.ajax({
                         url: "edit_flow", // json datasource
@@ -130,125 +137,219 @@ function simpan(){
                     return false;
                 }
         }
-
-        // $('#id_btnHapus').attr('disabled',false);
-        // $('#id_btnUbah').attr('disabled',true);
-        // $('#id_btnSimpan').attr('disabled',false);
              
     });
 
-//       table.on('click', 'tbody tr', function () {
-//                 alert(id_id);
-//                 $("#navitab_2_1").trigger('click');
-//                 var id_id = $(this).find("td").eq(1).html();
-//                 var id_entity_name = $(this).find("td").eq(2).html();
-//                 var id_latitude = $(this).find("td").eq(3).html();
-//                 var id_location_name = $(this).find("td").eq(4).html();
-//                 var id_longitude = $(this).find("td").eq(5).html();
-//                 var id_permitted_radius = $(this).find("td").eq(6).html();
-//                 var id_locationDesc = $(this).find("td").eq(7).html();
-//                 var gbr_id = $(this).find("td").eq(8).html();
-//                 var downloadQrId = $(this).find("td").eq(9).html();
-//                 //var userFullName = $(this).find("td").eq(2).html();
-// //                var passwd = $(this).find("td").eq(3).html();
-// //                var userGroup = $(this).find("td").eq(4).html();
-// //                var id_kyw = $(this).find("td").eq(5).html();
-
-//                 $('#id_id').val(id_id);
-//                 $('#id_entity_name').val(id_entity_name);
-//                 $('#id_latitude').val(id_latitude);
-//                 $('#id_location_name').val(id_location_name);
-//                 $('#id_longitude').val(id_longitude);
-//                 $('#id_permitted_radius').val(id_permitted_radius);
-//                 $('#id_locationDesc').val(id_locationDesc);
-//                 var url = "../../images/qr_code/"+gbr_id;
-//                 if(gbr_id != ''){ //file ada
-//                     var file_gbr = '<img class="zoom" src="'+url+'" alt="Smiley face" width="42" height="42">';
-//                     var dwnld = '<a class="btn btn-danger" href="'+url+'" download>DownloadQr</a>'
-                   
-
-                
-//                 }else{
-//                     var file_gbr = '<img class="zoom" src="../../images/Not-Found.png" alt="Smiley face" width="60" height="30">';
-//                     var dwnld = '';
-//                 }
-//                 $('#gbr_id').html(file_gbr);
-//                 $('#downloadQrId').html(dwnld);
-                
-
-                
-//                 $('#id_btnHapus').attr('disabled',false);
-//                 $('#id_btnUbah').attr('disabled',false);
-//                 $('#id_btnSimpan').attr('disabled',true);
-// //                $('#id_karyawan').val(id_kyw);
-// //                $('#id_kataKunci').val(passwd);
-// //                $('#id_confKataKunci').val(passwd);
-// //                $('#id_groupUser').val(userGroup);
-// //                //$('#').val();
-// //                $('#id_userName').focus();
-
-//             });
-
-
-        $('#id_formRoom_grup').submit(function (event) {
-        var r = confirm('Do you want to save this file ?');
-            if (r == true) {
-                $.ajax({
-            url: "simpan/2", // json datasource
-            type: 'POST',
-            data: new FormData(this),
-            async: false,
-            cache: false,
-            contentType: false,
-            processData: false,
-            dataType: "JSON",
-            success: function (e) {
-                if(e.act){
-                    UIToastr.init(e.tipePesan, e.pesan);
-                    iPID=e.iPid;
-                    $("#id_btnBatal22").trigger('click');
-                }else{
-                    UIToastr.init(e.tipePesan, e.pesan);
-                    location.reload();
+     $('#id_formRoom_grup').submit(function (event) {
+        // alert('wewe');
+        $nilai = $('#idTmpAksiBtn').val();
+        if($nilai == '4'){
+            var r = confirm('Do you want to save this grup ?');
+                if (r == true) {
+                    $.ajax({
+                        url: "simpan/2", // json datasource
+                        type: 'POST',
+                        data: new FormData(this),
+                        async: false,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        dataType: "JSON",
+                        success: function (e) {
+                            if(e.act){
+                                UIToastr.init(e.tipePesan, e.pesan);
+                                iPID=e.iPid;
+                                $("#id_btnBatal22").trigger('click');
+                            }else{
+                                UIToastr.init(e.tipePesan, e.pesan);
+                            }
+                        },
+                    }); 
+                    event.preventDefault(); 
+                } else {//if(r)
+                    return false;
                 }
-
-            },
-        }); 
-                event.preventDefault(); 
-            } else {//if(r)
-                return false;
-            }
-             
-    });
-
-        $('#id_formRoom_STATUS').submit(function (event) {
-        var r = confirm('Do you want to save this file ?');
-            if (r == true) {
-                $.ajax({
-            url: "simpan/3", // json datasource
-            type: 'POST',
-            data: new FormData(this),
-            async: false,
-            cache: false,
-            contentType: false,
-            processData: false,
-            dataType: "JSON",
-            success: function (e) {
-                if(e.act){
-                    UIToastr.init(e.tipePesan, e.pesan);
-                    iPID=e.iPid;
-                    $("#id_btnBatal22").trigger('click');
-                }else{
-                    UIToastr.init(e.tipePesan, e.pesan);
+        }
+        if($nilai == '5'){
+            var r = confirm('Do you want to update this grup ?');
+                if (r == true) {
+                    $.ajax({
+                        url: "edit_grup", // json datasource
+                        type: 'POST',
+                        data: new FormData(this),
+                        async: false,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        dataType: "JSON",
+                        success: function (e) {
+                            if(e.act){
+                                UIToastr.init(e.tipePesan, e.pesan);
+                                iPID=e.iPid;
+                                $("#id_btnBatal22").trigger('click');
+                            }else{
+                                UIToastr.init(e.tipePesan, e.pesan);
+                            }
+                        },
+                    }); 
+                    event.preventDefault(); 
+                } else {//if(r)
+                    return false;
                 }
-            },
-        }); 
-                event.preventDefault(); 
-            } else {//if(r)
-                return false;
-            }
+        }
              
     });
+
+      $('#id_formRoom_STATUS').submit(function (event) {
+        // alert('wewe');
+        $nilai = $('#idTmpAksiBtn').val();
+        if($nilai == '6'){
+            var r = confirm('Do you want to save this status ?');
+                if (r == true) {
+                    $.ajax({
+                        url: "simpan/3", // json datasource
+                        type: 'POST',
+                        data: new FormData(this),
+                        async: false,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        dataType: "JSON",
+                        success: function (e) {
+                            if(e.act){
+                                UIToastr.init(e.tipePesan, e.pesan);
+                                iPID=e.iPid;
+                                $("#id_btnBatal22").trigger('click');
+                            }else{
+                                UIToastr.init(e.tipePesan, e.pesan);
+                            }
+                        },
+                    }); 
+                    event.preventDefault(); 
+                } else {//if(r)
+                    return false;
+                }
+        }
+        if($nilai == '7'){
+            var r = confirm('Do you want to update this status ?');
+                if (r == true) {
+                    $.ajax({
+                        url: "edit_status", // json datasource
+                        type: 'POST',
+                        data: new FormData(this),
+                        async: false,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        dataType: "JSON",
+                        success: function (e) {
+                            if(e.act){
+                                UIToastr.init(e.tipePesan, e.pesan);
+                                iPID=e.iPid;
+                                $("#id_btnBatal22").trigger('click');
+                            }else{
+                                UIToastr.init(e.tipePesan, e.pesan);
+                            }
+                        },
+                    }); 
+                    event.preventDefault(); 
+                } else {//if(r)
+                    return false;
+                }
+        }
+             
+    });
+
+
+    // $('#id_formRoom_grup').submit(function (event) {
+    //   // $nilai = $('#idTmpAksiBtn').val();
+    //   //   if($nilai == '1'){
+    //     var r = confirm('Do you want to save this file ?');
+    //         if (r == true) {
+    //             $.ajax({
+    //         url: "simpan/2", // json datasource
+    //         type: 'POST',
+    //         data: new FormData(this),
+    //         async: false,
+    //         cache: false,
+    //         contentType: false,
+    //         processData: false,
+    //         dataType: "JSON",
+    //         success: function (e) {
+    //             if(e.act){
+    //                 UIToastr.init(e.tipePesan, e.pesan);
+    //                 iPID=e.iPid;
+    //                 $("#id_btnBatal22").trigger('click');
+    //             }else{
+    //                 UIToastr.init(e.tipePesan, e.pesan);
+    //                 location.reload();
+    //             }
+
+    //         },
+    //     }); 
+    //             event.preventDefault(); 
+    //         } else {//if(r)
+    //             return false;
+    //         }
+        // }
+        //  if($nilai == '2'){
+        //     var r = confirm('Do you want to update this file ?');
+        //         if (r == true) {
+        //             $.ajax({
+        //                 url: "edit_grup", // json datasource
+        //                 type: 'POST',
+        //                 data: new FormData(this),
+        //                 async: false,
+        //                 cache: false,
+        //                 contentType: false,
+        //                 processData: false,
+        //                 dataType: "JSON",
+        //                 success: function (e) {
+        //                     if(e.act){
+        //                         UIToastr.init(e.tipePesan, e.pesan);
+        //                         iPID=e.iPid;
+        //                         $("#id_btnBatal22").trigger('click');
+        //                     }else{
+        //                         UIToastr.init(e.tipePesan, e.pesan);
+        //                     }
+        //                 },
+        //             }); 
+        //             event.preventDefault(); 
+        //         } else {//if(r)
+        //             return false;
+        //         }
+        // }
+             
+    // });
+
+    //     $('#id_formRoom_STATUS').submit(function (event) {
+    //     var r = confirm('Do you want to save this file ?');
+    //         if (r == true) {
+    //             $.ajax({
+    //         url: "simpan/3", // json datasource
+    //         type: 'POST',
+    //         data: new FormData(this),
+    //         async: false,
+    //         cache: false,
+    //         contentType: false,
+    //         processData: false,
+    //         dataType: "JSON",
+    //         success: function (e) {
+    //             if(e.act){
+    //                 UIToastr.init(e.tipePesan, e.pesan);
+    //                 iPID=e.iPid;
+    //                 $("#id_btnBatal22").trigger('click');
+    //             }else{
+    //                 UIToastr.init(e.tipePesan, e.pesan);
+    //             }
+    //         },
+    //     }); 
+    //             event.preventDefault(); 
+    //         } else {//if(r)
+    //             return false;
+    //         }
+             
+    // });
     
     function loadGridFlow() {
         iZone = $("#dd_id_zone_A").val();
@@ -263,11 +364,11 @@ function simpan(){
         </div>');
                 // dd_Zone("A");
             }, "lengthMenu": [
-                [5, 10, 15, 20, -1],
-                [5, 10, 15, 20, "All"] // change per page values here
+                [10, 20, 50, -1],
+                [10, 20, 50, "All"] // change per page values here
             ],
 //                // set the initial value
-            "pageLength": 5,
+            "pageLength": 10,
             "processing": true,
             "serverSide": true,
             "ajax": {
@@ -538,9 +639,44 @@ function simpan(){
     $('#id_btnflowUbah').click(function () {
         $('#idTmpAksiBtn').val('2');
     });
-    $('#id_btnHapus').click(function () {
-        $('#idTmpAksiBtn').val('3');
+    // $('#id_btnHapus').click(function () {
+    //     $('#idTmpAksiBtn').val('3');
+    // });
+
+    //  $('#id_btnBatal').click(function () {
+    //     // btnStart();
+
+        
+    //     $('#id_btnSimpanstatus').attr('disabled',false);
+        
+
+    // });
+
+
+    $("#id_btnSimpangroup").click(function () {
+        $('#idTmpAksiBtn').val('4');
     });
+
+    $('#id_btnflowUbahgroup').click(function () {
+        $('#idTmpAksiBtn').val('5');
+    });
+
+     $("#id_btnSimpanstatus").click(function () {
+        $('#idTmpAksiBtn').val('6');
+    });
+
+    $('#id_btnubahstatus').click(function () {
+        $('#idTmpAksiBtn').val('7');
+    });
+
+
+    // $("#btngrupSimpan").click(function () {
+    //     $('#idTmpAksiBtn').val('4');
+    // });
+
+    // $('#id_btnflowUbah').click(function () {
+    //     $('#idTmpAksiBtn').val('5');
+
 
      function myFunction() {
     var x = document.getElementById("id_aksi").selectedIndex;
@@ -585,31 +721,114 @@ function simpan(){
     }
 
 
-     function update_flow(){
-         var id_flow_id = $('#id_flow_id').val();
-         var id_nama_flow = $('#id_nama_flow').val();
-         var id_status_dari = $('#id_status_dari').val();
-         var id_aksi = $('#id_aksi').val();
-         var id_status_ke = $('#id_status_ke').val();
-         var id_tipe = $('#id_tipe').val();
-         var id_min_hps = $('#id_min_hps').val();
-         var id_max_hps = $('#id_max_hps').val();
-        var dataku  = $('#id_formRoom_flow').serialize();
+    //  function update_flow(){
+    //      var id_flow_id = $('#id_flow_id').val();
+    //      var id_nama_flow = $('#id_nama_flow').val();
+    //      var id_status_dari = $('#id_status_dari').val();
+    //      var id_aksi = $('#id_aksi').val();
+    //      var id_status_ke = $('#id_status_ke').val();
+    //      var id_tipe = $('#id_tipe').val();
+    //      var id_min_hps = $('#id_min_hps').val();
+    //      var id_max_hps = $('#id_max_hps').val();
+    //     var dataku  = $('#id_formRoom_flow').serialize();
 
-        $.ajax({
-            url: "edit_flow", // json datasource
-            type: 'POST',
-            data: dataku,
-            async: false,
-            cache: false,
-            contentType: false,
-            processData: false,
-            dataType: "JSON",
+    //     $.ajax({
+    //         url: "edit_flow", // json datasource
+    //         type: 'POST',
+    //         data: dataku,
+    //         async: false,
+    //         cache: false,
+    //         contentType: false,
+    //         processData: false,
+    //         dataType: "JSON",
       
-        }); 
+    //     }); 
 
+
+    // }
+
+     function show_status_(val){
+        // alert(val);
+             console.log(val);
+        $('#id_formRoom_STATUS').trigger("click");
+    
+        var res = val.split("#");
+        var id_id = res[0];
+        var id_grup_status = res[1];
+
+        var idd = id_grup_status.split("-");
+        var id_grup_status = idd[0];
+
+        var input_status = res[2];
+
+       // document.getElementById("id_grup_status").readOnly = true;
+       
+        $('#id_id').val(id_id);
+        $('#id_grup_status').val(id_grup_status);
+        $('#input_status').val(input_status);
+
+
+        $('#id_btnHapus').attr('disabled',false);
+        $('#id_btnubahstatus').attr('disabled',false);
+        $('#id_btnSimpanstatus').attr('disabled',true);
+        $('#id_grup_status').attr('disabled',true);
 
     }
+
+     function show_grup_(val){
+        // alert(val);
+
+             console.log(val);
+        $('#id_formRoom_grup').trigger("click");
+        // Qty
+        var res = val.split("#");
+        var id_group = res[0];
+        var grup = res[1];
+       
+       
+
+        $('#id_group').val(id_group);
+        $('#grup').val(grup);
+      
+
+        $('#id_btnHapus').attr('disabled',false);
+        $('#id_btnflowUbahgroup').attr('disabled',false);
+        $('#id_btnSimpangroup').attr('disabled',true);
+       
+
+    }
+
+    function btlflow() {
+        // alert('dsds');
+        $('#id_btnHapus').attr('disabled',false);
+        $('#id_btnflowUbah').attr('disabled',true);
+        $('#id_btnSimpan').attr('disabled',false);
+      
+    }
+
+    function btlstatus() {
+        // alert('dsds');
+        $('#id_btnubahstatus').attr('disabled',true);
+        $('#id_btnSimpanstatus').attr('disabled',false);
+        $('#id_grup_status').attr('disabled',false);
+      
+    }
+
+    function btlgrup() {
+        // alert('dsds');
+        $('#id_btnHapus').attr('disabled',false);
+        $('#id_btnflowUbahgroup').attr('disabled',true);
+        $('#id_btnSimpangroup').attr('disabled',false);
+      
+    }
+
+    //  $("#btngrupSimpan").click(function () {
+    //     $('#idTmpAksiBtn').val('4');
+    // });
+
+    // $('#id_btnflowUbah').click(function () {
+    //     $('#idTmpAksiBtn').val('5');
+
 
 
 

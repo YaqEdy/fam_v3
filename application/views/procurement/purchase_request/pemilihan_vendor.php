@@ -274,7 +274,16 @@
     function go_to_list() {
         $(location).attr("href", "<?php echo base_url("/procurement/purchase_request/list_pemilihan_vendor") ?>");
     }
-
+	
+	// function submit_app(){
+		// fetch('<?= base_url("/procurement/purchase_request/app_requestproc_vendor_item"); ?>', {
+			// method: 'POST',
+			// body: formData
+		// }).then(response => {
+			// console.log(response);
+		// });
+	// }
+	
     function submit_app() {
         var action = document.getElementById('action').value;
         var RequestID = document.getElementById('RequestID').value;
@@ -302,28 +311,51 @@
             VendorItemID = VendorItemID + document.getElementById('itemvendor_' + i).value + ',';
             PPNVendor = PPNVendor + document.getElementById('ppnvendor_' + i).value + ',';
         }
-        console.log(row_vendor);
+        // console.log(row_vendor);
+		
+		// var fileInput = document.querySelector("#DokumenVendor");
+		// var DokumenVendor = fileInput.files;
+        // console.log(DokumenVendor);
+		
+		var dv = document.querySelector('[type=file]').files;
+        console.log(dv[0]);
+		var fdv = new FormData();
+	
+		// for (let i = 0; i < files.length; i++) {
+			// let file = files[i];
+	
+			fdv.append("files", dv[0]);
+			fdv.append("username", "Groucho");
+			fdv.append("accountnum", 123456);
+		// }
+        console.log(fdv);
+		// fetch('<?= base_url("/procurement/purchase_request/app_requestproc_vendor_item_doc"); ?>', {
+			// method: 'POST',
+			// body: formDataDokumenVendor
+		// }).then(response => {
+			// console.log(response);
+		// });
 
-        $.post('<?= base_url("/procurement/purchase_request/app_requestproc_vendor_item"); ?>', {
-            action: action,
-            RequestID: RequestID,
-            flow_id: flow_id,
-            status: status,
-            notes: notes,
-            JenisPengadaan: JenisPengadaan,
-            VendorID: VendorID,
-            VendorPemenang: VendorPemenang,
-            HargaSebelumPenawaran: HargaSebelumPenawaran,
-            HargaSetelahPenawaran: HargaSetelahPenawaran,
-            VendorItemID: VendorItemID,
-            PPNVendor: PPNVendor,
-            row_vendor: row_vendor
+        // $.post('<?= base_url("/procurement/purchase_request/app_requestproc_vendor_item"); ?>', {
+            // action: action,
+            // RequestID: RequestID,
+            // flow_id: flow_id,
+            // status: status,
+            // notes: notes,
+            // JenisPengadaan: JenisPengadaan,
+            // VendorID: VendorID,
+            // VendorPemenang: VendorPemenang,
+            // HargaSebelumPenawaran: HargaSebelumPenawaran,
+            // HargaSetelahPenawaran: HargaSetelahPenawaran,
+            // VendorItemID: VendorItemID,
+            // PPNVendor: PPNVendor,
+            // row_vendor: row_vendor
 
-        },
-        function (data) {
-            alert(data);
-            go_to_list();
-        })
+        // },
+        // function (data) {
+            // alert(data);
+            // go_to_list();
+        // })
     }
 
     function VendorList() {

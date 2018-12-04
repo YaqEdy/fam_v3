@@ -85,6 +85,9 @@
                                             <th>
                                              Item Type Code
                                             </th>
+                                            <th>
+                                                Umur Fiskal
+                                            </th>
                                              <th>
                                                 Action
                                             </th>
@@ -156,7 +159,15 @@
                     <input type="text" class="form-control" id="txtTypeName">
                 </div>
             </div>
-        </div> 
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-3">Umur Fiskal</label>
+            <div class="col-sm-3">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="umurviskal" name="umurviskal">
+                </div>
+            </div>
+        </div>  
          <div class="form-group status">
             <label class="control-label col-sm-3">Status</label>
             <div class="col-sm-3">
@@ -194,9 +205,12 @@
      $("#txtCategory").val("");
      $("#txtTypeCode").val("");
      $("#txtTypeName").val("");
+     $("#umurviskal").val("");
+    
      document.getElementById("txtCategory").readOnly = false;
      document.getElementById("txtTypeCode").readOnly = false;
     document.getElementById("txtTypeName").readOnly = false;
+    document.getElementById("umurviskal").readOnly = false;
     $(".btnSC").show();
     $(".btnSC .save").show();
     $(".btnSC .update").hide();
@@ -277,9 +291,12 @@
     $("#txtCategory").val(idata[2].trim());
     $("#txtTypeCode").val(idata[5]);
     $("#txtTypeName").val(idata[4]);
+    $("#umurviskal").val(idata[6]);
+
     document.getElementById("txtCategory").readOnly = false;
     document.getElementById("txtTypeCode").readOnly = true;
     document.getElementById("txtTypeName").readOnly = false;
+    document.getElementById("umurviskal").readOnly = false;
     
     $(".btnSC").show();
     $(".btnSC .save").hide();
@@ -295,6 +312,7 @@
             IClassID: $("#txtCategory").val(),
             TypeCode: $("#txtTypeCode").val(),
             ItemTypeName: $("#txtTypeName").val(),
+            umurviskal: $("#umurviskal").val(),
             Status: iStatusAdd
         }
         console.log(i_clsUpdate)

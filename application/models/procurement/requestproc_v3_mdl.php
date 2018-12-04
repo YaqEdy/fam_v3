@@ -114,6 +114,25 @@ Class Requestproc_v3_mdl extends CI_Model {
 		return $up;
 	}
 	
+	function update_status_po($data){
+		$ambil_flow = $this->db->query("
+							SELECT * FROM MS_FLOW 
+							WHERE 
+								flow_id = ".$data['flow_id']."
+								and status_dari = '".$data['status_po']."' 
+								and action = '".$data['action']."'
+						")->row();
+        $up = $this->db->query("
+							UPDATE TBL_T_PO 
+							SET status = '".$ambil_flow->status_ke."'
+							WHERE ID_PO = ".$data['ID_PO']."	
+						");
+						
+		#log
+		
+		return $up;
+	}
+	
 	function update_pr_action($data,$action,$note){
 		$ambil_flow = $this->db->query("
 							SELECT * FROM MS_FLOW 
@@ -335,6 +354,15 @@ Class Requestproc_v3_mdl extends CI_Model {
 		$get = $this->db
 				->where('RequestID',$RequestID)
 				->get('VW_ITEM_REQUEST');
+				
+		return $get;
+	}
+	
+	function get_doc($RequestID){
+		$get = $this->db
+				->where('RequestID',$RequestID)
+				->order_by('id','desc')
+				->get('TBL_REQUEST_DOC');
 				
 		return $get;
 	}

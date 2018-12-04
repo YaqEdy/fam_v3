@@ -203,6 +203,7 @@ class assetlist extends CI_Controller {
                 'SALVAGE_VALUE' => $_POST['salvage_val'],
                 'LIFE_IN_YEAR' => $_POST['life_years'],
                 'FAM_ASSET_ID' => $idAsset,
+                'ASSET_NUMBER' => '100330',
             ];
             $tabel = "TBL_T_ASSETS_ADJUST";
             $data_local = array(
@@ -228,6 +229,7 @@ class assetlist extends CI_Controller {
                 'UMUR_FISKAL' => $umur_fiskal,
                 'JENIS_BARANG' => $_POST['jnsbrg'],
                 'FAM_ASSET_ID' => $idAsset,
+                'ASSET_NUMBER' => '100330',
             ];
             
             $tabel = "TBL_T_ASSETS_RECLASS";

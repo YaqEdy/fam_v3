@@ -44,7 +44,6 @@ class Main extends CI_Controller {
             //$data ['nama'] = $this->home_m->get_nama_kantor ();
             $data['menu_id'] = 0;
             $tanggal = $this->session->userdata('tgl_d');
-            $this->template->set('title', 'Mega Jaya | Beranda');
             $this->template->set('title', 'Home');
             
             $sql_pr = "select warna,ket,nilai from(

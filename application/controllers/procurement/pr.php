@@ -118,7 +118,7 @@ class pr extends CI_Controller {
         $data['JUMLAH'] = $this->input->post('jml');
         $data['SPESIFIKASI'] = $this->input->post('spek');
         $data['STATUS'] = 'PENGAJUAN';
-
+print_r($data);die();
         $po_id = $this->master_pr_m->save_tiket($data);
 
         redirect('procurement/pr/home');

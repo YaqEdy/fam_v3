@@ -157,14 +157,11 @@ function home() {
             $nestedData[] = $row["ReqTypeID"];     
             $nestedData[] = $row["ReqTypeName"];
             $nestedData[] = $row["Is_trash"];
-            // $nestedData[] = $row["Status"];
+            // $nestedData[] = $row["Status"];              
 
-            if($row["Is_trash"]==0)
-            {
+           if ($row["Is_trash"] == 0) {
                 $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate" data-toggle="modal" data-target="#mdl_Update">Update</a><a class="btn  btn-sm btn-danger" id="btnAktiv" href="#">Aktivate</a>';
-            }
-            else
-            {
+            } else {
                 $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate" data-toggle="modal" data-target="#mdl_Update">Update<a class="btn btn-sm green-meadow" id="btnDeactivate" href="#">Deactivate</a>';
             }
 
@@ -189,14 +186,19 @@ function home() {
         $id = trim(element('ReqTypeID',$i_list));
         $id_kyw=(int)$this->session->userdata('id_kyw');
         $Is_trash = trim(element('Is_trash',$i_list));
+        $ReqTypeName = trim(element('ReqTypeName',$i_list));
         
         $data = array(
-            // 'ReqTypeID' => $id,
+            'ReqTypeName' => $ReqTypeName,
             'Is_trash' => $Is_trash,
+            // 'ReqTypeName' => $ReqTypeName,
            
             
         );
+        // print_r($data); die();
+
         $model = $this->global_m->ubah('Mst_RequestType', $data,'ReqTypeID',$id);
+
         if ($model) {
             $notifikasi = Array(
                 'msgType' => true,

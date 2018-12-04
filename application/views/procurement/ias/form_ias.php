@@ -139,7 +139,7 @@ button:hover {
                             </tbody>
                         </table>
                     </div>
-                    <input type="hidden" name="id_po_detail" value="<?php echo $dpp->ID_PO_DETAIL;?>">
+                    <input type="hidden" name="id_po_detail" value="<?php echo $po_dtl->ID_PO_DETAIL;?>">
                     <div class="form-group col-md-12">
                         <label class="col-sm-3 control-label" style="text-align: left;">DPP</label>
                         <div class="col-sm-3">
@@ -149,25 +149,26 @@ button:hover {
                     <div class="form-group col-md-12">
                         <label class="col-sm-3 control-label" style="text-align: left;">PPN</label>
                         <div class="col-sm-3">
-                            <input class="form-control m-input" value="<?php echo $dpp->PPN;?>" name="ppn" id="ppn" type="number" required>
-                        </div>
-                        <!-- <div class="col-sm-3">
-                            <input class="form-control m-input" value="10" name="presentase" id="presentase" type="number" readonly>
+                            <input class="form-control m-input" value="<?php echo $ppn->PPN;?>" name="ppn" id="ppn" type="number" required>
                         </div>
                         <div class="col-sm-3">
+                            <input class="form-control m-input" value="<?php echo $persen_ppn->PERSEN_PPN;?>" name="presentase" id="presentase" type="text">
+                        </div>
+                        <!--<div class="col-sm-3">
                             <button type="button" class="btn red" id="edit_presentase">Edit</button>
                         </div> -->
                     </div>
                     <div class="form-group col-md-12">
                         <label class="col-sm-3 control-label" style="text-align: left;">PPH</label>
                         <div class="col-sm-3">
-                            <input class="form-control m-input" name="pph" id="pph" value="<?php echo $dpp->PPH;?>" type="number" required>
+                            <!--<input class="form-control m-input" name="pph" id="pph" value="0" type="number" required>-->
+                            <input class="form-control m-input" name="pph" id="pph" value="<?php echo $pph->PPH;?>" type="number" required>
                         </div>
                     </div>
                     <div class="form-group col-md-12">
                         <label class="col-sm-3 control-label" style="text-align: left;">Denda</label>
                         <div class="col-sm-3">
-                            <input class="form-control m-input" name="denda" id="denda" type="number" required>
+                            <input class="form-control m-input" name="denda" id="denda" type="number" required value="0">
                         </div>
                         <div class="col-sm-3">
                             <input class="form-control m-input" name="dendas" id="dendas" type="number" value="<?php echo $total?>" readonly>
@@ -180,9 +181,9 @@ button:hover {
                         </div>
                     </div>
                     <div class="form-group col-md-12">
-                        <label class="col-sm-3 control-label" style="text-align: left;">Nilai Dibayarkan</label>
+                        <label class="col-sm-3 control-label" style="text-align: left;">Nilai Dibayarkan</label> 
                         <div class="col-sm-3">
-                            <input class="form-control m-input" type="number" id="dibayarkan" name="dibayarkan" readonly>
+                            <input class="form-control m-input" type="number" id="dibayarkan" name="dibayarkan" readonly value="<?php echo $dpp->TOTAL+$ppn->PPN-$pph->PPH ;?>">
                         </div>
                     </div>
                 </div>
@@ -216,7 +217,7 @@ button:hover {
                         <input type="file" class="form-control m-input" name="dok">
                     </div>
                 </div>
-                <div class="form-group m-form__group m--margin-top-10">
+                <!-- <div class="form-group m-form__group m--margin-top-10">
                     <h5 class="m-portlet__head-text"><strong>Penilaian Vendor</strong></h5>
                 </div>
                 <div class="m-portlet__body col-md-12 penilaian">
@@ -245,7 +246,7 @@ button:hover {
                     <div class="col-sm-3">
                         <input class="form-control m-input" id="akhir" name="akhir" type="text" readonly>
                     </div>
-                </div>
+                </div> -->
                 
                 <!-- <div style="overflow:auto;"> -->
                     <!-- <div style="float:right;"> -->
@@ -253,7 +254,7 @@ button:hover {
 
                         <?php if (empty($done_termin)) {
                         if (!empty($last_termin)) {
-                                if($quant->quant == $dpp->TTL_QTY){?>
+                                if($quant->quant == $po_dtl->TTL_QTY){?>
                             <button type="submit" class="btn blue">Send</button>
                         <?php }else{?>
                             <label class="control-label" style="text-align: left;">Tidak dapat menambah penilaian termin akhir. Item belum diterima 100%.</label>

@@ -81,11 +81,12 @@
                                             <tr>
                                                 <th class='row-2'>NO</th>     
                                                 <th class='row-md-3'>Nama Item</th>
+                                                <th class='row-md-3'>Branch</th>
                                                 <th class='row-md-5'>Harga</th>
                                                 <th class='row-md-6'>Tanggal Mulai Berlaku</th>
                                                 <th class='row-md-6'>Tanggal Selesai Berlaku</th>
                                                 <th class='row-md-3'>Aksi</th>
-                                                <th class='row-md-3'></th>
+                                                <!-- <th class='row-md-3'></th> -->
 
                                             </tr>
                                         </thead>

@@ -6,13 +6,18 @@ if (!defined('BASEPATH'))
 class master_po_m extends CI_Model {
 
 	public function getList($status) {
-		$sql = "SELECT VW_T_PR.*, (SELECT count(ID_PR) from TBL_T_PO WHERE ID_PR = VW_T_PR.RequestID) as Jumlah FROM VW_T_PR WHERE VW_T_PR.statusID = '".$status."'";
+		$sql = "SELECT VW_T_PR.*, (SELECT count(ID_PR) from TBL_T_PO WHERE ID_PR = VW_T_PR.RequestID) as Jumlah FROM VW_T_PR WHERE VW_T_PR.status_dari = '".$status."'";
 		$query = $this->db->query($sql);
 		return $query->result();
 	}
 
 	public function getItemList($id) {
-		$sql = "select a.ItemID, a.Qty, a.HargaHPS, a.Qty*a.HargaHPS as total, b.ItemName, c.ItemTypeName from TBL_REQUEST_ITEMLIST a join Mst_ItemList b on a.ItemID = b.ItemID join Mst_ItemType c on b.ItemTypeID = c.ItemTypeID WHERE a.RequestID = $id";
+		$sql = "select a.ItemID, a.Qty, a.HargaHPS, a.Qty*a.HargaHPS as total, b.ItemName, c.ItemTypeName, '' as JNS_PERIODE, '' as START_PERIODE, '' as END_PERIODE,'' as NOTIF 
+                        from TBL_REQUEST_ITEMLIST a join 
+                        TBL_REQUEST as d on a.RequestID=d.RequestID join
+                        Mst_ItemList b on a.ItemID = b.ItemID join 
+                        Mst_ItemType c on b.ItemTypeID = c.ItemTypeID
+                        WHERE a.RequestID = $id";
 		$query = $this->db->query($sql);
 		return $query->result();
 	}

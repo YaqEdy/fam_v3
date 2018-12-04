@@ -5,19 +5,19 @@ if (!defined('BASEPATH'))
 
 class master_vendorlist_m extends CI_Model {
    public function getIdMax() { //query untuk mendapatkan id_kyw selanjutnya
-        $sql = "select Raw_ID from Mst_Vendor";
+        $sql = "select VendorID from Mst_Vendor";
         $query = $this->db->query($sql);
         $jml = $query->num_rows();
         if ($jml == 0) {
-            $Raw_ID = "001";
-            return $Raw_ID;
+            $VendorID = "001";
+            return $VendorID;
         } else {
-            $sql = "select max(Raw_ID)+1 as Raw_ID from Mst_Vendor";
+            $sql = "select max(VendorID)+1 as VendorID from Mst_Vendor";
             $query = $this->db->query($sql);
             $hasil = $query->result();
-            $Raw_ID = $hasil[0]->Raw_ID;
+            $VendorID = $hasil[0]->VendorID;
             // $Raw_ID = sprintf('%06u', $Raw_ID + 1);
-            return $Raw_ID;
+            return $VendorID;
         }
     }
 

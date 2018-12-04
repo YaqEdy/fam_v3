@@ -18,7 +18,7 @@
                 <div class="tools">
 
 
-                <button  onclick="sys_kotalocation()">Button Sync  <i class="fa fa-refresh green"></i></button>
+                <button  onclick="sys_kotalocation()">Button Sync API <i class="fa fa-refresh green"></i></button>
                     <a href="javascript:;" class="collapse">
                     </a>
                     <a href="javascript:;" class="fullscreen">

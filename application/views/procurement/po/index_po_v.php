@@ -1,7 +1,7 @@
 <!-- BEGIN PAGE BREADCRUMB --> 
 
 <style type="text/css">
-    
+
 
 
     table#table_gridCategory th:nth-child(2){
@@ -35,115 +35,115 @@
             </div>
             <div class="portlet-body">
                 <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-        <a class="dashboard-stat dashboard-stat-v2 blue" href="#">
-            <div class="visual">
-                <i class="fa fa-comments"></i>
-            </div>
-            <div class="details">
-                <div class="number">
-                    <span data-counter="counterup" data-value="1449">1449</span>
-                </div>
-                <div class="desc"> Jumlah PR & PA </div>
-            </div>
-        </a>
-    </div>
-    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-        <a class="dashboard-stat dashboard-stat-v2 green" href="#">
-            <div class="visual">
-                <i class="fa fa-shopping-cart"></i>
-            </div>
-            <div class="details">
-                <div class="number">
-                    <span data-counter="counterup" data-value="549">549</span>
-                </div>
-                <div class="desc"> PO Keluar </div>
-            </div>
-        </a>
-    </div>
-    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-        <a class="dashboard-stat dashboard-stat-v2 red" href="#">
-            <div class="visual">
-                <i class="fa fa-bar-chart-o"></i>
-            </div>
-            <div class="details">
-                <div class="number">
-                    <span data-counter="counterup" data-value="12,5">123</span> </div>
-                <div class="desc"> PO Pending </div>
-            </div>
-        </a>
-    </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <?php if($this->session->flashdata('success')): ?>
-                                        <div class="alert alert-success">
-                                            <strong>Success!</strong> <?php echo $this->session->flashdata('success');?> 
-                                        </div>
-                                    <?php endif ?>
-                                    <?php if($this->session->flashdata('error')): ?>
-                                        <div class="alert alert-danger">
-                                            <strong>Error!</strong> <?php echo $this->session->flashdata('error');?> 
-                                        </div>
-                                    <?php endif ?>
-                                    <button id="id_Reload" style="display: none;"></button>
-                                </div>
+                    <a class="dashboard-stat dashboard-stat-v2 blue" href="#">
+                        <div class="visual">
+                            <i class="fa fa-comments"></i>
+                        </div>
+                        <div class="details">
+                            <div class="number">
+                                <span data-counter="counterup" data-value="1449">1449</span>
                             </div>
-                            <div class="row" style="margin-top: 2%;">
-                                <div class="col-md-12">
-
-                                    <table class="table table-striped table-bordered text_kanan"
-                                           id="idTablePo">
-                                        <thead>
-                                            <tr>                                     
-                                                <th>
-                                                    No PR
-                                                </th>
-                                                <th>
-                                                    Tanggal Request
-                                                </th>
-                                                <th>
-                                                    Request Type
-                                                </th>
-                                                <th>
-                                                    Category Name
-                                                </th>
-                                                <th>
-                                                    Name Project
-                                                </th>
-                                                <th>
-                                                    Branch
-                                                </th>
-                                                <th>
-                                                    Divisi
-                                                </th>
-                                                <th>
-                                                    Status Akhir
-                                                </th>
-                                                <th>
-                                                    Catatan
-                                                </th>
-                                                <th>
-                                                    Aksi
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            
-                                        </tbody>
-                                        <tfoot>
-
-                                        </tfoot>
-                                    </table>
-                                </div>
-                                <!-- end col-12 -->
+                            <div class="desc"> Jumlah PR & PA </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                    <a class="dashboard-stat dashboard-stat-v2 green" href="#">
+                        <div class="visual">
+                            <i class="fa fa-shopping-cart"></i>
+                        </div>
+                        <div class="details">
+                            <div class="number">
+                                <span data-counter="counterup" data-value="549">549</span>
                             </div>
-                            <!-- END ROW-->
+                            <div class="desc"> PO Keluar </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                    <a class="dashboard-stat dashboard-stat-v2 red" href="#">
+                        <div class="visual">
+                            <i class="fa fa-bar-chart-o"></i>
+                        </div>
+                        <div class="details">
+                            <div class="number">
+                                <span data-counter="counterup" data-value="12,5">123</span> </div>
+                            <div class="desc"> PO Pending </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <?php if ($this->session->flashdata('success')): ?>
+                            <div class="alert alert-success">
+                                <strong>Success!</strong> <?php echo $this->session->flashdata('success'); ?> 
+                            </div>
+                        <?php endif ?>
+                        <?php if ($this->session->flashdata('error')): ?>
+                            <div class="alert alert-danger">
+                                <strong>Error!</strong> <?php echo $this->session->flashdata('error'); ?> 
+                            </div>
+                        <?php endif ?>
+                        <button id="id_Reload" style="display: none;"></button>
                     </div>
                 </div>
+                <div class="row" style="margin-top: 2%;">
+                    <div class="col-md-12">
 
+                        <table class="table table-striped table-bordered text_kanan"
+                               id="idTablePo">
+                            <thead>
+                                <tr>                                     
+                                    <th>
+                                        No PR
+                                    </th>
+                                    <th>
+                                        Tanggal Request
+                                    </th>
+                                    <th>
+                                        Request Type
+                                    </th>
+                                    <th>
+                                        Category Name
+                                    </th>
+                                    <th>
+                                        Name Project
+                                    </th>
+                                    <th>
+                                        Branch
+                                    </th>
+                                    <th>
+                                        Divisi
+                                    </th>
+                                    <th>
+                                        Status Akhir
+                                    </th>
+                                    <th>
+                                        Catatan
+                                    </th>
+                                    <th>
+                                        Aksi
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                            <tfoot>
+
+                            </tfoot>
+                        </table>
+                    </div>
+                    <!-- end col-12 -->
+                </div>
+                <!-- END ROW-->
             </div>
         </div>
-        <!-- END VALIDATION STATES-->
+
     </div>
+</div>
+<!-- END VALIDATION STATES-->
+</div>
 </div>
 
 
@@ -171,11 +171,11 @@
                     {"data": "catatan"},
                     {data: "jumlah",
                         className: "center",
-                        render: function ( data, type, full, meta ) {
+                        render: function (data, type, full, meta) {
                             if (data.Jumlah == 0) {
-                                return '<a href="<?php echo base_url('procurement/po/po_form');?>/'+data.RequestID+'" class="btn btn-primary">Edit</a>';
-                            }else{
-                                return '<a href="<?php echo base_url('procurement/po/po_dokumen');?>/'+data.RequestID+'" class="btn btn-primary">Upload</a>';
+                                return '<a href="<?php echo base_url('procurement/po/po_form'); ?>/' + data.RequestID + '" class="btn btn-primary">Edit</a>';
+                            } else {
+                                return '<a href="<?php echo base_url('procurement/po/po_dokumen'); ?>/' + data.RequestID + '" class="btn btn-primary">Upload</a>';
                             }
                         }
                     }
@@ -228,7 +228,7 @@
 
             var tableWrapper = jQuery('#example_wrapper');
 
-           
+
 
             tableWrapper.find('.dataTables_length select').addClass("form-control input-xsmall input-inline"); // modify table per page dropdown
         }
@@ -247,11 +247,11 @@
     App.isAngularJsApp() === !1 && jQuery(document).ready(function () {
         UIBootbox.init();
         TableManaged.init();
-      
+
         $('#id_desc_usergroup').focus();
         $("#id_btnUbah").attr("disabled", "disabled");
         $("#id_btnHapus").attr("disabled", "disabled");
-        
+
     });
     $('#id_btnBatal').click(function () {
         btnStart();

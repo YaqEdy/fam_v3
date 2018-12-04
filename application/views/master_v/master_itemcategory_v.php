@@ -81,6 +81,10 @@
                                                     Item Category Name
                                                 </th>
 
+                                                  <th>
+                                                    Umur Fiskal
+                                                </th>
+
                                                 <th>
                                                     Time Period
                                                 </th>
@@ -141,6 +145,13 @@
                         <div class="col-sm-7">
                             <input type="text" class="form-control" id="txtName">
                         </div>
+                    </div>
+
+                     <div class="form-group">
+                        <label class="control-label col-sm-3">Umur Fiskal</label>
+                        <div class="col-sm-7">
+                            <input type="text" class="form-control" id="txtumurfiskal">
+                        </div>
                     </div>      
                     <div class="form-group">
                         <label class="control-label col-sm-3">Time Period</label>
@@ -190,9 +201,11 @@
         $("#txtId").val("Generate");
         $("#txtCode").val("");
         $("#txtName").val("");
+        $("#txtumurfiskal").val("");
         $("#txtPeriod").val("");
         document.getElementById("txtCode").readOnly = false;
         document.getElementById("txtName").readOnly = false;
+        document.getElementById("txtumurfiskal").readOnly = false;
         document.getElementById("txtPeriod").readOnly = false;
         $(".btnSC").show();
         $(".btnSC .save").show();
@@ -285,11 +298,13 @@
     function clickUpdate() {
         var ItemCategoryCode = $("#txtCode").val();
         var ItemCategoryName = $("#txtName").val();
+        var ItemCategoryumurfiskal = $("#txtumurfiskal").val();
         var ItemCategoryPriode = $("#txtPeriod").val();
         var i_clsUpdate = {
             IClassID: $("#txtId").val(),
             ClassCode: ItemCategoryCode,
             IClassName: ItemCategoryName,
+            umurfiskal: ItemCategoryumurfiskal,
             Priod: ItemCategoryPriode,
             Status: iStatusAdd
         }
@@ -305,7 +320,12 @@
                 message: "Required Item Category Name",
                 backdrop: true
             });
-        } else if (ItemCategoryPriode == "") {
+        }else if (ItemCategoryumurfiskal == "") {
+            bootbox.alert({
+                message: "Required Item Category Umur Fiskal",
+                backdrop: true
+            });
+        }else if (ItemCategoryPriode == "") {
             bootbox.alert({
                 message: "Required Item Category Priode",
                 backdrop: true
@@ -353,10 +373,12 @@
         $("#txtId").val(idata[1]);
         $("#txtCode").val(idata[2]);
         $("#txtName").val(idata[3]);
-        $("#txtPeriod").val(idata[4]);
+        $("#txtumurfiskal").val(idata[4]);
+        $("#txtPeriod").val(idata[5]);
 
         document.getElementById("txtCode").readOnly = true;
         document.getElementById("txtName").readOnly = true;
+        document.getElementById("txtumurfiskal").readOnly = true;
         document.getElementById("txtPeriod").readOnly = true;
         $(".btnSC").hide();
         $(".status").hide();
@@ -371,9 +393,11 @@
         $("#txtId").val(idata[1]);
         $("#txtCode").val(idata[2]);
         $("#txtName").val(idata[3]);
-        $("#txtPeriod").val(idata[4]);
+        $("#txtumurfiskal").val(idata[4]);
+        $("#txtPeriod").val(idata[5]);
         document.getElementById("txtCode").readOnly = true;
         document.getElementById("txtName").readOnly = false;
+        document.getElementById("txtumurfiskal").readOnly = false;
         document.getElementById("txtPeriod").readOnly = false;
         $(".btnSC").show();
         $(".btnSC .save").hide();

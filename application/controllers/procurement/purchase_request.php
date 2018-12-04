@@ -78,7 +78,14 @@ class Purchase_request extends CI_Controller {
 	}
 
     function add_requestproc() {
+		
+        $istatus = false;
+        $iremarks = 'FAIL!';
+		
 		$post = $this->input->post();
+		// $result = array('istatus' => 'AADA', 'iremarks' => json_encode($post));
+        // echo json_encode($result);
+		// die();
 
         $divid = $this->input->post('DivisionID');
         $ReqTypeID = $this->input->post('ReqTypeID');
@@ -90,6 +97,12 @@ class Purchase_request extends CI_Controller {
 		
         $JenisPR = $this->input->post('JenisPR');
         $NomorMemo = $this->input->post('NomorMemo');
+		
+        $SewaPeriodeNilai = $this->input->post('SewaPeriodeNilai');
+        $SewaPeriodeSatuan = $this->input->post('SewaPeriodeSatuan');
+        $PeriodeTanggalDari = date("Y-m-d", strtotime($this->input->post('PeriodeTanggalDari')));
+        $PeriodeTanggalSampai = date("Y-m-d", strtotime($this->input->post('PeriodeTanggalSampai')));
+        // $PeriodeTanggalSampai = $this->input->post('PeriodeTanggalSampai');
 		
 		# ambil max RequestID
 		$max_RequestID = $this->Requestproc_v3_mdl->getMax('RequestID','tbl_request')->row()->RequestID;
@@ -111,10 +124,19 @@ class Purchase_request extends CI_Controller {
 		$data_add['BudgetUsed'] = $BudgetUsed;
 		$data_add['JenisPR'] = $JenisPR;
 		$data_add['NomorMemo'] = $NomorMemo;
+		$data_add['SewaPeriodeNilai'] = $SewaPeriodeNilai;
+		$data_add['SewaPeriodeSatuan'] = $SewaPeriodeSatuan;
+		$data_add['PeriodeTanggalDari'] = $PeriodeTanggalDari;
+		$data_add['PeriodeTanggalSampai'] = $PeriodeTanggalSampai;
 		$data_add['CreateDate'] = date("Y-m-d H:i:s");
 		$data_add['CreateBy'] = $this->session->userdata('id_user');
 		
-		$add = $this->Requestproc_v3_mdl->tbl_insert('tbl_request',$data_add);
+		$add = $this->Requestproc_v3_mdl->tbl_insert('TBL_REQUEST',$data_add);
+		
+		if($add){
+			$istatus = true;
+			$iremarks = 'Data Berhasil Diinput.';
+		}
 		
 		# insert item
         $row = $this->input->post('row');
@@ -136,8 +158,44 @@ class Purchase_request extends CI_Controller {
 		$data_log['user_id'] = $this->session->userdata('id_user');
 		$data_log['date'] = date("Y-m-d H:i:s");
 		$add_request_log = $this->Requestproc_v3_mdl->tbl_insert('tbl_request_log',$data_log);
+				
+		# upload
+		if($_FILES["file_zip"]["name"] != ''){
+			$_FILES["file_zip"]["name"] = time() . $_FILES["file_zip"]["name"];
+			$name_file_up = $_FILES["file_zip"]["name"];
+			$ext_file_up = strtoupper(end((explode(".", $name_file_up))));
+			if ($ext_file_up !== 'ZIP' && $ext_file_up !== 'RAR') {
+				$istatus = false;
+				$iremarks = 'FAIL! Eksistensi File tidak diizinkan !. Harus Zip atau Rar !';
+			} 
+			else if ($ext_file_up != '' || $ext_file_up != null) {
+				$pathfile = "./uploads/purchase_request/";
+				$config['upload_path'] = $pathfile;
+				$config['allowed_types'] = '*';
+				$config['max_size'] = '0';
+				$this->load->library('upload', $config);
+				if ($this->upload->do_upload("file_zip")) {
+					$error = array('array' => $this->upload->display_errors());
+					$data = $this->upload->data();
+					$source = $pathfile . $data['file_name'];
+					chmod($source, 0777);
+					$paydata = $data['file_name'];
+					
+					$data_doc['RequestID'] = $new_RequestID;
+					$data_doc['NamaDokumen'] = $paydata;
+					$data_doc['Path'] = $source;
+					$in_data_doc = $this->Requestproc_v3_mdl->tbl_insert('TBL_REQUEST_DOC',$data_doc);
+					
+					$istatus = true;
+					$iremarks = 'Data Berhasil Diinput.';
+				} else {
+					$istatus = false;
+					$iremarks = $this->upload->display_errors();
+				}
+			}
+		}
 		
-        $result = array('istatus' => true, 'iremarks' => 'Data Berhasil Diinput.');
+        $result = array('istatus' => $istatus, 'iremarks' => $iremarks);
         echo json_encode($result);
     }
 
@@ -152,9 +210,18 @@ class Purchase_request extends CI_Controller {
 		if($jns_pengadaan != null){
 			$up_flow = $this->Requestproc_v3_mdl->update_flow($this->input->post('RequestID'),$jns_pengadaan);
 		}
+		$data_po['ID_PO'] = $this->input->post('ID_PO');
+		$data_po['flow_id'] = $this->input->post('flow_id');
+		$data_po['status_po'] = $this->input->post('status_po');
+		$data_po['action'] = $this->input->post('action');
 		
-		$up_status = $this->Requestproc_v3_mdl->update_status($data);
-
+		if($this->input->post('ID_PO') == ''){
+			$up_status = $this->Requestproc_v3_mdl->update_status($data);
+		}
+		else{
+			$up_status = $this->Requestproc_v3_mdl->update_status_po($data_po);
+		}
+		
 		if($up_status){
 			echo "Success.";
 		}
@@ -532,6 +599,7 @@ class Purchase_request extends CI_Controller {
 		$data['item'] = $this->Requestproc_v3_mdl->get_item($RequestID)->result_array();
 		$data['list_pic'] = $this->Requestproc_v3_mdl->get_pic($RequestID)->result_array();
 		$data['vendor'] = $this->Requestproc_v3_mdl->get_vendor_pr($RequestID)->result_array();
+		// print_r($data['approve_pr']);die();
 		
         $this->template->set('title', 'Approve');
 		$this->template->load('template/template_dataTable', 'procurement/purchase_request/appove_requestproc', $data);
@@ -574,6 +642,9 @@ class Purchase_request extends CI_Controller {
         
 		$data['approve_pr'] = $this->Requestproc_v3_mdl->get_data_request($RequestID)->row();
 		$data['item'] = $this->Requestproc_v3_mdl->get_item($RequestID)->result_array();
+		$docc = $this->Requestproc_v3_mdl->get_doc($RequestID)->result_array()[0];
+		$path_doc = base_url() . substr($docc['Path'], 2); 
+		$data['path_doc'] = $path_doc;
 		
         $this->template->set('title', 'Approve');
 		$this->template->load('template/template_dataTable', 'procurement/purchase_request/data_check_request', $data);
@@ -1015,7 +1086,46 @@ class Purchase_request extends CI_Controller {
 		}
     }
 	
+	function app_requestproc_vendor_item_doc(){
+		// print_r($_FILES["files"]);die();
+		$_FILES["files"]["name"] = time() . $_FILES["files"]["name"];
+		$name_file_up = $_FILES["files"]["name"];
+        $ext_file_up = strtoupper(end((explode(".", $name_file_up))));
+        if ($ext_file_up !== 'ZIP' && $ext_file_up !== 'RAR') {
+            $istatus = false;
+            $iremarks = 'FAIL! Eksistensi File tidak diizinkan !. Harus Zip atau Rar !';
+        } 
+		else if (!empty($name_file_up)) {
+			$pathfile = "./uploads/purchase_request/";
+            $config['upload_path'] = $pathfile;
+            $config['allowed_types'] = '*';
+            $config['max_size'] = '0';
+            $this->load->library('upload', $config);
+            if ($this->upload->do_upload("files")) {
+                $error = array('array' => $this->upload->display_errors());
+                $data = $this->upload->data();
+                $source = $pathfile . $data['file_name'];
+                chmod($source, 0777);
+                $paydata = $data['file_name'];
+				
+				$data_doc['RequestID'] = $new_RequestID;
+				$data_doc['NamaDokumen'] = $paydata;
+				$data_doc['Path'] = $source;
+				$in_data_doc = $this->Requestproc_v3_mdl->tbl_insert('TBL_REQUEST_DOC',$data_doc);
+				
+                $istatus = true;
+                $iremarks = 'Data Berhasil Diinput.';
+            } else {
+                $istatus = false;
+                $iremarks = $this->upload->display_errors();
+            }
+        }        
+		$result = array('istatus' => $istatus, 'iremarks' => $iremarks);
+        echo json_encode($result);
+	}
+	
 	function app_requestproc_vendor_item() {
+		print_r($this->input->post('DokumenVendor'));die();
 		$data['RequestID'] = $this->input->post('RequestID');
 		$data['flow_id'] = $this->input->post('flow_id');
 		$data['status'] = $this->input->post('status');

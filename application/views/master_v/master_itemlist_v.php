@@ -43,7 +43,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-8">
-                                    <a class="btn btn-sm btn-primary" href="#" id="btnAdd" data-toggle="modal" data-target="#mdl_Update">Add Master Item List</a>
+                                    <!--<a class="btn btn-sm btn-primary" href="#" id="btnAdd" data-toggle="modal" data-target="#mdl_Update">Add Master Item List</a>-->
                                     <!-- <button class="btn btn-sm btn-default">Add Item Category</button> -->
                                 </div>
                                 <div class="col-md-2">

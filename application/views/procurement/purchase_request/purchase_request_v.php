@@ -77,6 +77,26 @@
                                             </select>
                                         </div>
                                     </div>
+                                    <div class="form-group" id="PR_sewa" style="display:none">
+										<label class="control-label col-sm-3">Periode Sewa </label>
+                                        <div class="col-sm-7 form-inline">
+                                            <input type="number" class="form-control" id="SewaPeriodeNilai" name="SewaPeriodeNilai"/>
+                                            <select name="SewaPeriodeSatuan" class="form-control input-small">
+                                                <option selected="" disabled="" value="">-Select-</option>
+                                                <option value="Hari">Hari</option>
+                                                <option value="Bulan">Bulan</option>
+                                                <option value="Tahun">Tahun</option>
+                                            </select>
+										</div>
+									</div>
+                                    <div class="form-group" id="PR_sewa_tgl" style="display:none">
+										<label class="control-label col-sm-3">Per Tanggal </label>
+                                        <div class="col-sm-7 form-inline">
+                                            <input type="text" class="form-control input-sm date-picker" data-date-format="dd/mm/yyyy" id="PeriodeTanggalDari" name="PeriodeTanggalDari" />
+                                            &nbsp;&nbsp;-&nbsp;&nbsp;
+											<input type="text" class="form-control input-sm date-picker" data-date-format="dd/mm/yyyy" id="PeriodeTanggalSampai" name="PeriodeTanggalSampai"/>
+										</div>
+									</div>
                                     <div class="form-group">
                                         <label class="control-label col-sm-3">Request Category</label>
                                         <div class="col-sm-7">

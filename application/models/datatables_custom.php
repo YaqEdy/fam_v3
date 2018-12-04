@@ -14,6 +14,7 @@ class datatables_custom extends CI_Model {
     public $where_in = array();
     public $param_in;
     public $or_where = array();
+    public $group_by;
 
     function __construct() {
         parent::__construct();
@@ -35,6 +36,7 @@ class datatables_custom extends CI_Model {
         $this->db->from($this->table);
         $this->db->where_not_in($this->param_not_in, $this->where_not_in);
         $this->db->or_where($this->or_where);
+//        $this->db->group_by($this->group_by); 
 //        $this->db->like($this->where);
 //        $this->db->from($this->table);
 
@@ -117,5 +119,8 @@ class datatables_custom extends CI_Model {
         $this->db->where('pid_pelamar', $id);
         $this->db->delete($this->table);
     }
+    
+    
+    
 
 }

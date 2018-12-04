@@ -1,4 +1,16 @@
 
+<style type="text/css">
+
+    table#table_gridflow th:nth-child(1){
+        display: none;
+    } 
+    table#table_gridflow td:nth-child(1){
+        display: none;
+    }
+    
+</style>
+
+
 <div class="row">
     <div class="col-md-12">
 
@@ -19,13 +31,15 @@
                             </li>
                            
                             <li class="linav " id="linav2">
-                                <a href="#tab_2_3" data-toggle="tab" id="navitab_2_3" class="anavitab">
+                                <a href="#tab_2_2" data-toggle="tab" id="navitab_2_2" class="anavitab">
                                     Status </a>
                             </li>
-                             <li class="linav " id="linav2">
-                                <a href="#tab_2_2" data-toggle="tab" id="navitab_2_2" class="anavitab">
+
+<!--                            <li class="linav " id="linav2">
+                                <a href="#tab_2_3" data-toggle="tab" id="navitab_2_3" class="anavitab">
                                     Group </a>
-                            </li>
+                            </li>-->
+                            
 
                         </ul>     
                         <div class="tab-content">
@@ -54,9 +68,21 @@
                                                         <input required="required" class="form-control" id="id_nama_flow" name="id_nama_flow" type="text" min="1" max="100" step="1" />
                                                     </div>
 
-                                                    <div class="form-group">
+                                                    <!-- <div class="form-group">
                                                         <label>Status Dari</label> <span class="required">*</span>
                                                         <input required="required" class="form-control" id="id_status_dari" name="id_status_dari" type="text" min="1" max="100" step="1" />
+                                                    </div> -->
+
+                                                    <div class="form-group">
+                                                        <label>Status Dari</label>
+                                                        <?php
+                                                        $data = array();
+                                                        $data[''] = '';
+                                                        foreach ($dd_status as $k) :
+                                                            $data[$k->id] = $k->status;
+                                                        endforeach;
+                                                        echo form_dropdown('id', $data, '', 'id="id_status_dari" name="id_status_dari" class="form-control" required');
+                                                        ?>
                                                     </div>
 
                                                     <div class="form-group">
@@ -70,10 +96,22 @@
                                                           <input  id="idTmpAksiBtn"  name="idTmpAksiBtn" data-required="1" class="form-control input-sm hidden" type="text"> 
                                                     </div>
 
-                                                     <div class="form-group">
+                                                    <div class="form-group">
+                                                        <label>Status Ke</label>
+                                                        <?php
+                                                        $data = array();
+                                                        $data[''] = '';
+                                                        foreach ($dd_status as $k) :
+                                                            $data[$k->id] = $k->status;
+                                                        endforeach;
+                                                        echo form_dropdown('id', $data, '', 'id="id_status_ke" name="id_status_ke" class="form-control" required');
+                                                        ?>
+                                                    </div>
+
+                                                     <!-- <div class="form-group">
                                                         <label>Status Ke</label> <span class="required">*</span>
                                                         <input required="required" class="form-control" id="id_status_ke" name="id_status_ke" type="text" min="1" max="100" step="1" />
-                                                    </div>
+                                                    </div> -->
 
                                                     <div class="form-group">
                                                         <label>Tipe</label>
@@ -121,7 +159,7 @@
                                                         <!--<i class="fa fa-edit"></i>--> Ubah
                                                     </button>
 
-                                                     <button id="id_btnBatalRoot" type="reset" class="btn default">Batal</button>
+                                                     <button id="id_btnBatal" type="reset" class="btn default" onclick="btlflow()"><i class="fa fa-refresh"></i> Batal</button>
                                                 </div>
                                             </div>
 
@@ -138,8 +176,12 @@
                                                 <th class='row-md-3'>Flow Id</th>
                                                 <th class='row-md-3'>Nama Flow ID</th>
                                                 <th class='row-md-6'>Status dari</th>
-                                                <th class='row-md-5'>Status ke</th>
                                                 <th class='row-md-3'>Aksi</th>
+                                                <th class='row-md-5'>Status ke</th>
+                                                <th class='row-md-5'>Tipe</th>
+                                                <th class='row-md-5'>Min Hps</th>
+                                                <th class='row-md-5'> Max Hps &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                                                
                                                   <th>Opsi</th>
                                             </tr>
                                         </thead>
@@ -172,7 +214,7 @@
                                     </div>
                                 </div>   
                                 <div class="row">
-                                    <input class="form-control hidden" type="text" id="id_data" name="id_data"/>
+                                    <!-- <input class="form-control hidden " type="text" id="id_data" name="id_data"/> -->
                                     <!-- HIDDEN INPUT -->
                                     <input type="text" id="idTmpAksiBtn" class="hidden">
                                     <!-- END HIDDEN INPUT -->
@@ -180,8 +222,9 @@
                                 <div class="col-md-12">&nbsp;</div>
                                 <div class="col-md-12">
                                     <div class="row">
-                                        <input class="form-control hidden" type="text" id="id_data" name="id_data"/>
+                                        <input class="form-control hidden " type="text" id="id_id" name="id_id"/>
                                         <div class="form-body">
+
                                             <div class="col-md-4">
                                                <div class="form-group">
                                                 <label>GROUP</label>
@@ -191,7 +234,7 @@
                                                 foreach ($dd_grup as $row) :
                                                     $data[$row->id] = $row->grup;
                                                 endforeach;
-                                                echo form_dropdown('id', $data, '', 'id="id" class="form-control  input-sm select2me" required="required"');
+                                                echo form_dropdown('grup_status', $data, '', 'id="id_grup_status" class="form-control " required="required"');
                                                 ?>
                                           </div>
                                                 <div class="form-group">
@@ -204,7 +247,13 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="form-actions">
-                                                <button name="btnSimpan" onclick="reload2()"  class="btn blue" id="id_btnSimpan">Simpan</button>
+                                                <button name="btnSimpanstatus" onclick="reload2()"  class="btn blue" id="id_btnSimpanstatus">Simpan</button>
+
+                                                    <button name="btnubahStatus" class="btn yellow" id="id_btnubahstatus" >
+                                                        <i class="fa fa-edit"></i> Ubah </button> 
+
+                                                     <button id="id_btnBatal" name="id_btnBatal" type="reset" class="btn default" onclick="btlstatus()"> <i class="fa fa-refresh"></i> Batal</button>
+
                                             </div>
                                         </div>
                                     </div>
@@ -245,7 +294,7 @@
                                             </div>
                                         </div>   
                                         <div class="row">
-                                            <input class="form-control hidden" type="text" id="id_data" name="id_data"/>
+                                            <!-- <input class="form-control hidden" type="text" id="id_data" name="id_data"/> -->
                                             <!-- HIDDEN INPUT -->
                                             <input type="text" id="idTmpAksiBtn" class="hidden">
                                             <!-- END HIDDEN INPUT -->
@@ -256,7 +305,7 @@
                                         <div class="col-md-12">&nbsp;</div>
                                         <div class="col-md-12">
                                             <div class="row">
-                                                <input class="form-control hidden" type="text" id="id_data" name="id_data"/>
+                                                <input class="form-control hidden " type="text" id="id_group" name="id_group"/>
                                                 <div class="form-body">
                                                     <div class="col-md-4">
                                                         <div class="form-group">
@@ -269,14 +318,19 @@
                                             </div>
 
                                             <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="form-actions">
+                                            <div class="col-md-12">
+                                                <div class="form-actions">
 
-                                                        <button name="btnSimpan" target="_blank" class="btn blue" id="id_btnSimpan">
-                                                            <!--<i class="fa fa-check"></i>--> Simpan</button>
-                                                    </div>
+                                                <button name="btnSimpan" value="simpan"  class="btn blue" id="id_btnSimpangroup">
+                                                        <i class="fa fa-check"></i> Simpan</button>
+                                                    <button name="btnflowUbah" class="btn yellow" id="id_btnflowUbahgroup" >
+                                                        <i class="fa fa-edit"></i> Ubah </button> 
+
+                                                     <button id="id_btnBatal" type="reset" class="btn default" onclick="btlgrup()"><i class="fa fa-refresh"></i> Batal</button>
                                                 </div>
                                             </div>
+
+                                        </div>
 
                                             <div class="col-md-12">&nbsp;</div>
 

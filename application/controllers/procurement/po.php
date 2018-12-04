@@ -163,7 +163,7 @@ class po extends CI_Controller {
 
     public function getTableList() {
         $this->CI = & get_instance();
-        $rows = $this->master_po_m->getList($this->global_m->getFlow('7-2'));
+        $rows = $this->master_po_m->getList('7-2');
         $data['data'] = array();
         foreach ($rows as $row) {
             $array = array(
@@ -187,6 +187,7 @@ class po extends CI_Controller {
 
     public function savedata()
     {
+        
         $flow = $this->master_po_m->getflow();
         $cek_po = $this->master_po_m->cek_po($this->input->post('id_pr'));
         $id_po_detail = $this->global_m->getIdMax('ID_PO_DETAIL','TBL_T_PO_DETAIL');
@@ -196,8 +197,10 @@ class po extends CI_Controller {
             $id_po = $this->global_m->getIdMax('ID_PO','TBL_T_PO');
             $head['ID_PO'] = $id_po;
             $head['ID_PR'] = $this->input->post('id_pr');
-            $head['flow_id'] = 1;
-            $head['status'] = '6-2';
+            $head['flow_id'] = $this->global_m->getFlowId($this->input->post('id_pr'));
+            $head['status'] = $this->global_m->getNextFlow($this->input->post('id_pr'),$this->global_m->getNextFlow($this->input->post('id_pr'),'7-2'));
+            $head['CREATE_BY'] = $this->session->userdata('user_id');
+            $head['CREATE_DATE'] = date('Y-m-d H:i:s');
             $this->master_po_m->save_po($head);
         }
 
@@ -209,6 +212,7 @@ class po extends CI_Controller {
         $detail['SUB_TOTAL'] = $this->input->post('subtotal');
         $detail['DISC'] = $this->input->post('disc');
         $detail['PPN'] = $this->input->post('ppn');
+        $detail['PERSEN_PPN'] = $this->input->post('presentase');
         $detail['PPH'] = $this->input->post('pph');
         $detail['TOTAL'] = $this->input->post('totalall');
         $detail['CREATE_BY'] = $this->session->userdata('user_id');
@@ -217,15 +221,14 @@ class po extends CI_Controller {
         
         //request log
         $log['RequestID'] = $this->input->post('id_pr');
-        $log['status_dari'] = $flow->status_dari;
-        $log['action'] = $flow->ACTION;
-        $log['status_ke'] = $flow->status_ke;
+        $log['status_dari'] = $this->global_m->getNextFlow($this->input->post('id_pr'),'7-2');
+        $log['action'] = 'approve';
+        $log['status_ke'] = $this->global_m->getNextFlow($this->input->post('id_pr'),$this->global_m->getNextFlow($this->input->post('id_pr'),'7-2'));
         $log['user_id'] = $this->session->userdata('user_id');
         $log['date'] = date('Y-m-d H:i:s');
         $this->master_po_m->save_log($log);
 
         //berdasarkan vendor
-
         for ($i=0; $i < count($_POST['barang']); $i++) { 
             $data['ID_PO'] = $id_po;
             $data['VENDOR_ID'] = $this->input->post('id_vendor');
@@ -235,6 +238,12 @@ class po extends CI_Controller {
             $data['QTY'] = $_POST['qty'][$i];
             $data['HARGA'] = $_POST['satuan'][$i];
             $data['TTL_HARGA'] = $_POST['hargatotal'][$i];
+            $data['JNS_PERIODE'] = $_POST['jns_periode'][$i];
+            $data['START_PERIODE'] = $_POST['start_periode'][$i];
+            $data['END_PERIODE'] = $_POST['end_periode'][$i];
+            $data['NOTIF'] = date("Y-m-d",strtotime($_POST['notif'][$i]));
+            $data['CREATE_BY'] = $this->session->userdata('user_id');
+            $data['CREATE_DATE'] = date('Y-m-d H:i:s');
 
             $this->master_po_m->save_po_detail($data);
         }

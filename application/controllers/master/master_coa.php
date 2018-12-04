@@ -18,6 +18,7 @@ class master_coa extends CI_Controller {
             $this->load->model('global_m');
             $this->load->model('master_m/master_coa_m');
             $this->load->model('datatables_custom');
+            $this->load->model('datatables');
         }
     }
 
@@ -107,884 +108,1248 @@ function home() {
 //     }
 
 
-     function get_server_side() {
-        $requestData = $_REQUEST;
-       // print_r($requestData);die();
-        $iStatus=$this->input->post('sStatus');
-        $iSearch=$this->input->post('sSearch');
-        $columns = array(
-            // datatable column index  => database column name
-            0 => 'ID',
-            1 => 'FLEX_VALUE',
-            2 => 'BRANCH_DESC',
-            3 => 'ZONE_ID',
-            4 => 'ZoneName',
-            5 => 'CREATE_BY',
-            6 => 'CREATE_DATE',
-            7 => 'UPDATE_BY',
-            8 => 'UPDATE_DATE',
-            9 => 'IS_TRASH'
+//      function get_server_side() {
+//         $requestData = $_REQUEST;
+//        // print_r($requestData);die();
+//         $iStatus=$this->input->post('sStatus');
+//         $iSearch=$this->input->post('sSearch');
+//         $columns = array(
+//             // datatable column index  => database column name
+//             0 => 'ID',
+//             1 => 'FLEX_VALUE',
+//             2 => 'BRANCH_DESC',
+//             3 => 'ZONE_ID',
+//             4 => 'ZoneName',
+//             5 => 'CREATE_BY',
+//             6 => 'CREATE_DATE',
+//             7 => 'UPDATE_BY',
+//             8 => 'UPDATE_DATE',
+//             9 => 'IS_TRASH'
            
-        );
+//         );
 
-        // print($columns);die('dsda');
+//         // print($columns);die('dsda');
 
-        $sql = "SELECT * from VW_TBL_BRANCH";
+//         $sql = "SELECT * from VW_TBL_BRANCH";
         
-        $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
+//         $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
 
-        $totalFiltered = $totalData;
+//         $totalFiltered = $totalData;
 
-        // print_r($totalData);die('ewew');
+//         // print_r($totalData);die('ewew');
 
-        if (!empty($requestData['search']['value'])) {
-            if ($iSearch=='1'){
-                $sql = "SELECT * from VW_TBL_BRANCH where IS_TRASH like '%".$iStatus."%'and ID like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='2'){
-                $sql = "SELECT * from VW_TBL_BRANCH where IS_TRASH like '%".$iStatus."%'and FLEX_VALUE like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='3'){
-                $sql = "SELECT * from VW_TBL_BRANCH where IS_TRASH like '%".$iStatus."%'and BRANCH_DESC like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='4'){
-                $sql = "SELECT * from VW_TBL_BRANCH where IS_TRASH like '%".$iStatus."%'and ZONE_ID like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='5'){
-                $sql = "SELECT * from VW_TBL_BRANCH where IS_TRASH like '%".$iStatus."%'and ZoneName like '%".$requestData['search']['value']."%'";
-            }else{
-                $sql = "SELECT * from VW_TBL_BRANCH where IS_TRASH like '%".$iStatus."%'"; 
-                $sql .= "and ID like '%".$requestData['search']['value']."%'"; 
-                $sql .= "or FLEX_VALUE like '%".$requestData['search']['value']."%'";
-                $sql .= "and BRANCH_DESC like '%".$requestData['search']['value']."%'"; 
-                $sql .= "or ZONE_ID like '%".$requestData['search']['value']."%'";
-                $sql .= "and ZoneName like '%".$requestData['search']['value']."%'"; 
+//         if (!empty($requestData['search']['value'])) {
+//             if ($iSearch=='1'){
+//                 $sql = "SELECT * from VW_TBL_BRANCH where IS_TRASH like '%".$iStatus."%'and ID like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='2'){
+//                 $sql = "SELECT * from VW_TBL_BRANCH where IS_TRASH like '%".$iStatus."%'and FLEX_VALUE like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='3'){
+//                 $sql = "SELECT * from VW_TBL_BRANCH where IS_TRASH like '%".$iStatus."%'and BRANCH_DESC like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='4'){
+//                 $sql = "SELECT * from VW_TBL_BRANCH where IS_TRASH like '%".$iStatus."%'and ZONE_ID like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='5'){
+//                 $sql = "SELECT * from VW_TBL_BRANCH where IS_TRASH like '%".$iStatus."%'and ZoneName like '%".$requestData['search']['value']."%'";
+//             }else{
+//                 $sql = "SELECT * from VW_TBL_BRANCH where IS_TRASH like '%".$iStatus."%'"; 
+//                 $sql .= "and ID like '%".$requestData['search']['value']."%'"; 
+//                 $sql .= "or FLEX_VALUE like '%".$requestData['search']['value']."%'";
+//                 $sql .= "and BRANCH_DESC like '%".$requestData['search']['value']."%'"; 
+//                 $sql .= "or ZONE_ID like '%".$requestData['search']['value']."%'";
+//                 $sql .= "and ZoneName like '%".$requestData['search']['value']."%'"; 
              
-            }
+//             }
            
-            $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
+//             $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
              
-            $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
-            $totalFiltered = $totalData;
-        } else {
-             $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";   
-        }
+//             $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
+//             $totalFiltered = $totalData;
+//         } else {
+//              $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";   
+//         }
 
-        $row = $this->global_m->tampil_semua_array($sql)->result_array(); 
-         // print_r($row); die();
+//         $row = $this->global_m->tampil_semua_array($sql)->result_array(); 
+//          // print_r($row); die();
+//         $data = array();
+//         $no=$_POST['start']+1;
+//         foreach ($row as $row) {
+//             # code...
+//             // preparing an array
+
+//             $ID = $row["ID"];
+//             $ZONE_ID = $row["ZONE_ID"];
+//          // // $ItemName = $idatatables->ItemName;
+
+//             $gbg=$ID."#".$ZONE_ID;
+
+
+//             $nestedData = array();
+           
+//             $nestedData[] = $no++;     
+//             $nestedData[] = $row["ID"];     
+//             $nestedData[] = $row["FLEX_VALUE"];
+//             $nestedData[] = $row["BRANCH_DESC"];   
+//             $nestedData[] = $row["ZONE_ID"];     
+//             $nestedData[] = $row["ZoneName"];
+//             $nestedData[] = '<button onclick="tmplEdit(this.value)" value="'.$gbg.'" class="btn btn-sm btn-warning" href="#" id="btnUpdateku" data-toggle="modal" data-target="#mdl_Update">Update</button>';
+
+
+//             $data[] = $nestedData;
+//         }
+
+//         $json_data = array(
+//             "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
+//             "recordsTotal" => intval($totalData), // total number of records
+//             "recordsFiltered" => intval($totalFiltered), // total number of records after searching, if there is no searching then totalFiltered = totalData
+//             "data" => $data   // total data array
+//         );
+
+//         echo json_encode($json_data);  
+//     }
+
+
+
+//          function get_server_side_coa() {
+//         $requestData = $_REQUEST;
+// //        print_r($requestData);die();
+//         $iStatus=$this->input->post('sStatus');
+//         $iSearch=$this->input->post('sSearch');
+//         $columns = array(
+//             // datatable column index  => database column name
+//             0 => 'ID',
+//             1 => 'FLEX_VALUE',
+//             2 => 'ACCOUNT_DESC',
+//             3 => 'ENABLED_FLAG',
+//             4 => 'SUMMARY_FLAG',
+//             5 => 'CREATE_DATE',
+//             6 => 'CREATE_BY',
+//             7 => 'UPDATE_BY',
+//             8 => 'UPDATE_DATE',
+//             9 => 'IS_TRASH'
+           
+//         );
+
+//         $sql = "SELECT * from TBL_M_ACCOUNT";            
+//         $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
+//         $totalFiltered = $totalData;
+
+//         if (!empty($requestData['search']['value'])) {
+//             if ($iSearch=='1'){
+//                 $sql = "SELECT * from TBL_M_ACCOUNT where IS_TRASH like '%".$iStatus."%'and ID like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='2'){
+//                 $sql = "SELECT * from TBL_M_ACCOUNT where IS_TRASH like '%".$iStatus."%'and FLEX_VALUE like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='3'){
+//                 $sql = "SELECT * from TBL_M_ACCOUNT where IS_TRASH like '%".$iStatus."%'and ACCOUNT_DESC like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='4'){
+//                 $sql = "SELECT * from TBL_M_ACCOUNT where IS_TRASH like '%".$iStatus."%'and ENABLED_FLAG like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='5'){
+//                 $sql = "SELECT * from TBL_M_ACCOUNT where IS_TRASH like '%".$iStatus."%'and SUMMARY_FLAG like '%".$requestData['search']['value']."%'";
+//             }else{
+//                 $sql = "SELECT * from TBL_M_ACCOUNT where IS_TRASH like '%".$iStatus."%'"; 
+//                 $sql .= "and ID like '%".$requestData['search']['value']."%'"; 
+//                 $sql .= "or FLEX_VALUE like '%".$requestData['search']['value']."%'";
+//                 $sql .= "and ACCOUNT_DESC like '%".$requestData['search']['value']."%'"; 
+//                 $sql .= "or ENABLED_FLAG like '%".$requestData['search']['value']."%'";
+//                 $sql .= "and SUMMARY_FLAG like '%".$requestData['search']['value']."%'"; 
+               
+               
+//             }
+           
+//             $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
+             
+//             $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
+//             $totalFiltered = $totalData;
+//         } else {
+//              $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";   
+//         }
+
+//         $row = $this->global_m->tampil_semua_array($sql)->result_array(); 
+        
+//         $data = array();
+//         $no=$_POST['start']+1;
+//         foreach ($row as $row) {
+//             # code...
+//             // preparing an array
+//             $nestedData = array();
+           
+//             $nestedData[] = $no++;     
+//             $nestedData[] = $row["ID"];     
+//             $nestedData[] = $row["FLEX_VALUE"];
+//             $nestedData[] = $row["ACCOUNT_DESC"];
+//             $nestedData[] = $row["ENABLED_FLAG"];     
+//             $nestedData[] = $row["SUMMARY_FLAG"];
+          
+            
+//             // $nestedData[] = $row["Status"];
+
+//             // if($row["IS_TRASH"]==0)
+//             // {
+//             //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate1" data-toggle="modal" data-target="#mdl_Update">Update</a><a class="btn  btn-sm btn-danger" id="btnAktiv" href="#">Aktivate</a>';
+//             // }
+//             // else
+//             // {
+//             //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate1" data-toggle="modal" data-target="#mdl_Update">Update<a class="btn btn-sm green-meadow" id="btnDeactivate" href="#">Deactivate</a>';
+//             // }
+
+//             $data[] = $nestedData;
+//         }
+
+//         $json_data = array(
+//             "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
+//             "recordsTotal" => intval($totalData), // total number of records
+//             "recordsFiltered" => intval($totalFiltered), // total number of records after searching, if there is no searching then totalFiltered = totalData
+//             "data" => $data   // total data array
+//         );
+
+//         echo json_encode($json_data);  
+//     }
+
+
+
+
+
+//          function get_server_side_subcoa() {
+//         $requestData = $_REQUEST;
+// //        print_r($requestData);die();
+//         $iStatus=$this->input->post('sStatus');
+//         $iSearch=$this->input->post('sSearch');
+//         $columns = array(
+//             // datatable column index  => database column name
+//             0 => 'ID',
+//             1 => 'FLEX_VALUE',
+//             2 => 'SUBACCOUNT_DESC',
+//             3 => 'ENABLED_FLAG',
+//             4 => 'SUMMARY_FLAG',
+//             5 => 'CREATE_DATE',
+//             6 => 'CREATE_BY',
+//             7 => 'UPDATE_BY',
+//             8 => 'UPDATE_DATE',
+//             9 => 'IS_TRASH'
+           
+//         );
+
+//         $sql = "SELECT * from TBL_M_SUBACCOUNT";            
+//         $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
+//         $totalFiltered = $totalData;
+
+//         if (!empty($requestData['search']['value'])) {
+//             if ($iSearch=='1'){
+//                 $sql = "SELECT * from TBL_M_SUBACCOUNT where IS_TRASH like '%".$iStatus."%'and ID like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='2'){
+//                 $sql = "SELECT * from TBL_M_SUBACCOUNT where IS_TRASH like '%".$iStatus."%'and FLEX_VALUE like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='3'){
+//                 $sql = "SELECT * from TBL_M_SUBACCOUNT where IS_TRASH like '%".$iStatus."%'and SUBACCOUNT_DESC like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='4'){
+//                 $sql = "SELECT * from TBL_M_SUBACCOUNT where IS_TRASH like '%".$iStatus."%'and ENABLED_FLAG like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='5'){
+//                 $sql = "SELECT * from TBL_M_SUBACCOUNT where IS_TRASH like '%".$iStatus."%'and SUMMARY_FLAG like '%".$requestData['search']['value']."%'";
+//             }else{
+//                 $sql = "SELECT * from TBL_M_SUBACCOUNT where IS_TRASH like '%".$iStatus."%'"; 
+//                 $sql .= "and ID like '%".$requestData['search']['value']."%'"; 
+//                 $sql .= "or FLEX_VALUE like '%".$requestData['search']['value']."%'";
+//                 $sql .= "and SUBACCOUNT_DESC like '%".$requestData['search']['value']."%'"; 
+//                 $sql .= "or ENABLED_FLAG like '%".$requestData['search']['value']."%'";
+//                 $sql .= "and SUMMARY_FLAG like '%".$requestData['search']['value']."%'"; 
+               
+               
+//             }
+           
+//             $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
+             
+//             $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
+//             $totalFiltered = $totalData;
+//         } else {
+//              $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";   
+//         }
+
+//         $row = $this->global_m->tampil_semua_array($sql)->result_array(); 
+        
+//         $data = array();
+//         $no=$_POST['start']+1;
+//         foreach ($row as $row) {
+//             # code...
+//             // preparing an array
+//             $nestedData = array();
+           
+//             $nestedData[] = $no++;     
+//             $nestedData[] = $row["ID"];     
+//             $nestedData[] = $row["FLEX_VALUE"];
+//             $nestedData[] = $row["SUBACCOUNT_DESC"];
+//             $nestedData[] = $row["ENABLED_FLAG"];     
+//             $nestedData[] = $row["SUMMARY_FLAG"];
+          
+            
+//             // $nestedData[] = $row["Status"];
+
+//             // if($row["IS_TRASH"]==0)
+//             // {
+//             //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate2" data-toggle="modal" data-target="#mdl_Update">Update</a><a class="btn  btn-sm btn-danger" id="btnAktiv" href="#">Aktivate</a>';
+//             // }
+//             // else
+//             // {
+//             //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate2" data-toggle="modal" data-target="#mdl_Update">Update<a class="btn btn-sm green-meadow" id="btnDeactivate" href="#">Deactivate</a>';
+//             // }
+
+//             $data[] = $nestedData;
+//         }
+
+//         $json_data = array(
+//             "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
+//             "recordsTotal" => intval($totalData), // total number of records
+//             "recordsFiltered" => intval($totalFiltered), // total number of records after searching, if there is no searching then totalFiltered = totalData
+//             "data" => $data   // total data array
+//         );
+
+//         echo json_encode($json_data);  
+//     }
+
+
+//    function get_server_side_lob() {
+//         $requestData = $_REQUEST;
+// //        print_r($requestData);die();
+//         $iStatus=$this->input->post('sStatus');
+//         $iSearch=$this->input->post('sSearch');
+//         $columns = array(
+//             // datatable column index  => database column name
+//             0 => 'ID',
+//             1 => 'FLEX_VALUE',
+//             2 => 'LOB_DESC',
+//             3 => 'ENABLED_FLAG',
+//             4 => 'SUMMARY_FLAG',
+//             5 => 'CREATE_DATE',
+//             6 => 'CREATE_BY',
+//             7 => 'UPDATE_BY',
+//             8 => 'UPDATE_DATE',
+//             9 => 'IS_TRASH'
+           
+//         );
+
+//         $sql = "SELECT * from TBL_M_LOB";            
+//         $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
+//         $totalFiltered = $totalData;
+
+//         if (!empty($requestData['search']['value'])) {
+//             if ($iSearch=='1'){
+//                 $sql = "SELECT * from TBL_M_LOB where IS_TRASH like '%".$iStatus."%'and ID like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='2'){
+//                 $sql = "SELECT * from TBL_M_LOB where IS_TRASH like '%".$iStatus."%'and FLEX_VALUE like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='3'){
+//                 $sql = "SELECT * from TBL_M_LOB where IS_TRASH like '%".$iStatus."%'and LOB_DESC like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='4'){
+//                 $sql = "SELECT * from TBL_M_LOB where IS_TRASH like '%".$iStatus."%'and ENABLED_FLAG like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='5'){
+//                 $sql = "SELECT * from TBL_M_LOB where IS_TRASH like '%".$iStatus."%'and SUMMARY_FLAG like '%".$requestData['search']['value']."%'";
+//             }else{
+//                 $sql = "SELECT * from TBL_M_LOB where IS_TRASH like '%".$iStatus."%'"; 
+//                 $sql .= "and ID like '%".$requestData['search']['value']."%'"; 
+//                 $sql .= "or FLEX_VALUE like '%".$requestData['search']['value']."%'";
+//                 $sql .= "and LOB_DESC like '%".$requestData['search']['value']."%'"; 
+//                 $sql .= "or ENABLED_FLAG like '%".$requestData['search']['value']."%'";
+//                 $sql .= "and SUMMARY_FLAG like '%".$requestData['search']['value']."%'"; 
+               
+               
+//             }
+           
+//             $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
+             
+//             $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
+//             $totalFiltered = $totalData;
+//         } else {
+//              $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";   
+//         }
+
+//         $row = $this->global_m->tampil_semua_array($sql)->result_array(); 
+        
+//         $data = array();
+//         $no=$_POST['start']+1;
+//         foreach ($row as $row) {
+//             # code...
+//             // preparing an array
+//             $nestedData = array();
+           
+//             $nestedData[] = $no++;     
+//             $nestedData[] = $row["ID"];     
+//             $nestedData[] = $row["FLEX_VALUE"];
+//             $nestedData[] = $row["LOB_DESC"];
+//             $nestedData[] = $row["ENABLED_FLAG"];     
+//             $nestedData[] = $row["SUMMARY_FLAG"];
+          
+            
+//             // $nestedData[] = $row["Status"];
+
+//             // if($row["IS_TRASH"]==0)
+//             // {
+//             //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate3" data-toggle="modal" data-target="#mdl_Update">Update</a><a class="btn  btn-sm btn-danger" id="btnAktiv" href="#">Aktivate</a>';
+//             // }
+//             // else
+//             // {
+//             //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate3" data-toggle="modal" data-target="#mdl_Update">Update<a class="btn btn-sm green-meadow" id="btnDeactivate" href="#">Deactivate</a>';
+//             // }
+
+//             $data[] = $nestedData;
+//         }
+
+//         $json_data = array(
+//             "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
+//             "recordsTotal" => intval($totalData), // total number of records
+//             "recordsFiltered" => intval($totalFiltered), // total number of records after searching, if there is no searching then totalFiltered = totalData
+//             "data" => $data   // total data array
+//         );
+
+//         echo json_encode($json_data);  
+//     }
+
+
+
+
+//    function get_server_side_division() {
+//         $requestData = $_REQUEST;
+// //        print_r($requestData);die();
+//         $iStatus=$this->input->post('sStatus');
+//         $iSearch=$this->input->post('sSearch');
+//         $columns = array(
+//             // datatable column index  => database column name
+//             0 => 'ID',
+//             1 => 'FLEX_VALUE',
+//             2 => 'DIV_DESC',
+//             3 => 'ENABLED_FLAG',
+//             4 => 'SUMMARY_FLAG',
+//             5 => 'CREATE_DATE',
+//             6 => 'CREATE_BY',
+//             7 => 'UPDATE_BY',
+//             8 => 'UPDATE_DATE',
+//             9 => 'IS_TRASH'
+           
+//         );
+
+//         $sql = "SELECT * from TBL_M_DIVISION";            
+//         $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
+//         $totalFiltered = $totalData;
+
+//         if (!empty($requestData['search']['value'])) {
+//             if ($iSearch=='1'){
+//                 $sql = "SELECT * from TBL_M_DIVISION where IS_TRASH like '%".$iStatus."%'and ID like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='2'){
+//                 $sql = "SELECT * from TBL_M_DIVISION where IS_TRASH like '%".$iStatus."%'and FLEX_VALUE like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='3'){
+//                 $sql = "SELECT * from TBL_M_DIVISION where IS_TRASH like '%".$iStatus."%'and DIV_DESC like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='4'){
+//                 $sql = "SELECT * from TBL_M_DIVISION where IS_TRASH like '%".$iStatus."%'and ENABLED_FLAG like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='5'){
+//                 $sql = "SELECT * from TBL_M_DIVISION where IS_TRASH like '%".$iStatus."%'and SUMMARY_FLAG like '%".$requestData['search']['value']."%'";
+//             }else{
+//                 $sql = "SELECT * from TBL_M_DIVISION where IS_TRASH like '%".$iStatus."%'"; 
+//                 $sql .= "and ID like '%".$requestData['search']['value']."%'"; 
+//                 $sql .= "or FLEX_VALUE like '%".$requestData['search']['value']."%'";
+//                 $sql .= "and DIV_DESC like '%".$requestData['search']['value']."%'"; 
+//                 $sql .= "or ENABLED_FLAG like '%".$requestData['search']['value']."%'";
+//                 $sql .= "and SUMMARY_FLAG like '%".$requestData['search']['value']."%'"; 
+               
+               
+//             }
+           
+//             $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
+             
+//             $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
+//             $totalFiltered = $totalData;
+//         } else {
+//              $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";   
+//         }
+
+//         $row = $this->global_m->tampil_semua_array($sql)->result_array(); 
+        
+//         $data = array();
+//         $no=$_POST['start']+1;
+//         foreach ($row as $row) {
+//             # code...
+//             // preparing an array
+//             $nestedData = array();
+           
+//             $nestedData[] = $no++;     
+//             $nestedData[] = $row["ID"];     
+//             $nestedData[] = $row["FLEX_VALUE"];
+//             $nestedData[] = $row["DIV_DESC"];
+//             $nestedData[] = $row["ENABLED_FLAG"];     
+//             $nestedData[] = $row["SUMMARY_FLAG"];
+          
+            
+//             // $nestedData[] = $row["Status"];
+
+//             // if($row["IS_TRASH"]==0)
+//             // {
+//             //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate4" data-toggle="modal" data-target="#mdl_Update">Update</a><a class="btn  btn-sm btn-danger" id="btnAktiv" href="#">Aktivate</a>';
+//             // }
+//             // else
+//             // {
+//             //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate4" data-toggle="modal" data-target="#mdl_Update">Update<a class="btn btn-sm green-meadow" id="btnDeactivate" href="#">Deactivate</a>';
+//             // }
+
+//             $data[] = $nestedData;
+//         }
+
+//         $json_data = array(
+//             "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
+//             "recordsTotal" => intval($totalData), // total number of records
+//             "recordsFiltered" => intval($totalFiltered), // total number of records after searching, if there is no searching then totalFiltered = totalData
+//             "data" => $data   // total data array
+//         );
+
+//         echo json_encode($json_data);  
+//     }
+
+
+
+
+
+//    function get_server_side_type() {
+//         $requestData = $_REQUEST;
+// //        print_r($requestData);die();
+//         $iStatus=$this->input->post('sStatus');
+//         $iSearch=$this->input->post('sSearch');
+//         $columns = array(
+//             // datatable column index  => database column name
+//             0 => 'ID',
+//             1 => 'FLEX_VALUE',
+//             2 => 'TYPE_DESC',
+//             3 => 'ENABLED_FLAG',
+//             4 => 'SUMMARY_FLAG',
+//             5 => 'CREATE_DATE',
+//             6 => 'CREATE_BY',
+//             7 => 'UPDATE_BY',
+//             8 => 'UPDATE_DATE',
+//             9 => 'IS_TRASH'
+           
+//         );
+
+//         $sql = "SELECT * from TBL_M_TYPE";            
+//         $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
+//         $totalFiltered = $totalData;
+
+//         if (!empty($requestData['search']['value'])) {
+//             if ($iSearch=='1'){
+//                 $sql = "SELECT * from TBL_M_TYPE where IS_TRASH like '%".$iStatus."%'and ID like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='2'){
+//                 $sql = "SELECT * from TBL_M_TYPE where IS_TRASH like '%".$iStatus."%'and FLEX_VALUE like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='3'){
+//                 $sql = "SELECT * from TBL_M_TYPE where IS_TRASH like '%".$iStatus."%'and TYPE_DESC like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='4'){
+//                 $sql = "SELECT * from TBL_M_TYPE where IS_TRASH like '%".$iStatus."%'and ENABLED_FLAG like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='5'){
+//                 $sql = "SELECT * from TBL_M_TYPE where IS_TRASH like '%".$iStatus."%'and SUMMARY_FLAG like '%".$requestData['search']['value']."%'";
+//             }else{
+//                 $sql = "SELECT * from TBL_M_TYPE where IS_TRASH like '%".$iStatus."%'"; 
+//                 $sql .= "and ID like '%".$requestData['search']['value']."%'"; 
+//                 $sql .= "or FLEX_VALUE like '%".$requestData['search']['value']."%'";
+//                 $sql .= "and TYPE_DESC like '%".$requestData['search']['value']."%'"; 
+//                 $sql .= "or ENABLED_FLAG like '%".$requestData['search']['value']."%'";
+//                 $sql .= "and SUMMARY_FLAG like '%".$requestData['search']['value']."%'"; 
+               
+               
+//             }
+           
+//             $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
+             
+//             $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
+//             $totalFiltered = $totalData;
+//         } else {
+//              $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";   
+//         }
+
+//         $row = $this->global_m->tampil_semua_array($sql)->result_array(); 
+        
+//         $data = array();
+//         $no=$_POST['start']+1;
+//         foreach ($row as $row) {
+//             # code...
+//             // preparing an array
+//             $nestedData = array();
+           
+//             $nestedData[] = $no++;     
+//             $nestedData[] = $row["ID"];     
+//             $nestedData[] = $row["FLEX_VALUE"];
+//             $nestedData[] = $row["TYPE_DESC"];
+//             $nestedData[] = $row["ENABLED_FLAG"];     
+//             $nestedData[] = $row["SUMMARY_FLAG"];
+          
+            
+//             // $nestedData[] = $row["Status"];
+
+//             // if($row["IS_TRASH"]==0)
+//             // {
+//             //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate5" data-toggle="modal" data-target="#mdl_Update">Update</a><a class="btn  btn-sm btn-danger" id="btnAktiv" href="#">Aktivate</a>';
+//             // }
+//             // else
+//             // {
+//             //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate5" data-toggle="modal" data-target="#mdl_Update">Update<a class="btn btn-sm green-meadow" id="btnDeactivate" href="#">Deactivate</a>';
+//             // }
+
+//             $data[] = $nestedData;
+//         }
+
+//         $json_data = array(
+//             "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
+//             "recordsTotal" => intval($totalData), // total number of records
+//             "recordsFiltered" => intval($totalFiltered), // total number of records after searching, if there is no searching then totalFiltered = totalData
+//             "data" => $data   // total data array
+//         );
+
+//         echo json_encode($json_data);  
+//     }
+
+
+
+// function get_server_side_project() {
+//         $requestData = $_REQUEST;
+// //        print_r($requestData);die();
+//         $iStatus=$this->input->post('sStatus');
+//         $iSearch=$this->input->post('sSearch');
+//         $columns = array(
+//             // datatable column index  => database column name
+//             0 => 'ID',
+//             1 => 'FLEX_VALUE',
+//             2 => 'PROJECT_DESC',
+//             3 => 'ENABLED_FLAG',
+//             4 => 'SUMMARY_FLAG',
+//             5 => 'CREATE_DATE',
+//             6 => 'CREATE_BY',
+//             7 => 'UPDATE_BY',
+//             8 => 'UPDATE_DATE',
+//             9 => 'IS_TRASH'
+           
+//         );
+
+//         $sql = "SELECT * from TBL_M_PROJECT";            
+//         $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
+//         $totalFiltered = $totalData;
+
+//         if (!empty($requestData['search']['value'])) {
+//             if ($iSearch=='1'){
+//                 $sql = "SELECT * from TBL_M_PROJECT where IS_TRASH like '%".$iStatus."%'and ID like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='2'){
+//                 $sql = "SELECT * from TBL_M_PROJECT where IS_TRASH like '%".$iStatus."%'and FLEX_VALUE like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='3'){
+//                 $sql = "SELECT * from TBL_M_PROJECT where IS_TRASH like '%".$iStatus."%'and PROJECT_DESC like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='4'){
+//                 $sql = "SELECT * from TBL_M_PROJECT where IS_TRASH like '%".$iStatus."%'and ENABLED_FLAG like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='5'){
+//                 $sql = "SELECT * from TBL_M_PROJECT where IS_TRASH like '%".$iStatus."%'and SUMMARY_FLAG like '%".$requestData['search']['value']."%'";
+//             }else{
+//                 $sql = "SELECT * from TBL_M_PROJECT where IS_TRASH like '%".$iStatus."%'"; 
+//                 $sql .= "and ID like '%".$requestData['search']['value']."%'"; 
+//                 $sql .= "or FLEX_VALUE like '%".$requestData['search']['value']."%'";
+//                 $sql .= "and TYPE_DESC like '%".$requestData['search']['value']."%'"; 
+//                 $sql .= "or ENABLED_FLAG like '%".$requestData['search']['value']."%'";
+//                 $sql .= "and SUMMARY_FLAG like '%".$requestData['search']['value']."%'"; 
+               
+               
+//             }
+           
+//             $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
+             
+//             $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
+//             $totalFiltered = $totalData;
+//         } else {
+//              $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";   
+//         }
+
+//         $row = $this->global_m->tampil_semua_array($sql)->result_array(); 
+        
+//         $data = array();
+//         $no=$_POST['start']+1;
+//         foreach ($row as $row) {
+//             # code...
+//             // preparing an array
+//             $nestedData = array();
+           
+//             $nestedData[] = $no++;     
+//             $nestedData[] = $row["ID"];     
+//             $nestedData[] = $row["FLEX_VALUE"];
+//             $nestedData[] = $row["PROJECT_DESC"];
+//             $nestedData[] = $row["ENABLED_FLAG"];     
+//             $nestedData[] = $row["SUMMARY_FLAG"];
+          
+            
+//             // $nestedData[] = $row["Status"];
+
+//             // if($row["IS_TRASH"]==0)
+//             // {
+//             //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate6" data-toggle="modal" data-target="#mdl_Update">Update</a><a class="btn  btn-sm btn-danger" id="btnAktiv" href="#">Aktivate</a>';
+//             // }
+//             // else
+//             // {
+//             //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate6" data-toggle="modal" data-target="#mdl_Update">Update<a class="btn btn-sm green-meadow" id="btnDeactivate" href="#">Deactivate</a>';
+//             // }
+
+//             $data[] = $nestedData;
+//         }
+
+//         $json_data = array(
+//             "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
+//             "recordsTotal" => intval($totalData), // total number of records
+//             "recordsFiltered" => intval($totalFiltered), // total number of records after searching, if there is no searching then totalFiltered = totalData
+//             "data" => $data   // total data array
+//         );
+
+//         echo json_encode($json_data);  
+//     }
+
+
+
+
+
+//     function get_server_side_future1() {
+//         $requestData = $_REQUEST;
+// //        print_r($requestData);die();
+//         $iStatus=$this->input->post('sStatus');
+//         $iSearch=$this->input->post('sSearch');
+//         $columns = array(
+//             // datatable column index  => database column name
+//             0 => 'ID',
+//             1 => 'FLEX_VALUE',
+//             2 => 'FUTURE1_DESC',
+//             3 => 'ENABLED_FLAG',
+//             4 => 'SUMMARY_FLAG',
+//             5 => 'CREATE_DATE',
+//             6 => 'CREATE_BY',
+//             7 => 'UPDATE_BY',
+//             8 => 'UPDATE_DATE',
+//             9 => 'IS_TRASH'
+           
+//         );
+
+//         $sql = "SELECT * from TBL_M_FUTURE1";            
+//         $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
+//         $totalFiltered = $totalData;
+
+//         if (!empty($requestData['search']['value'])) {
+//             if ($iSearch=='1'){
+//                 $sql = "SELECT * from TBL_M_FUTURE1 where IS_TRASH like '%".$iStatus."%'and ID like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='2'){
+//                 $sql = "SELECT * from TBL_M_FUTURE1 where IS_TRASH like '%".$iStatus."%'and FLEX_VALUE like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='3'){
+//                 $sql = "SELECT * from TBL_M_FUTURE1 where IS_TRASH like '%".$iStatus."%'and FUTURE1_DESC like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='4'){
+//                 $sql = "SELECT * from TBL_M_FUTURE1 where IS_TRASH like '%".$iStatus."%'and ENABLED_FLAG like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='5'){
+//                 $sql = "SELECT * from TBL_M_FUTURE1 where IS_TRASH like '%".$iStatus."%'and SUMMARY_FLAG like '%".$requestData['search']['value']."%'";
+//             }else{
+//                 $sql = "SELECT * from TBL_M_FUTURE1 where IS_TRASH like '%".$iStatus."%'"; 
+//                 $sql .= "and ID like '%".$requestData['search']['value']."%'"; 
+//                 $sql .= "or FLEX_VALUE like '%".$requestData['search']['value']."%'";
+//                 $sql .= "and FUTURE1_DESC like '%".$requestData['search']['value']."%'"; 
+//                 $sql .= "or ENABLED_FLAG like '%".$requestData['search']['value']."%'";
+//                 $sql .= "and SUMMARY_FLAG like '%".$requestData['search']['value']."%'"; 
+               
+               
+//             }
+           
+//             $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
+             
+//             $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
+//             $totalFiltered = $totalData;
+//         } else {
+//              $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";   
+//         }
+
+//         $row = $this->global_m->tampil_semua_array($sql)->result_array(); 
+        
+//         $data = array();
+//         $no=$_POST['start']+1;
+//         foreach ($row as $row) {
+//             # code...
+//             // preparing an array
+//             $nestedData = array();
+           
+//             $nestedData[] = $no++;     
+//             $nestedData[] = $row["ID"];     
+//             $nestedData[] = $row["FLEX_VALUE"];
+//             $nestedData[] = $row["FUTURE1_DESC"];
+//             $nestedData[] = $row["ENABLED_FLAG"];     
+//             $nestedData[] = $row["SUMMARY_FLAG"];
+          
+            
+//             // $nestedData[] = $row["Status"];
+
+//             // if($row["IS_TRASH"]==0)
+//             // {
+//             //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate7" data-toggle="modal" data-target="#mdl_Update">Update</a><a class="btn  btn-sm btn-danger" id="btnAktiv" href="#">Aktivate</a>';
+//             // }
+//             // else
+//             // {
+//             //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate7" data-toggle="modal" data-target="#mdl_Update">Update<a class="btn btn-sm green-meadow" id="btnDeactivate" href="#">Deactivate</a>';
+//             // }
+
+//             $data[] = $nestedData;
+//         }
+
+//         $json_data = array(
+//             "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
+//             "recordsTotal" => intval($totalData), // total number of records
+//             "recordsFiltered" => intval($totalFiltered), // total number of records after searching, if there is no searching then totalFiltered = totalData
+//             "data" => $data   // total data array
+//         );
+
+//         echo json_encode($json_data);  
+//     }
+
+
+
+//      function get_server_side_future2() {
+//         $requestData = $_REQUEST;
+// //        print_r($requestData);die();
+//         $iStatus=$this->input->post('sStatus');
+//         $iSearch=$this->input->post('sSearch');
+//         $columns = array(
+//             // datatable column index  => database column name
+//             0 => 'ID',
+//             1 => 'FLEX_VALUE',
+//             2 => 'FUTURE2_DESC',
+//             3 => 'ENABLED_FLAG',
+//             4 => 'SUMMARY_FLAG',
+//             5 => 'CREATE_DATE',
+//             6 => 'CREATE_BY',
+//             7 => 'UPDATE_BY',
+//             8 => 'UPDATE_DATE',
+//             9 => 'IS_TRASH'
+           
+//         );
+
+//         $sql = "SELECT * from TBL_M_FUTURE2";            
+//         $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
+//         $totalFiltered = $totalData;
+
+//         if (!empty($requestData['search']['value'])) {
+//             if ($iSearch=='1'){
+//                 $sql = "SELECT * from TBL_M_FUTURE2 where IS_TRASH like '%".$iStatus."%'and ID like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='2'){
+//                 $sql = "SELECT * from TBL_M_FUTURE2 where IS_TRASH like '%".$iStatus."%'and FLEX_VALUE like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='3'){
+//                 $sql = "SELECT * from TBL_M_FUTURE2 where IS_TRASH like '%".$iStatus."%'and FUTURE2_DESC like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='4'){
+//                 $sql = "SELECT * from TBL_M_FUTURE2 where IS_TRASH like '%".$iStatus."%'and ENABLED_FLAG like '%".$requestData['search']['value']."%'";
+//             }else if ($iSearch=='5'){
+//                 $sql = "SELECT * from TBL_M_FUTURE2 where IS_TRASH like '%".$iStatus."%'and SUMMARY_FLAG like '%".$requestData['search']['value']."%'";
+//             }else{
+//                 $sql = "SELECT * from TBL_M_FUTURE2 where IS_TRASH like '%".$iStatus."%'"; 
+//                 $sql .= "and ID like '%".$requestData['search']['value']."%'"; 
+//                 $sql .= "or FLEX_VALUE like '%".$requestData['search']['value']."%'";
+//                 $sql .= "and FUTURE2_DESC like '%".$requestData['search']['value']."%'"; 
+//                 $sql .= "or ENABLED_FLAG like '%".$requestData['search']['value']."%'";
+//                 $sql .= "and SUMMARY_FLAG like '%".$requestData['search']['value']."%'"; 
+               
+               
+//             }
+           
+//             $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
+             
+//             $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
+//             $totalFiltered = $totalData;
+//         } else {
+//              $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";   
+//         }
+
+//         $row = $this->global_m->tampil_semua_array($sql)->result_array(); 
+        
+//         $data = array();
+//         $no=$_POST['start']+1;
+//         foreach ($row as $row) {
+//             # code...
+//             // preparing an array
+//             $nestedData = array();
+           
+//             $nestedData[] = $no++;     
+//             $nestedData[] = $row["ID"];     
+//             $nestedData[] = $row["FLEX_VALUE"];
+//             $nestedData[] = $row["FUTURE2_DESC"];
+//             $nestedData[] = $row["ENABLED_FLAG"];     
+//             $nestedData[] = $row["SUMMARY_FLAG"];
+          
+            
+//             // $nestedData[] = $row["Status"];
+
+//             // if($row["IS_TRASH"]==0)
+//             // {
+//             //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate8" data-toggle="modal" data-target="#mdl_Update">Update</a><a class="btn  btn-sm btn-danger" id="btnAktiv" href="#">Aktivate</a>';
+//             // }
+//             // else
+//             // {
+//             //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate8" data-toggle="modal" data-target="#mdl_Update">Update<a class="btn btn-sm green-meadow" id="btnDeactivate" href="#">Deactivate</a>';
+//             // }
+
+//             $data[] = $nestedData;
+//         }
+
+//         $json_data = array(
+//             "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
+//             "recordsTotal" => intval($totalData), // total number of records
+//             "recordsFiltered" => intval($totalFiltered), // total number of records after searching, if there is no searching then totalFiltered = totalData
+//             "data" => $data   // total data array
+//         );
+
+//         echo json_encode($json_data);  
+//     }
+
+
+
+
+    public function get_server_side() {    
+       $icolumn = array('ID', 'FLEX_VALUE', 'BRANCH_DESC',  'ZONE_ID', 'ZoneName');
+        // $iwhere = array('STATUS' => 0);
+        $iorder = array('ID' => 'asc');
+        $list = $this->datatables->get_datatables('VW_TBL_BRANCH', $icolumn, $iorder);
+            // print_r($list);
+            // die();
         $data = array();
-        $no=$_POST['start']+1;
-        foreach ($row as $row) {
-            # code...
-            // preparing an array
+        $no = $_POST['start'];
+        foreach ($list as $idatatables) {
 
-            $ID = $row["ID"];
-            $ZONE_ID = $row["ZONE_ID"];
-         // // $ItemName = $idatatables->ItemName;
+            $ID = $idatatables->ID;
+            $ZONE_ID = $idatatables->ZONE_ID;
 
             $gbg=$ID."#".$ZONE_ID;
 
+            $no++;
+            $row = array();
+            $row[] = $no;
 
-            $nestedData = array();
+            $row[] = $idatatables->ID;
+            $row[] = $idatatables->FLEX_VALUE;
+            $row[] = $idatatables->BRANCH_DESC;
+            $row[] = $idatatables->ZONE_ID;
+            $row[] = $idatatables->ZoneName;
+            $row[] = '<button onclick="tmplEdit(this.value)" value="'.$gbg.'" class="btn btn-sm btn-warning" href="#" id="btnUpdateku" data-toggle="modal" data-target="#mdl_Update">Update</button>';
            
-            $nestedData[] = $no++;     
-            $nestedData[] = $row["ID"];     
-            $nestedData[] = $row["FLEX_VALUE"];
-            $nestedData[] = $row["BRANCH_DESC"];   
-            $nestedData[] = $row["ZONE_ID"];     
-            $nestedData[] = $row["ZoneName"];
-            $nestedData[] = '<button onclick="tmplEdit(this.value)" value="'.$gbg.'" class="btn btn-sm btn-warning" href="#" id="btnUpdateku" data-toggle="modal" data-target="#mdl_Update">Update</button>';
 
-
-            $data[] = $nestedData;
+            $data[] = $row;
         }
 
-        $json_data = array(
-            "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
-            "recordsTotal" => intval($totalData), // total number of records
-            "recordsFiltered" => intval($totalFiltered), // total number of records after searching, if there is no searching then totalFiltered = totalData
-            "data" => $data   // total data array
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
+            "data" => $data,
         );
 
-        echo json_encode($json_data);  
+
+        //output to json format
+        echo json_encode($output);
     }
 
 
 
-         function get_server_side_coa() {
-        $requestData = $_REQUEST;
-//        print_r($requestData);die();
-        $iStatus=$this->input->post('sStatus');
-        $iSearch=$this->input->post('sSearch');
-        $columns = array(
-            // datatable column index  => database column name
-            0 => 'ID',
-            1 => 'FLEX_VALUE',
-            2 => 'ACCOUNT_DESC',
-            3 => 'ENABLED_FLAG',
-            4 => 'SUMMARY_FLAG',
-            5 => 'CREATE_DATE',
-            6 => 'CREATE_BY',
-            7 => 'UPDATE_BY',
-            8 => 'UPDATE_DATE',
-            9 => 'IS_TRASH'
-           
-        );
-
-        $sql = "SELECT * from TBL_M_ACCOUNT";            
-        $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
-        $totalFiltered = $totalData;
-
-        if (!empty($requestData['search']['value'])) {
-            if ($iSearch=='1'){
-                $sql = "SELECT * from TBL_M_ACCOUNT where IS_TRASH like '%".$iStatus."%'and ID like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='2'){
-                $sql = "SELECT * from TBL_M_ACCOUNT where IS_TRASH like '%".$iStatus."%'and FLEX_VALUE like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='3'){
-                $sql = "SELECT * from TBL_M_ACCOUNT where IS_TRASH like '%".$iStatus."%'and ACCOUNT_DESC like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='4'){
-                $sql = "SELECT * from TBL_M_ACCOUNT where IS_TRASH like '%".$iStatus."%'and ENABLED_FLAG like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='5'){
-                $sql = "SELECT * from TBL_M_ACCOUNT where IS_TRASH like '%".$iStatus."%'and SUMMARY_FLAG like '%".$requestData['search']['value']."%'";
-            }else{
-                $sql = "SELECT * from TBL_M_ACCOUNT where IS_TRASH like '%".$iStatus."%'"; 
-                $sql .= "and ID like '%".$requestData['search']['value']."%'"; 
-                $sql .= "or FLEX_VALUE like '%".$requestData['search']['value']."%'";
-                $sql .= "and ACCOUNT_DESC like '%".$requestData['search']['value']."%'"; 
-                $sql .= "or ENABLED_FLAG like '%".$requestData['search']['value']."%'";
-                $sql .= "and SUMMARY_FLAG like '%".$requestData['search']['value']."%'"; 
-               
-               
-            }
-           
-            $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
-             
-            $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
-            $totalFiltered = $totalData;
-        } else {
-             $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";   
-        }
-
-        $row = $this->global_m->tampil_semua_array($sql)->result_array(); 
-        
+    public function get_server_side_coa() {    
+       $icolumn = array('ID', 'FLEX_VALUE', 'ACCOUNT_DESC',  'ENABLED_FLAG', 'SUMMARY_FLAG', 'PARENT_FLEX');
+        // $iwhere = array('STATUS' => 0);
+        $iorder = array('ID' => 'asc');
+        $list = $this->datatables->get_datatables('TBL_M_ACCOUNT', $icolumn, $iorder);
+            // print_r($list);
+            // die();
         $data = array();
-        $no=$_POST['start']+1;
-        foreach ($row as $row) {
-            # code...
-            // preparing an array
-            $nestedData = array();
+        $no = $_POST['start'];
+        foreach ($list as $idatatables) {
+
+            $no++;
+            $row = array();
+            $row[] = $no;
+
+            $row[] = $idatatables->ID;
+            $row[] = $idatatables->FLEX_VALUE;
+            $row[] = $idatatables->ACCOUNT_DESC;
+            $row[] = $idatatables->ENABLED_FLAG;
+            $row[] = $idatatables->SUMMARY_FLAG;
+            $row[] = $idatatables->PARENT_FLEX;
            
-            $nestedData[] = $no++;     
-            $nestedData[] = $row["ID"];     
-            $nestedData[] = $row["FLEX_VALUE"];
-            $nestedData[] = $row["ACCOUNT_DESC"];
-            $nestedData[] = $row["ENABLED_FLAG"];     
-            $nestedData[] = $row["SUMMARY_FLAG"];
-          
-            
-            // $nestedData[] = $row["Status"];
 
-            // if($row["IS_TRASH"]==0)
-            // {
-            //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate1" data-toggle="modal" data-target="#mdl_Update">Update</a><a class="btn  btn-sm btn-danger" id="btnAktiv" href="#">Aktivate</a>';
-            // }
-            // else
-            // {
-            //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate1" data-toggle="modal" data-target="#mdl_Update">Update<a class="btn btn-sm green-meadow" id="btnDeactivate" href="#">Deactivate</a>';
-            // }
-
-            $data[] = $nestedData;
+            $data[] = $row;
         }
 
-        $json_data = array(
-            "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
-            "recordsTotal" => intval($totalData), // total number of records
-            "recordsFiltered" => intval($totalFiltered), // total number of records after searching, if there is no searching then totalFiltered = totalData
-            "data" => $data   // total data array
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
+            "data" => $data,
         );
 
-        echo json_encode($json_data);  
+
+        //output to json format
+        echo json_encode($output);
+    }
+
+
+
+    public function get_server_side_subcoa() {    
+       $icolumn = array('ID', 'FLEX_VALUE', 'SUBACCOUNT_DESC',  'ENABLED_FLAG', 'SUMMARY_FLAG');
+        // $iwhere = array('STATUS' => 0);
+        $iorder = array('ID' => 'asc');
+        $list = $this->datatables->get_datatables('TBL_M_SUBACCOUNT', $icolumn, $iorder);
+            // print_r($list);
+            // die();
+        $data = array();
+        $no = $_POST['start'];
+        foreach ($list as $idatatables) {
+
+            $no++;
+            $row = array();
+            $row[] = $no;
+
+            $row[] = $idatatables->ID;
+            $row[] = $idatatables->FLEX_VALUE;
+            $row[] = $idatatables->SUBACCOUNT_DESC;
+            $row[] = $idatatables->ENABLED_FLAG;
+            $row[] = $idatatables->SUMMARY_FLAG;
+            // $row[] = $idatatables->PARENT_FLEX;
+           
+
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
+            "data" => $data,
+        );
+
+
+        //output to json format
+        echo json_encode($output);
     }
 
 
 
 
-
-         function get_server_side_subcoa() {
-        $requestData = $_REQUEST;
-//        print_r($requestData);die();
-        $iStatus=$this->input->post('sStatus');
-        $iSearch=$this->input->post('sSearch');
-        $columns = array(
-            // datatable column index  => database column name
-            0 => 'ID',
-            1 => 'FLEX_VALUE',
-            2 => 'SUBACCOUNT_DESC',
-            3 => 'ENABLED_FLAG',
-            4 => 'SUMMARY_FLAG',
-            5 => 'CREATE_DATE',
-            6 => 'CREATE_BY',
-            7 => 'UPDATE_BY',
-            8 => 'UPDATE_DATE',
-            9 => 'IS_TRASH'
-           
-        );
-
-        $sql = "SELECT * from TBL_M_SUBACCOUNT";            
-        $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
-        $totalFiltered = $totalData;
-
-        if (!empty($requestData['search']['value'])) {
-            if ($iSearch=='1'){
-                $sql = "SELECT * from TBL_M_SUBACCOUNT where IS_TRASH like '%".$iStatus."%'and ID like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='2'){
-                $sql = "SELECT * from TBL_M_SUBACCOUNT where IS_TRASH like '%".$iStatus."%'and FLEX_VALUE like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='3'){
-                $sql = "SELECT * from TBL_M_SUBACCOUNT where IS_TRASH like '%".$iStatus."%'and SUBACCOUNT_DESC like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='4'){
-                $sql = "SELECT * from TBL_M_SUBACCOUNT where IS_TRASH like '%".$iStatus."%'and ENABLED_FLAG like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='5'){
-                $sql = "SELECT * from TBL_M_SUBACCOUNT where IS_TRASH like '%".$iStatus."%'and SUMMARY_FLAG like '%".$requestData['search']['value']."%'";
-            }else{
-                $sql = "SELECT * from TBL_M_SUBACCOUNT where IS_TRASH like '%".$iStatus."%'"; 
-                $sql .= "and ID like '%".$requestData['search']['value']."%'"; 
-                $sql .= "or FLEX_VALUE like '%".$requestData['search']['value']."%'";
-                $sql .= "and SUBACCOUNT_DESC like '%".$requestData['search']['value']."%'"; 
-                $sql .= "or ENABLED_FLAG like '%".$requestData['search']['value']."%'";
-                $sql .= "and SUMMARY_FLAG like '%".$requestData['search']['value']."%'"; 
-               
-               
-            }
-           
-            $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
-             
-            $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
-            $totalFiltered = $totalData;
-        } else {
-             $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";   
-        }
-
-        $row = $this->global_m->tampil_semua_array($sql)->result_array(); 
-        
+     public function get_server_side_lob() {    
+       $icolumn = array('ID', 'FLEX_VALUE', 'LOB_DESC',  'ENABLED_FLAG', 'SUMMARY_FLAG');
+        // $iwhere = array('STATUS' => 0);
+        $iorder = array('ID' => 'asc');
+        $list = $this->datatables->get_datatables('TBL_M_LOB', $icolumn, $iorder);
+            // print_r($list);
+            // die();
         $data = array();
-        $no=$_POST['start']+1;
-        foreach ($row as $row) {
-            # code...
-            // preparing an array
-            $nestedData = array();
+        $no = $_POST['start'];
+        foreach ($list as $idatatables) {
+
+            $no++;
+            $row = array();
+            $row[] = $no;
+
+            $row[] = $idatatables->ID;
+            $row[] = $idatatables->FLEX_VALUE;
+            $row[] = $idatatables->LOB_DESC;
+            $row[] = $idatatables->ENABLED_FLAG;
+            $row[] = $idatatables->SUMMARY_FLAG;
+            // $row[] = $idatatables->PARENT_FLEX;
            
-            $nestedData[] = $no++;     
-            $nestedData[] = $row["ID"];     
-            $nestedData[] = $row["FLEX_VALUE"];
-            $nestedData[] = $row["SUBACCOUNT_DESC"];
-            $nestedData[] = $row["ENABLED_FLAG"];     
-            $nestedData[] = $row["SUMMARY_FLAG"];
-          
-            
-            // $nestedData[] = $row["Status"];
 
-            // if($row["IS_TRASH"]==0)
-            // {
-            //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate2" data-toggle="modal" data-target="#mdl_Update">Update</a><a class="btn  btn-sm btn-danger" id="btnAktiv" href="#">Aktivate</a>';
-            // }
-            // else
-            // {
-            //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate2" data-toggle="modal" data-target="#mdl_Update">Update<a class="btn btn-sm green-meadow" id="btnDeactivate" href="#">Deactivate</a>';
-            // }
-
-            $data[] = $nestedData;
+            $data[] = $row;
         }
 
-        $json_data = array(
-            "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
-            "recordsTotal" => intval($totalData), // total number of records
-            "recordsFiltered" => intval($totalFiltered), // total number of records after searching, if there is no searching then totalFiltered = totalData
-            "data" => $data   // total data array
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
+            "data" => $data,
         );
 
-        echo json_encode($json_data);  
-    }
 
-
-   function get_server_side_lob() {
-        $requestData = $_REQUEST;
-//        print_r($requestData);die();
-        $iStatus=$this->input->post('sStatus');
-        $iSearch=$this->input->post('sSearch');
-        $columns = array(
-            // datatable column index  => database column name
-            0 => 'ID',
-            1 => 'FLEX_VALUE',
-            2 => 'LOB_DESC',
-            3 => 'ENABLED_FLAG',
-            4 => 'SUMMARY_FLAG',
-            5 => 'CREATE_DATE',
-            6 => 'CREATE_BY',
-            7 => 'UPDATE_BY',
-            8 => 'UPDATE_DATE',
-            9 => 'IS_TRASH'
-           
-        );
-
-        $sql = "SELECT * from TBL_M_LOB";            
-        $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
-        $totalFiltered = $totalData;
-
-        if (!empty($requestData['search']['value'])) {
-            if ($iSearch=='1'){
-                $sql = "SELECT * from TBL_M_LOB where IS_TRASH like '%".$iStatus."%'and ID like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='2'){
-                $sql = "SELECT * from TBL_M_LOB where IS_TRASH like '%".$iStatus."%'and FLEX_VALUE like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='3'){
-                $sql = "SELECT * from TBL_M_LOB where IS_TRASH like '%".$iStatus."%'and LOB_DESC like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='4'){
-                $sql = "SELECT * from TBL_M_LOB where IS_TRASH like '%".$iStatus."%'and ENABLED_FLAG like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='5'){
-                $sql = "SELECT * from TBL_M_LOB where IS_TRASH like '%".$iStatus."%'and SUMMARY_FLAG like '%".$requestData['search']['value']."%'";
-            }else{
-                $sql = "SELECT * from TBL_M_LOB where IS_TRASH like '%".$iStatus."%'"; 
-                $sql .= "and ID like '%".$requestData['search']['value']."%'"; 
-                $sql .= "or FLEX_VALUE like '%".$requestData['search']['value']."%'";
-                $sql .= "and LOB_DESC like '%".$requestData['search']['value']."%'"; 
-                $sql .= "or ENABLED_FLAG like '%".$requestData['search']['value']."%'";
-                $sql .= "and SUMMARY_FLAG like '%".$requestData['search']['value']."%'"; 
-               
-               
-            }
-           
-            $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
-             
-            $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
-            $totalFiltered = $totalData;
-        } else {
-             $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";   
-        }
-
-        $row = $this->global_m->tampil_semua_array($sql)->result_array(); 
-        
-        $data = array();
-        $no=$_POST['start']+1;
-        foreach ($row as $row) {
-            # code...
-            // preparing an array
-            $nestedData = array();
-           
-            $nestedData[] = $no++;     
-            $nestedData[] = $row["ID"];     
-            $nestedData[] = $row["FLEX_VALUE"];
-            $nestedData[] = $row["LOB_DESC"];
-            $nestedData[] = $row["ENABLED_FLAG"];     
-            $nestedData[] = $row["SUMMARY_FLAG"];
-          
-            
-            // $nestedData[] = $row["Status"];
-
-            // if($row["IS_TRASH"]==0)
-            // {
-            //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate3" data-toggle="modal" data-target="#mdl_Update">Update</a><a class="btn  btn-sm btn-danger" id="btnAktiv" href="#">Aktivate</a>';
-            // }
-            // else
-            // {
-            //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate3" data-toggle="modal" data-target="#mdl_Update">Update<a class="btn btn-sm green-meadow" id="btnDeactivate" href="#">Deactivate</a>';
-            // }
-
-            $data[] = $nestedData;
-        }
-
-        $json_data = array(
-            "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
-            "recordsTotal" => intval($totalData), // total number of records
-            "recordsFiltered" => intval($totalFiltered), // total number of records after searching, if there is no searching then totalFiltered = totalData
-            "data" => $data   // total data array
-        );
-
-        echo json_encode($json_data);  
+        //output to json format
+        echo json_encode($output);
     }
 
 
 
-
-   function get_server_side_division() {
-        $requestData = $_REQUEST;
-//        print_r($requestData);die();
-        $iStatus=$this->input->post('sStatus');
-        $iSearch=$this->input->post('sSearch');
-        $columns = array(
-            // datatable column index  => database column name
-            0 => 'ID',
-            1 => 'FLEX_VALUE',
-            2 => 'DIV_DESC',
-            3 => 'ENABLED_FLAG',
-            4 => 'SUMMARY_FLAG',
-            5 => 'CREATE_DATE',
-            6 => 'CREATE_BY',
-            7 => 'UPDATE_BY',
-            8 => 'UPDATE_DATE',
-            9 => 'IS_TRASH'
-           
-        );
-
-        $sql = "SELECT * from TBL_M_DIVISION";            
-        $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
-        $totalFiltered = $totalData;
-
-        if (!empty($requestData['search']['value'])) {
-            if ($iSearch=='1'){
-                $sql = "SELECT * from TBL_M_DIVISION where IS_TRASH like '%".$iStatus."%'and ID like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='2'){
-                $sql = "SELECT * from TBL_M_DIVISION where IS_TRASH like '%".$iStatus."%'and FLEX_VALUE like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='3'){
-                $sql = "SELECT * from TBL_M_DIVISION where IS_TRASH like '%".$iStatus."%'and DIV_DESC like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='4'){
-                $sql = "SELECT * from TBL_M_DIVISION where IS_TRASH like '%".$iStatus."%'and ENABLED_FLAG like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='5'){
-                $sql = "SELECT * from TBL_M_DIVISION where IS_TRASH like '%".$iStatus."%'and SUMMARY_FLAG like '%".$requestData['search']['value']."%'";
-            }else{
-                $sql = "SELECT * from TBL_M_DIVISION where IS_TRASH like '%".$iStatus."%'"; 
-                $sql .= "and ID like '%".$requestData['search']['value']."%'"; 
-                $sql .= "or FLEX_VALUE like '%".$requestData['search']['value']."%'";
-                $sql .= "and DIV_DESC like '%".$requestData['search']['value']."%'"; 
-                $sql .= "or ENABLED_FLAG like '%".$requestData['search']['value']."%'";
-                $sql .= "and SUMMARY_FLAG like '%".$requestData['search']['value']."%'"; 
-               
-               
-            }
-           
-            $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
-             
-            $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
-            $totalFiltered = $totalData;
-        } else {
-             $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";   
-        }
-
-        $row = $this->global_m->tampil_semua_array($sql)->result_array(); 
-        
+     public function get_server_side_division() {    
+       $icolumn = array('ID', 'FLEX_VALUE', 'DIV_DESC',  'ENABLED_FLAG', 'SUMMARY_FLAG');
+        // $iwhere = array('STATUS' => 0);
+        $iorder = array('ID' => 'asc');
+        $list = $this->datatables->get_datatables('TBL_M_DIVISION', $icolumn, $iorder);
+            // print_r($list);
+            // die();
         $data = array();
-        $no=$_POST['start']+1;
-        foreach ($row as $row) {
-            # code...
-            // preparing an array
-            $nestedData = array();
+        $no = $_POST['start'];
+        foreach ($list as $idatatables) {
+
+            $no++;
+            $row = array();
+            $row[] = $no;
+
+            $row[] = $idatatables->ID;
+            $row[] = $idatatables->FLEX_VALUE;
+            $row[] = $idatatables->DIV_DESC;
+            $row[] = $idatatables->ENABLED_FLAG;
+            $row[] = $idatatables->SUMMARY_FLAG;
+            // $row[] = $idatatables->PARENT_FLEX;
            
-            $nestedData[] = $no++;     
-            $nestedData[] = $row["ID"];     
-            $nestedData[] = $row["FLEX_VALUE"];
-            $nestedData[] = $row["DIV_DESC"];
-            $nestedData[] = $row["ENABLED_FLAG"];     
-            $nestedData[] = $row["SUMMARY_FLAG"];
-          
-            
-            // $nestedData[] = $row["Status"];
 
-            // if($row["IS_TRASH"]==0)
-            // {
-            //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate4" data-toggle="modal" data-target="#mdl_Update">Update</a><a class="btn  btn-sm btn-danger" id="btnAktiv" href="#">Aktivate</a>';
-            // }
-            // else
-            // {
-            //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate4" data-toggle="modal" data-target="#mdl_Update">Update<a class="btn btn-sm green-meadow" id="btnDeactivate" href="#">Deactivate</a>';
-            // }
-
-            $data[] = $nestedData;
+            $data[] = $row;
         }
 
-        $json_data = array(
-            "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
-            "recordsTotal" => intval($totalData), // total number of records
-            "recordsFiltered" => intval($totalFiltered), // total number of records after searching, if there is no searching then totalFiltered = totalData
-            "data" => $data   // total data array
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
+            "data" => $data,
         );
 
-        echo json_encode($json_data);  
+
+        //output to json format
+        echo json_encode($output);
     }
 
 
 
-
-
-   function get_server_side_type() {
-        $requestData = $_REQUEST;
-//        print_r($requestData);die();
-        $iStatus=$this->input->post('sStatus');
-        $iSearch=$this->input->post('sSearch');
-        $columns = array(
-            // datatable column index  => database column name
-            0 => 'ID',
-            1 => 'FLEX_VALUE',
-            2 => 'TYPE_DESC',
-            3 => 'ENABLED_FLAG',
-            4 => 'SUMMARY_FLAG',
-            5 => 'CREATE_DATE',
-            6 => 'CREATE_BY',
-            7 => 'UPDATE_BY',
-            8 => 'UPDATE_DATE',
-            9 => 'IS_TRASH'
-           
-        );
-
-        $sql = "SELECT * from TBL_M_TYPE";            
-        $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
-        $totalFiltered = $totalData;
-
-        if (!empty($requestData['search']['value'])) {
-            if ($iSearch=='1'){
-                $sql = "SELECT * from TBL_M_TYPE where IS_TRASH like '%".$iStatus."%'and ID like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='2'){
-                $sql = "SELECT * from TBL_M_TYPE where IS_TRASH like '%".$iStatus."%'and FLEX_VALUE like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='3'){
-                $sql = "SELECT * from TBL_M_TYPE where IS_TRASH like '%".$iStatus."%'and TYPE_DESC like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='4'){
-                $sql = "SELECT * from TBL_M_TYPE where IS_TRASH like '%".$iStatus."%'and ENABLED_FLAG like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='5'){
-                $sql = "SELECT * from TBL_M_TYPE where IS_TRASH like '%".$iStatus."%'and SUMMARY_FLAG like '%".$requestData['search']['value']."%'";
-            }else{
-                $sql = "SELECT * from TBL_M_TYPE where IS_TRASH like '%".$iStatus."%'"; 
-                $sql .= "and ID like '%".$requestData['search']['value']."%'"; 
-                $sql .= "or FLEX_VALUE like '%".$requestData['search']['value']."%'";
-                $sql .= "and TYPE_DESC like '%".$requestData['search']['value']."%'"; 
-                $sql .= "or ENABLED_FLAG like '%".$requestData['search']['value']."%'";
-                $sql .= "and SUMMARY_FLAG like '%".$requestData['search']['value']."%'"; 
-               
-               
-            }
-           
-            $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
-             
-            $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
-            $totalFiltered = $totalData;
-        } else {
-             $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";   
-        }
-
-        $row = $this->global_m->tampil_semua_array($sql)->result_array(); 
-        
+     public function get_server_side_type() {    
+       $icolumn = array('ID', 'FLEX_VALUE', 'TYPE_DESC',  'ENABLED_FLAG', 'SUMMARY_FLAG');
+        // $iwhere = array('STATUS' => 0);
+        $iorder = array('ID' => 'asc');
+        $list = $this->datatables->get_datatables('TBL_M_TYPE', $icolumn, $iorder);
+            // print_r($list);
+            // die();
         $data = array();
-        $no=$_POST['start']+1;
-        foreach ($row as $row) {
-            # code...
-            // preparing an array
-            $nestedData = array();
+        $no = $_POST['start'];
+        foreach ($list as $idatatables) {
+
+            $no++;
+            $row = array();
+            $row[] = $no;
+
+            $row[] = $idatatables->ID;
+            $row[] = $idatatables->FLEX_VALUE;
+            $row[] = $idatatables->TYPE_DESC;
+            $row[] = $idatatables->ENABLED_FLAG;
+            $row[] = $idatatables->SUMMARY_FLAG;
+            // $row[] = $idatatables->PARENT_FLEX;
            
-            $nestedData[] = $no++;     
-            $nestedData[] = $row["ID"];     
-            $nestedData[] = $row["FLEX_VALUE"];
-            $nestedData[] = $row["TYPE_DESC"];
-            $nestedData[] = $row["ENABLED_FLAG"];     
-            $nestedData[] = $row["SUMMARY_FLAG"];
-          
-            
-            // $nestedData[] = $row["Status"];
 
-            // if($row["IS_TRASH"]==0)
-            // {
-            //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate5" data-toggle="modal" data-target="#mdl_Update">Update</a><a class="btn  btn-sm btn-danger" id="btnAktiv" href="#">Aktivate</a>';
-            // }
-            // else
-            // {
-            //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate5" data-toggle="modal" data-target="#mdl_Update">Update<a class="btn btn-sm green-meadow" id="btnDeactivate" href="#">Deactivate</a>';
-            // }
-
-            $data[] = $nestedData;
+            $data[] = $row;
         }
 
-        $json_data = array(
-            "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
-            "recordsTotal" => intval($totalData), // total number of records
-            "recordsFiltered" => intval($totalFiltered), // total number of records after searching, if there is no searching then totalFiltered = totalData
-            "data" => $data   // total data array
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
+            "data" => $data,
         );
 
-        echo json_encode($json_data);  
+
+        //output to json format
+        echo json_encode($output);
     }
 
 
-
-function get_server_side_project() {
-        $requestData = $_REQUEST;
-//        print_r($requestData);die();
-        $iStatus=$this->input->post('sStatus');
-        $iSearch=$this->input->post('sSearch');
-        $columns = array(
-            // datatable column index  => database column name
-            0 => 'ID',
-            1 => 'FLEX_VALUE',
-            2 => 'PROJECT_DESC',
-            3 => 'ENABLED_FLAG',
-            4 => 'SUMMARY_FLAG',
-            5 => 'CREATE_DATE',
-            6 => 'CREATE_BY',
-            7 => 'UPDATE_BY',
-            8 => 'UPDATE_DATE',
-            9 => 'IS_TRASH'
-           
-        );
-
-        $sql = "SELECT * from TBL_M_PROJECT";            
-        $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
-        $totalFiltered = $totalData;
-
-        if (!empty($requestData['search']['value'])) {
-            if ($iSearch=='1'){
-                $sql = "SELECT * from TBL_M_PROJECT where IS_TRASH like '%".$iStatus."%'and ID like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='2'){
-                $sql = "SELECT * from TBL_M_PROJECT where IS_TRASH like '%".$iStatus."%'and FLEX_VALUE like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='3'){
-                $sql = "SELECT * from TBL_M_PROJECT where IS_TRASH like '%".$iStatus."%'and PROJECT_DESC like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='4'){
-                $sql = "SELECT * from TBL_M_PROJECT where IS_TRASH like '%".$iStatus."%'and ENABLED_FLAG like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='5'){
-                $sql = "SELECT * from TBL_M_PROJECT where IS_TRASH like '%".$iStatus."%'and SUMMARY_FLAG like '%".$requestData['search']['value']."%'";
-            }else{
-                $sql = "SELECT * from TBL_M_PROJECT where IS_TRASH like '%".$iStatus."%'"; 
-                $sql .= "and ID like '%".$requestData['search']['value']."%'"; 
-                $sql .= "or FLEX_VALUE like '%".$requestData['search']['value']."%'";
-                $sql .= "and TYPE_DESC like '%".$requestData['search']['value']."%'"; 
-                $sql .= "or ENABLED_FLAG like '%".$requestData['search']['value']."%'";
-                $sql .= "and SUMMARY_FLAG like '%".$requestData['search']['value']."%'"; 
-               
-               
-            }
-           
-            $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
-             
-            $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
-            $totalFiltered = $totalData;
-        } else {
-             $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";   
-        }
-
-        $row = $this->global_m->tampil_semua_array($sql)->result_array(); 
-        
+     public function get_server_side_project() {    
+       $icolumn = array('ID', 'FLEX_VALUE', 'PROJECT_DESC',  'ENABLED_FLAG', 'SUMMARY_FLAG');
+        // $iwhere = array('STATUS' => 0);
+        $iorder = array('ID' => 'asc');
+        $list = $this->datatables->get_datatables('TBL_M_PROJECT', $icolumn, $iorder);
+            // print_r($list);
+            // die();
         $data = array();
-        $no=$_POST['start']+1;
-        foreach ($row as $row) {
-            # code...
-            // preparing an array
-            $nestedData = array();
+        $no = $_POST['start'];
+        foreach ($list as $idatatables) {
+
+            $no++;
+            $row = array();
+            $row[] = $no;
+
+            $row[] = $idatatables->ID;
+            $row[] = $idatatables->FLEX_VALUE;
+            $row[] = $idatatables->PROJECT_DESC;
+            $row[] = $idatatables->ENABLED_FLAG;
+            $row[] = $idatatables->SUMMARY_FLAG;
+            // $row[] = $idatatables->PARENT_FLEX;
            
-            $nestedData[] = $no++;     
-            $nestedData[] = $row["ID"];     
-            $nestedData[] = $row["FLEX_VALUE"];
-            $nestedData[] = $row["PROJECT_DESC"];
-            $nestedData[] = $row["ENABLED_FLAG"];     
-            $nestedData[] = $row["SUMMARY_FLAG"];
-          
-            
-            // $nestedData[] = $row["Status"];
 
-            // if($row["IS_TRASH"]==0)
-            // {
-            //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate6" data-toggle="modal" data-target="#mdl_Update">Update</a><a class="btn  btn-sm btn-danger" id="btnAktiv" href="#">Aktivate</a>';
-            // }
-            // else
-            // {
-            //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate6" data-toggle="modal" data-target="#mdl_Update">Update<a class="btn btn-sm green-meadow" id="btnDeactivate" href="#">Deactivate</a>';
-            // }
-
-            $data[] = $nestedData;
+            $data[] = $row;
         }
 
-        $json_data = array(
-            "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
-            "recordsTotal" => intval($totalData), // total number of records
-            "recordsFiltered" => intval($totalFiltered), // total number of records after searching, if there is no searching then totalFiltered = totalData
-            "data" => $data   // total data array
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
+            "data" => $data,
         );
 
-        echo json_encode($json_data);  
+
+        //output to json format
+        echo json_encode($output);
     }
 
 
-
-
-
-    function get_server_side_future1() {
-        $requestData = $_REQUEST;
-//        print_r($requestData);die();
-        $iStatus=$this->input->post('sStatus');
-        $iSearch=$this->input->post('sSearch');
-        $columns = array(
-            // datatable column index  => database column name
-            0 => 'ID',
-            1 => 'FLEX_VALUE',
-            2 => 'FUTURE1_DESC',
-            3 => 'ENABLED_FLAG',
-            4 => 'SUMMARY_FLAG',
-            5 => 'CREATE_DATE',
-            6 => 'CREATE_BY',
-            7 => 'UPDATE_BY',
-            8 => 'UPDATE_DATE',
-            9 => 'IS_TRASH'
-           
-        );
-
-        $sql = "SELECT * from TBL_M_FUTURE1";            
-        $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
-        $totalFiltered = $totalData;
-
-        if (!empty($requestData['search']['value'])) {
-            if ($iSearch=='1'){
-                $sql = "SELECT * from TBL_M_FUTURE1 where IS_TRASH like '%".$iStatus."%'and ID like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='2'){
-                $sql = "SELECT * from TBL_M_FUTURE1 where IS_TRASH like '%".$iStatus."%'and FLEX_VALUE like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='3'){
-                $sql = "SELECT * from TBL_M_FUTURE1 where IS_TRASH like '%".$iStatus."%'and FUTURE1_DESC like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='4'){
-                $sql = "SELECT * from TBL_M_FUTURE1 where IS_TRASH like '%".$iStatus."%'and ENABLED_FLAG like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='5'){
-                $sql = "SELECT * from TBL_M_FUTURE1 where IS_TRASH like '%".$iStatus."%'and SUMMARY_FLAG like '%".$requestData['search']['value']."%'";
-            }else{
-                $sql = "SELECT * from TBL_M_FUTURE1 where IS_TRASH like '%".$iStatus."%'"; 
-                $sql .= "and ID like '%".$requestData['search']['value']."%'"; 
-                $sql .= "or FLEX_VALUE like '%".$requestData['search']['value']."%'";
-                $sql .= "and FUTURE1_DESC like '%".$requestData['search']['value']."%'"; 
-                $sql .= "or ENABLED_FLAG like '%".$requestData['search']['value']."%'";
-                $sql .= "and SUMMARY_FLAG like '%".$requestData['search']['value']."%'"; 
-               
-               
-            }
-           
-            $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
-             
-            $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
-            $totalFiltered = $totalData;
-        } else {
-             $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";   
-        }
-
-        $row = $this->global_m->tampil_semua_array($sql)->result_array(); 
-        
+     public function get_server_side_future1() {    
+       $icolumn = array('ID', 'FLEX_VALUE', 'FUTURE1_DESC',  'ENABLED_FLAG', 'SUMMARY_FLAG');
+        // $iwhere = array('STATUS' => 0);
+        $iorder = array('ID' => 'asc');
+        $list = $this->datatables->get_datatables('TBL_M_FUTURE1', $icolumn, $iorder);
+            // print_r($list);
+            // die();
         $data = array();
-        $no=$_POST['start']+1;
-        foreach ($row as $row) {
-            # code...
-            // preparing an array
-            $nestedData = array();
+        $no = $_POST['start'];
+        foreach ($list as $idatatables) {
+
+            $no++;
+            $row = array();
+            $row[] = $no;
+
+            $row[] = $idatatables->ID;
+            $row[] = $idatatables->FLEX_VALUE;
+            $row[] = $idatatables->FUTURE1_DESC;
+            $row[] = $idatatables->ENABLED_FLAG;
+            $row[] = $idatatables->SUMMARY_FLAG;
+            // $row[] = $idatatables->PARENT_FLEX;
            
-            $nestedData[] = $no++;     
-            $nestedData[] = $row["ID"];     
-            $nestedData[] = $row["FLEX_VALUE"];
-            $nestedData[] = $row["FUTURE1_DESC"];
-            $nestedData[] = $row["ENABLED_FLAG"];     
-            $nestedData[] = $row["SUMMARY_FLAG"];
-          
-            
-            // $nestedData[] = $row["Status"];
 
-            // if($row["IS_TRASH"]==0)
-            // {
-            //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate7" data-toggle="modal" data-target="#mdl_Update">Update</a><a class="btn  btn-sm btn-danger" id="btnAktiv" href="#">Aktivate</a>';
-            // }
-            // else
-            // {
-            //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate7" data-toggle="modal" data-target="#mdl_Update">Update<a class="btn btn-sm green-meadow" id="btnDeactivate" href="#">Deactivate</a>';
-            // }
-
-            $data[] = $nestedData;
+            $data[] = $row;
         }
 
-        $json_data = array(
-            "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
-            "recordsTotal" => intval($totalData), // total number of records
-            "recordsFiltered" => intval($totalFiltered), // total number of records after searching, if there is no searching then totalFiltered = totalData
-            "data" => $data   // total data array
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
+            "data" => $data,
         );
 
-        echo json_encode($json_data);  
+
+        //output to json format
+        echo json_encode($output);
     }
 
 
-
-     function get_server_side_future2() {
-        $requestData = $_REQUEST;
-//        print_r($requestData);die();
-        $iStatus=$this->input->post('sStatus');
-        $iSearch=$this->input->post('sSearch');
-        $columns = array(
-            // datatable column index  => database column name
-            0 => 'ID',
-            1 => 'FLEX_VALUE',
-            2 => 'FUTURE2_DESC',
-            3 => 'ENABLED_FLAG',
-            4 => 'SUMMARY_FLAG',
-            5 => 'CREATE_DATE',
-            6 => 'CREATE_BY',
-            7 => 'UPDATE_BY',
-            8 => 'UPDATE_DATE',
-            9 => 'IS_TRASH'
-           
-        );
-
-        $sql = "SELECT * from TBL_M_FUTURE2";            
-        $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
-        $totalFiltered = $totalData;
-
-        if (!empty($requestData['search']['value'])) {
-            if ($iSearch=='1'){
-                $sql = "SELECT * from TBL_M_FUTURE2 where IS_TRASH like '%".$iStatus."%'and ID like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='2'){
-                $sql = "SELECT * from TBL_M_FUTURE2 where IS_TRASH like '%".$iStatus."%'and FLEX_VALUE like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='3'){
-                $sql = "SELECT * from TBL_M_FUTURE2 where IS_TRASH like '%".$iStatus."%'and FUTURE2_DESC like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='4'){
-                $sql = "SELECT * from TBL_M_FUTURE2 where IS_TRASH like '%".$iStatus."%'and ENABLED_FLAG like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='5'){
-                $sql = "SELECT * from TBL_M_FUTURE2 where IS_TRASH like '%".$iStatus."%'and SUMMARY_FLAG like '%".$requestData['search']['value']."%'";
-            }else{
-                $sql = "SELECT * from TBL_M_FUTURE2 where IS_TRASH like '%".$iStatus."%'"; 
-                $sql .= "and ID like '%".$requestData['search']['value']."%'"; 
-                $sql .= "or FLEX_VALUE like '%".$requestData['search']['value']."%'";
-                $sql .= "and FUTURE2_DESC like '%".$requestData['search']['value']."%'"; 
-                $sql .= "or ENABLED_FLAG like '%".$requestData['search']['value']."%'";
-                $sql .= "and SUMMARY_FLAG like '%".$requestData['search']['value']."%'"; 
-               
-               
-            }
-           
-            $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
-             
-            $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
-            $totalFiltered = $totalData;
-        } else {
-             $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";   
-        }
-
-        $row = $this->global_m->tampil_semua_array($sql)->result_array(); 
-        
+      public function get_server_side_future2() {    
+       $icolumn = array('ID', 'FLEX_VALUE', 'FUTURE2_DESC',  'ENABLED_FLAG', 'SUMMARY_FLAG');
+        // $iwhere = array('STATUS' => 0);
+        $iorder = array('ID' => 'asc');
+        $list = $this->datatables->get_datatables('TBL_M_FUTURE2', $icolumn, $iorder);
+            // print_r($list);
+            // die();
         $data = array();
-        $no=$_POST['start']+1;
-        foreach ($row as $row) {
-            # code...
-            // preparing an array
-            $nestedData = array();
+        $no = $_POST['start'];
+        foreach ($list as $idatatables) {
+
+            $no++;
+            $row = array();
+            $row[] = $no;
+
+            $row[] = $idatatables->ID;
+            $row[] = $idatatables->FLEX_VALUE;
+            $row[] = $idatatables->FUTURE2_DESC;
+            $row[] = $idatatables->ENABLED_FLAG;
+            $row[] = $idatatables->SUMMARY_FLAG;
+            // $row[] = $idatatables->PARENT_FLEX;
            
-            $nestedData[] = $no++;     
-            $nestedData[] = $row["ID"];     
-            $nestedData[] = $row["FLEX_VALUE"];
-            $nestedData[] = $row["FUTURE2_DESC"];
-            $nestedData[] = $row["ENABLED_FLAG"];     
-            $nestedData[] = $row["SUMMARY_FLAG"];
-          
-            
-            // $nestedData[] = $row["Status"];
 
-            // if($row["IS_TRASH"]==0)
-            // {
-            //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate8" data-toggle="modal" data-target="#mdl_Update">Update</a><a class="btn  btn-sm btn-danger" id="btnAktiv" href="#">Aktivate</a>';
-            // }
-            // else
-            // {
-            //     $nestedData[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate8" data-toggle="modal" data-target="#mdl_Update">Update<a class="btn btn-sm green-meadow" id="btnDeactivate" href="#">Deactivate</a>';
-            // }
-
-            $data[] = $nestedData;
+            $data[] = $row;
         }
 
-        $json_data = array(
-            "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
-            "recordsTotal" => intval($totalData), // total number of records
-            "recordsFiltered" => intval($totalFiltered), // total number of records after searching, if there is no searching then totalFiltered = totalData
-            "data" => $data   // total data array
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
+            "data" => $data,
         );
 
-        echo json_encode($json_data);  
+
+        //output to json format
+        echo json_encode($output);
     }
 
 

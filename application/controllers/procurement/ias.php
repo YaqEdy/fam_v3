@@ -22,9 +22,9 @@ class ias extends CI_Controller {
         }
     }
 
-    function get_kehilangan(){
-        $idt='100000,100001';
-        $idt=explode(',', $idt);
+    function get_kehilangan() {
+        $idt = '100000,100001';
+        $idt = explode(',', $idt);
         print_r($this->api_m->get_kehilangan($idt));
     }
 
@@ -69,14 +69,14 @@ class ias extends CI_Controller {
         $ops = $this->ias_mdl->get_var();
         $ret_val = "<option disabled selected>Pilih Variable</option>";
         foreach ($ops as $op) {
-            $ret_val .= "<option value='".$op->BOBOT."-".$op->ID_VNILAI."'>".$op->VARIABEL."</option>";
+            $ret_val .= "<option value='" . $op->BOBOT . "-" . $op->ID_VNILAI . "'>" . $op->VARIABEL . "</option>";
         }
         $data['var'] = $ret_val;
 
         $ndoc = $this->ias_mdl->get_doc();
         $doc_val = "<option disabled selected>Pilih Dokumen</option>";
         foreach ($ndoc as $doc) {
-            $doc_val .= "<option value='".$doc->ID_DOC."'>".$doc->NAMA_DOC."</option>";
+            $doc_val .= "<option value='" . $doc->ID_DOC . "'>" . $doc->NAMA_DOC . "</option>";
         }
         $data['doc'] = $doc_val;
 
@@ -89,17 +89,20 @@ class ias extends CI_Controller {
         $this->auth->cek_menu($data['menu_id']);
         $data['group_user'] = $this->konfigurasi_menu_status_user_m->get_status_user();
         //$data['level_user'] = $this->sec_user_m->get_level_user();
-
         // $id = $this->ias_mdl->get_termin($id_termin);
         $get_ias = $this->ias_mdl->get_all_ias($id_detail);
         $data['dpp'] = $this->ias_mdl->get_dpp($id_detail);
+        $data['ppn'] = $this->ias_mdl->get_ppn($id_detail);
+        $data['pph'] = $this->ias_mdl->get_pph($id_detail);
+        $data['persen_ppn'] = $this->ias_mdl->get_persen_ppn($id_detail);
         $data['quant'] = $this->ias_mdl->get_quant($id_detail);
+        $data['po_dtl'] = $this->ias_mdl->get_po_dtl($id_detail);
         $data['detail'] = $this->cek_barang_mdl->get_detail($id_detail);
         $data['barang'] = $this->cek_barang_mdl->get_one_barang($id_detail);
         $data['ias'] = $this->ias_mdl->get_ias($data['detail']->ID_PO);
         $all_termin = $this->ias_mdl->get_all_termin($id_detail);
         // var_dump($data['quant']->quant.' '.$data['dpp']->TTL_QTY);exit();
-        if ((count($all_termin)-1) == count($get_ias)) {
+        if ((count($all_termin) - 1) == count($get_ias)) {
             $data['last_termin'] = '1';
         }
 
@@ -112,11 +115,10 @@ class ias extends CI_Controller {
         $jt_po = new DateTime($data['barang']->TGL_TERIMA);
         $diff = $jt_barang->diff($jt_po);
         $total = $data['detail']->TTL_HARGA;
-        $data['total'] = intval((1/1000)*$total*$diff->days);
+        $data['total'] = intval((1 / 1000) * $total * $diff->days);
         // for ($i=0; $i < $id->TERMIN; $i++) { 
         //     $persen += $all_termin[$i]->PERSENTASE;
         // }
-
         // $data['persen'] = ceil($data['dpp']->TTL_QTY);
         $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
         $data['menu_all'] = $this->user_m->get_menu_all(0);
@@ -133,73 +135,78 @@ class ias extends CI_Controller {
         $this->template->load('template/template_dataTable', 'procurement/ias/form_ias', $data);
     }
 
-    public function savedata()
-    {
-        $id_ias = $this->global_m->getIdMax('ID_IAS','TBL_T_IAS');
+    public function savedata() {
+        $id_ias = $this->global_m->getIdMax('ID_IAS', 'TBL_T_IAS');
         $id_po_detail = $this->input->post('id_po_detail');
         $head['ID_IAS'] = $id_ias;
-        $head['NO_PA'] = $this->input->post('id_pa');
+//        $head['NO_PA'] = $this->input->post('id_pa');
+        $head['TERMIN'] = $this->global_m->tampil_data("SELECT COUNT(ID_PO_DETAIL)+1 TERMIN FROM TBL_T_IAS WHERE ID_PO_DETAIL=".$id_po_detail)[0]->TERMIN;
         $head['ID_PO_DETAIL'] = $id_po_detail;
         $head['DPP'] = $this->input->post('dpp');
         $head['PPN'] = $this->input->post('ppn');
+        $head['PERSEN_PPN'] = $this->input->post('presentase');
         $head['PPH'] = $this->input->post('pph');
         $head['DENDA'] = $this->input->post('denda');
         $head['NILAI_DIBAYARKAN'] = $this->input->post('dibayarkan');
-        $head['NILAI_VENDOR'] = $this->input->post('akhir');
+        $head['CREATE_BY'] = $this->session->userdata('user_id');
+        $head['CREATE_DATE'] = date('Y-m-d H:i:s');
+//        $head['NILAI_VENDOR'] = $this->input->post('akhir');
         if ($_FILES["dok"]['name'] != NULL) {
-            $new_name = time().$_FILES["dok"]['name'];
+            $new_name = time() . $_FILES["dok"]['name'];
             $config = array(
-                    'upload_path' => "./uploads/doc/",
-                    'allowed_types' => "zip|rar",
-                    'file_name' => $new_name,
-                    'overwrite' => TRUE,
-                    );
+                'upload_path' => "./uploads/doc/",
+                'allowed_types' => "zip|rar",
+                'file_name' => $new_name,
+                'overwrite' => TRUE,
+            );
             $upload = $this->load->library('upload', $config);
-            if($this->upload->do_upload('dok'))
-            {
-                $head['DOC_PATH'] = 'uploads/doc/'.$new_name;
-            }else{
+            if ($this->upload->do_upload('dok')) {
+                $head['DOC_PATH'] = 'uploads/doc/' . $new_name;
+            } else {
                 $this->session->set_flashdata('error', $this->upload->display_errors());
                 redirect('procurement/ias/home');
             }
         }
-        $this->ias_mdl->save_ias($head);
+        $insert_ias=$this->ias_mdl->save_ias($head);
 
-        for ($i=0; $i < count($_POST['nama_dokumen']); $i++) {
+        for ($i = 0; $i < count($_POST['nama_dokumen']); $i++) {
             $doc = array(
-                            'ID' => $this->global_m->getIdMax('ID','TBL_T_IAS_DOC'),
-                            'ID_IAS' => $id_ias,
-                            'NAMA_DOC' => $_POST['nama_dokumen'][$i],
-                            'NO_DOC' => $_POST['no_dokumen'][$i],
-                            'TGL' => DateTime::createFromFormat('d/m/Y', $_POST['tanggal'][$i])->format('Y-m-d')
-                            );
-            
+                'ID' => $this->global_m->getIdMax('ID', 'TBL_T_IAS_DOC'),
+                'ID_IAS' => $id_ias,
+                'NAMA_DOC' => $_POST['nama_dokumen'][$i],
+                'NO_DOC' => $_POST['no_dokumen'][$i],
+                'TGL' => DateTime::createFromFormat('d/m/Y', $_POST['tanggal'][$i])->format('Y-m-d'),
+                'CREATE_BY' => $this->session->userdata('user_id'),
+                'CREATE_DATE' => date('Y-m-d H:i:s')
+            );
+
             $this->ias_mdl->save_ias_doc($doc);
         }
 
-        for ($i=0; $i < count($_POST['varia']); $i++) {
-            $nilai = array(
-                            'ID_PENILAIAN' => $this->global_m->getIdMax('ID_PENILAIAN','TBL_T_PENILAIAN_VENDOR'),
-                            'ID_IAS' => $id_ias,
-                            'VARIABEL' => $_POST['variable'][$i],
-                            'PENILAIAN' => $_POST['penilaian'][$i],
-                            'BOBOT' => $_POST['vars'][$i]
-                            );
-
-            $this->ias_mdl->save_penilaian($nilai);
+//        for ($i=0; $i < count($_POST['varia']); $i++) {
+//            $nilai = array(
+//                            'ID_PENILAIAN' => $this->global_m->getIdMax('ID_PENILAIAN','TBL_T_PENILAIAN_VENDOR'),
+//                            'ID_IAS' => $id_ias,
+//                            'VARIABEL' => $_POST['variable'][$i],
+//                            'PENILAIAN' => $_POST['penilaian'][$i],
+//                            'BOBOT' => $_POST['vars'][$i]
+//                            );
+//
+//            $this->ias_mdl->save_penilaian($nilai);
+//        }
+        if($insert_ias){
+            $this->insert_ias_orc($this->input->post('id_po'), $id_ias, $this->input->post('id_po_detail'));            
         }
-
-        $this->insert_ias_orc($this->input->post('id_po'),$id_ias, $this->input->post('id_po_detail'));
         $this->session->set_flashdata('success', 'Data Berhasil Disimpan');
         redirect('procurement/ias/home');
     }
 
-    function insert_ias_orc($ID_PO, $ID_IAS,$ID_PO_DETAIL) {
-        $this->api_m->insert_ias_orc($ID_PO, $ID_IAS,$ID_PO_DETAIL);
+    function insert_ias_orc($ID_PO, $ID_IAS, $ID_PO_DETAIL) {
+        $this->api_m->insert_ias_orc($ID_PO, $ID_IAS, $ID_PO_DETAIL);
     }
 
     public function ajax_GridBudgetCapex() {
-        $icolumn = array('ID_PO', 'ID_PO_DETAIL', 'TGL_PR', 'ID_PR', 'REQ_NAME', 'ProjectName', 'BRANCH_DESC', 'STATUS_AKHIR', 'STATUS_CEK');
+        $icolumn = array( 'ID_PR', 'TGL_PR','ID_PO', 'ID_PO_DETAIL');
 //        $icolumn = array('BudgetID');
         $ilike = array(
             $this->input->post('sSearch') => $_POST['search']['value']
@@ -210,14 +217,14 @@ class ias extends CI_Controller {
                 'TGL_PR <' => date("Y-m-d", strtotime($this->input->post('sMulai'))),
                 'TGL_PR >' => date("Y-m-d", strtotime($this->input->post('sSampai')))
             );
-        }else{
+        } else {
             $iwhere = array();
         }
 
         $igroup_by = 'ID_PO_DETAIL';
 
-        $iorder = array('ID_PO' => 'asc');
-        $list = $this->datatables_custom->get_datatables('VW_IAS', $icolumn, $iorder, $iwhere, $ilike, $igroup_by);
+        $iorder = array('ID_PO' => 'ASC');
+        $list = $this->datatables_custom->get_datatables('VW_IAS_GRID', $icolumn, $iorder, $iwhere, $ilike, $igroup_by);
 
         $data = array();
         $no = $_POST['start'];
@@ -231,10 +238,10 @@ class ias extends CI_Controller {
             $row[] = $idatatables->ID_PO_DETAIL;
             $row[] = $termin->jml;
             $row[] = '';
-            $row[] = $this->get_status_ias($idatatables->ID_PO_DETAIL,'VALIDATED');
-            $row[] = $this->get_status_ias($idatatables->ID_PO_DETAIL,'FULLY APPLIED');
-            $row[] = $this->get_status_ias($idatatables->ID_PO_DETAIL,'CANCELLED');
-            $row[] = '<a href="'.base_url().'procurement/ias/ias_form/'.$idatatables->ID_PO_DETAIL.'" class="btn btn-primary">Upload</a><a href="javascript:void(0)" title="Edit" onclick="edit_sn('.$idatatables->ID_PO.', '.$idatatables->ID_PO.')" class="btn btn-primary">History</a>';
+            $row[] = $this->get_status_ias($idatatables->ID_PO_DETAIL, 'VALIDATED');
+            $row[] = $this->get_status_ias($idatatables->ID_PO_DETAIL, 'FULLY APPLIED');
+            $row[] = $this->get_status_ias($idatatables->ID_PO_DETAIL, 'CANCELLED');
+            $row[] = '<a href="' . base_url() . 'procurement/ias/ias_form/' . $idatatables->ID_PO_DETAIL . '" class="btn btn-primary">Upload</a><a href="javascript:void(0)" title="Edit" onclick="edit_sn(' . $idatatables->ID_PO . ', ' . $idatatables->ID_PO . ')" class="btn btn-primary">History</a>';
 
             $data[] = $row;
         }
@@ -248,26 +255,25 @@ class ias extends CI_Controller {
         //output to json format
         echo json_encode($output);
     }
-    
-function get_status_ias($ID_PO_DETAIL,$STATUS){
+
+    function get_status_ias($ID_PO_DETAIL, $STATUS) {
 //    $STATUS='VALIDATED';
 //    $ID_PO_DETAIL = 'PO1823';
 //        print_r($this->api_m->get_status_ias($ID_PO_DETAIL,$STATUS));die();
-    return $this->api_m->get_status_ias($ID_PO_DETAIL,$STATUS);
-}
-    public function get_sn($id_tb, $id_po)
-    {
+        return $this->api_m->get_status_ias($ID_PO_DETAIL, $STATUS);
+    }
+
+    public function get_sn($id_tb, $id_po) {
         $data = $this->cek_barang_mdl->get_sn($id_tb, $id_po);
 
         echo json_encode($data);
     }
 
-    public function get_var()
-    {
+    public function get_var() {
         $ops = $this->ias_mdl->get_var();
         $ret_val = "<option disabled selected>Pilih Variable</option>";
         foreach ($ops as $op) {
-            $ret_val .= "<option value='".$op->BOBOT.'-'.$op->ID_VNILAI."'>".$op->VARIABEL."</option>";
+            $ret_val .= "<option value='" . $op->BOBOT . '-' . $op->ID_VNILAI . "'>" . $op->VARIABEL . "</option>";
         }
 
         echo $ret_val;
@@ -473,7 +479,7 @@ function get_status_ias($ID_PO_DETAIL,$STATUS){
                 'TGL_PR <' => date("Y-m-d", strtotime($this->input->post('sMulai'))),
                 'TGL_PR >' => date("Y-m-d", strtotime($this->input->post('sSampai')))
             );
-        }else{
+        } else {
             $iwhere = array();
         }
 

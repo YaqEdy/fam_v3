@@ -70,8 +70,9 @@ class Api_m extends CI_Model {
 //Parent dari Branch/Division
         $query3 = $this->db->query("SELECT *,B.FLEX_VALUE AS FLEX_VALUE_,LEFT(BRANCH_DESC,3) AS PARENT FROM TBL_M_DIVISION AS A INNER JOIN TBL_M_BRANCH AS B ON A.PARENT_FLEX = B.FLEX_VALUE WHERE A.FLEX_VALUE='" . $this->session->userdata('DivisionID') . "'"); //
         $result3 = $query3->row();
-//AMOUNT
-        $query4 = $this->db->query("SELECT PPN,NILAI_DIBAYARKAN FROM  TBL_T_IAS WHERE ID_IAS=" . $ID_IAS);
+//AMOUNT cek TBL_T_PO_DTL_TOTAL, TBL_T_IAS
+        $query4 = $this->db->query("SELECT DPP,PPN,PERSEN_PPN,PPH,DENDA,NILAI_DIBAYARKAN,DPP+PPN-DENDA AS TTL_BYR FROM  TBL_T_IAS WHERE ID_IAS=" . $ID_IAS);
+//        $query4 = $this->db->query("SELECT PPN,PPH,DENDA,TOTAL AS NILAI_DIBAYARKAN FROM  TBL_T_PO_DTL_TOTAL WHERE ID_PO_DETAIL=" . $ID_PO_DETAIL);
         $result4 = $query4->row();
 //Faktur pajak
         $query5 = $this->db->query("SELECT NO_DOC FROM TBL_T_IAS_DOC WHERE NAMA_DOC=3 AND ID_IAS=" . $ID_IAS);
@@ -94,117 +95,313 @@ class Api_m extends CI_Model {
         foreach ($dataH as $hdr) {
 //detail data insert to orc
 //            $query3 = $this->db->query("SELECT * FROM VW_IAS_TO_ORC_DETAIL WHERE ID_PO_=" . $ID_PO . " AND VENDOR_ID=" . $hdr->VendorID);
-            $query3 = $this->db->query("SELECT DISTINCT A.ID AS FAM_ASSET_ID,C.Coa,B.*
+            $query7 = $this->db->query("SELECT DISTINCT CONVERT(VARCHAR(50),B.TypeCode) AS TypeCode,A.ID AS FAM_ASSET_ID,C.Coa,B.*,dbo.xfn_po_disc(B.ID_PO_DETAIL,B.HARGA) as HARGA_DISC
                                         FROM TBL_T_TB_DETAIL as A LEFT JOIN VW_IAS_TO_ORC_DETAIL AS B ON A.ID_PO_DETAIL=B.ID_PO_DETAIL AND A.ID_TB=B.ID
                                         LEFT JOIN  TBL_REQUEST_ITEMLIST AS C ON B.ID_PR=C.RequestID
                                         WHERE B.ID_PO_=" . $ID_PO . " AND VENDOR_ID=" . $hdr->VendorID . " AND A.STATUS = 0 order by A.ID"); //
-            $dtl = $query3->result();
-//             $PPN = $result4->PPN;
-//            if (!sizeof($dtl)) {
+            $dtl = $query7->result();
             $i = 0;
-//            print_r($ID_PO);
-//            print_r($hdr->VendorID);
-//            print_r($result3->FLEX_VALUE_);
-//            print_r($dtl[$i]->AccountLiability);
-//            die();
-            $arrDataPPH[] = array(
-                'OPERATING_UNIT' => $result3->BRANCH_DESC,
-                'INVOICE_NUM' => $invoice, //TBL_T_IAS_DOC=>NAMA_DOC=2(INVOICE)
-                'INVOICE_TYPE' => 'STANDARD',
-                'VENDOR_NAME' => $hdr->VendorName,
-                'VENDOR_SITE_CODE' => $hdr->City, //kapital ?
-                'INVOICE_DATE' => date('Y-m-d h:i:s'),
-                'INVOICE_CURRENCY_CODE' => $hdr->Currency,
-                'INVOICE_AMOUNT' => $result4->NILAI_DIBAYARKAN,
-                'TERMS_NAME' => 'Immediate',
-                'LIABILITY_ACCOUNT' => $result3->FLEX_VALUE_ . '-' . $dtl[$i]->AccountLiability . '-000000-00-0000-00-0000-0000-0000', //VENDOR paren-liability-9segmen ?
-                'INVOICE_DESCRIPTION' => $hdr->ProjectName, //NAMA PROJECT PR
-                'FAKTUR_PAJAK' => $faktur, //TBL_T_IAS_DOC=>NAMA_DOC=2(FAKTUR PAJAK)
-//                    'NOMORPO' => 'PO/' . $hdr->ID_PO,
-                'NOMORPO' => $ID_PO_DETAIL,
-                'LINE_NUMBER' => COUNT($dtl) + 1,
-                'LINE_TYPE_LOOKUP_CODE' => 'ITEM ', //ASER 'AWT' BARANG 'ITEM'
-                'AMOUNT' => $result4->PPN, //$dtl->HARGA, //TAMBAH 1 ROW PPN
-                'AKUN_DISTRIBUSI' => $result3->FLEX_VALUE_.'-1182001-000000-00-0000-00-0000-0000-0000', //AMBIL DARI COA PER ITEM(tunggu design table)=>SEMENTARA
-                'LINE_DESCRIPTION' => 'PPN', //NAMA ITEM PPN
-//                'ITEM_DESCRIPTION' => '',
-                'ASSET_BOOK_NAME' => 'PNM COMMERCIAL BOOK', //$result3->PARENT . ' COM BOOK', //PAREN COM BOOK
-                'ASSET_CATEGORY' => $dtl[$i]->ClassCode, //ITEM CATEGORY ->ID
-                'JENIS_BARANG' => $dtl[$i]->TypeCode, //ITEM TYPE ->ID
-                'UMUR_FISKAL' => $dtl[$i]->umurfiskal, //ITEM CATEGORY //masih kosong
-//                'AMORTIZATION' => '',
-//                'FAM_ASSET_ID' => '', // SN
-//                'DEFERRED_ACCTG_FLAG' => '',
-//                'DEF_ACCTG_START_DATE' => '',
-//                'DEF_ACCTG_END_DATE' => '',
-                'SOURCE' => 'INTEGRATION', //DEFAULT
-                'PAYMENT_METHOD_CODE' => 'PNM PAYMENT METHOD', //PNM PAYMENT METHOD
-                'FAM_INVOICE_ID' => $ID_IAS //NO IAS -> UNTUK ASSET
-//                'TGL_PENGAKUAN_BRG' => '',
-//                'STATUS' => '',
-//                'ERROR_CODE' => '',
-//                'ERROR_MESSAGE' => '',
-//                'PROCESS_ID' => ''
-            );
-            // var_dump($dtl);exit();
+            //Nilai
+//            $NilaiTotal = $this->db->query("SELECT SUM(TOTAL) AS NILAI FROM TBL_T_PO_DTL_TOTAL WHERE ID_PO_DETAIL=" . $ID_PO_DETAIL)->row()->NILAI;
+//            $NilaiIas = $this->db->query("SELECT SUM(NILAI_DIBAYARKAN) AS NILAI FROM TBL_T_IAS WHERE ID_PO_DETAIL=" . $ID_PO_DETAIL)->row()->NILAI;
 
-            for ($i = 0; $i < COUNT($dtl); $i++) {
-                $update = array('STATUS' => 1);
-                $this->db->where('ID', $dtl[$i]->FAM_ASSET_ID);
-                $this->db->update('TBL_T_TB_DETAIL', $update);
-//                
-                $iLine = $i + 1;
-                $arrData[] = array(
-                    'OPERATING_UNIT' => $result3->BRANCH_DESC,
-                    'INVOICE_NUM' => $invoice, //TBL_T_IAS_DOC=>NAMA_DOC=2(INVOICE)
-                    'INVOICE_TYPE' => 'STANDARD',
-                    'VENDOR_NAME' => $hdr->VendorName,
-                    'VENDOR_SITE_CODE' => $hdr->City, //huruf besar
-                    'INVOICE_DATE' => date('Y-m-d h:i:s'),
-                    'INVOICE_CURRENCY_CODE' => $hdr->Currency,
-                    'INVOICE_AMOUNT' => $result4->NILAI_DIBAYARKAN,
-                    'TERMS_NAME' => 'Immediate',
-                    'LIABILITY_ACCOUNT' => $result3->FLEX_VALUE_ . '-' . $dtl[$i]->AccountLiability . '-000000-00-0000-00-0000-0000-0000', //VENDOR 
-                    'INVOICE_DESCRIPTION' => $hdr->ProjectName, //NAMA PROJECT PR
-                    'FAKTUR_PAJAK' => $faktur, //
+            $NilaiTermin = $this->db->query("SELECT Top 1 TERMIN AS NILAI FROM TBL_T_TERMIN WHERE ID_PO_DETAIL=" . $ID_PO_DETAIL . " order by TERMIN desc")->row()->NILAI;
+            $NilaiIas = $this->db->query("SELECT COUNT(*) AS NILAI FROM TBL_T_IAS WHERE ID_PO_DETAIL=" . $ID_PO_DETAIL)->row()->NILAI;
+            $iiLine = 0;
+//            print_r($NilaiTermin);
+//            print_r($NilaiIas);
+
+            if ($NilaiTermin == $NilaiIas) { 
+                $iTop = $NilaiIas - 1;
+                $Ias_old = $this->db->query("SELECT TOP " . $iTop . " DPP FROM TBL_T_IAS WHERE ID_PO_DETAIL=" . $ID_PO_DETAIL . " order by CREATE_DATE asc")->result();
+                $iDPP=0;
+                for ($d = 0; $d < count($Ias_old); $d++) {
+                    $iDPP=$iDPP+$Ias_old[$d]->DPP;
+                    //DPP
+                    $iiLine = $iiLine + 1;
+                    $arrdt[] = array(
+                        'OPERATING_UNIT' => $result3->BRANCH_DESC,
+                        'INVOICE_NUM' => $invoice, //TBL_T_IAS_DOC=>NAMA_DOC=2(INVOICE)
+                        'INVOICE_TYPE' => 'STANDARD',
+                        'VENDOR_NAME' => $hdr->VendorName,
+                        'VENDOR_SITE_CODE' => $hdr->City, //kapital ?
+                        'INVOICE_DATE' => date('Y-m-d h:i:s'),
+                        'INVOICE_CURRENCY_CODE' => $hdr->Currency,
+                        'INVOICE_AMOUNT' => $result4->TTL_BYR,
+                        'TERMS_NAME' => 'Immediate',
+                        'LIABILITY_ACCOUNT' => $result3->FLEX_VALUE_ . '-' . $dtl[$i]->AccountLiability . '-000000-00-0000-00-0000-0000-0000', //VENDOR paren-liability-9segmen ?
+                        'INVOICE_DESCRIPTION' => $hdr->ProjectName, //NAMA PROJECT PR
+                        'FAKTUR_PAJAK' => $faktur, //TBL_T_IAS_DOC=>NAMA_DOC=2(FAKTUR PAJAK)
+                        'NOMORPO' => $ID_PO_DETAIL,
+                        'LINE_NUMBER' => $iiLine,
+                        'LINE_TYPE_LOOKUP_CODE' => 'ITEM ', //ASER 'AWT' BARANG 'ITEM'
+                        'AMOUNT' => -$Ias_old[$d]->DPP, //$dtl->HARGA, //TAMBAH 1 ROW PPN 1182001
+                        'AKUN_DISTRIBUSI' => $result3->FLEX_VALUE_ . '-1190000-000000-00-0000-00-0000-0000-0000', //AMBIL DARI COA PER ITEM(tunggu design table)=>SEMENTARA
+                        'LINE_DESCRIPTION' => 'DPP', //NAMA ITEM PPN
+                        'SOURCE' => 'INTEGRATION', //DEFAULT
+                        'PAYMENT_METHOD_CODE' => 'PNM PAYMENT METHOD', //PNM PAYMENT METHOD
+                        'FAM_INVOICE_ID' => $ID_IAS //NO IAS -> UNTUK ASSET
+                    );
+                }
+
+                //PPH
+                if ($result4->PPH > 0) {
+                    $iiLine = $iiLine + 1;
+                    $arrdt[] = array(
+                        'OPERATING_UNIT' => $result3->BRANCH_DESC,
+                        'INVOICE_NUM' => $invoice, //TBL_T_IAS_DOC=>NAMA_DOC=2(INVOICE)
+                        'INVOICE_TYPE' => 'STANDARD',
+                        'VENDOR_NAME' => $hdr->VendorName,
+                        'VENDOR_SITE_CODE' => $hdr->City, //kapital ?
+                        'INVOICE_DATE' => date('Y-m-d h:i:s'),
+                        'INVOICE_CURRENCY_CODE' => $hdr->Currency,
+                        'INVOICE_AMOUNT' => $result4->TTL_BYR,
+                        'TERMS_NAME' => 'Immediate',
+                        'LIABILITY_ACCOUNT' => $result3->FLEX_VALUE_ . '-' . $dtl[$i]->AccountLiability . '-000000-00-0000-00-0000-0000-0000', //VENDOR paren-liability-9segmen ?
+                        'INVOICE_DESCRIPTION' => $hdr->ProjectName, //NAMA PROJECT PR
+                        'FAKTUR_PAJAK' => $faktur, //TBL_T_IAS_DOC=>NAMA_DOC=2(FAKTUR PAJAK)
+                        'NOMORPO' => $ID_PO_DETAIL,
+                        'LINE_NUMBER' => $iiLine,
+                        'LINE_TYPE_LOOKUP_CODE' => 'AWT ', //ASER 'AWT' BARANG 'ITEM'
+                        'AMOUNT' => $result4->PPH, //$dtl->HARGA, //TAMBAH 1 ROW PPN
+                        'AKUN_DISTRIBUSI' => $result3->FLEX_VALUE_ . '-1181004-000000-00-0000-00-0000-0000-0000', //AMBIL DARI COA PER ITEM(tunggu design table)=>SEMENTARA
+                        'LINE_DESCRIPTION' => 'PPH', //NAMA ITEM PPH
+                        'SOURCE' => 'INTEGRATION', //DEFAULT
+                        'PAYMENT_METHOD_CODE' => 'PNM PAYMENT METHOD', //PNM PAYMENT METHOD
+                        'FAM_INVOICE_ID' => $ID_IAS //NO IAS -> UNTUK ASSET
+                    );
+                }
+                //DENDA
+                if ($result4->DENDA > 0) {
+                    $iiLine = $iiLine + 1;
+                    $arrdt[] = array(
+                        'OPERATING_UNIT' => $result3->BRANCH_DESC,
+                        'INVOICE_NUM' => $invoice, //TBL_T_IAS_DOC=>NAMA_DOC=2(INVOICE)
+                        'INVOICE_TYPE' => 'STANDARD',
+                        'VENDOR_NAME' => $hdr->VendorName,
+                        'VENDOR_SITE_CODE' => $hdr->City, //kapital ?
+                        'INVOICE_DATE' => date('Y-m-d h:i:s'),
+                        'INVOICE_CURRENCY_CODE' => $hdr->Currency,
+                        'INVOICE_AMOUNT' => $result4->TTL_BYR,
+                        'TERMS_NAME' => 'Immediate',
+                        'LIABILITY_ACCOUNT' => $result3->FLEX_VALUE_ . '-' . $dtl[$i]->AccountLiability . '-000000-00-0000-00-0000-0000-0000', //VENDOR paren-liability-9segmen ?
+                        'INVOICE_DESCRIPTION' => $hdr->ProjectName, //NAMA PROJECT PR
+                        'FAKTUR_PAJAK' => $faktur, //TBL_T_IAS_DOC=>NAMA_DOC=2(FAKTUR PAJAK)
+                        'NOMORPO' => $ID_PO_DETAIL,
+                        'LINE_NUMBER' => $iiLine,
+                        'LINE_TYPE_LOOKUP_CODE' => 'ITEM ', //ASER 'AWT' BARANG 'ITEM'
+                        'AMOUNT' => $result4->DENDA, //$dtl->HARGA, //TAMBAH 1 ROW PPN
+                        'AKUN_DISTRIBUSI' => $result3->FLEX_VALUE_ . '-2020300-000000-00-0000-00-0000-0000-0000', //AMBIL DARI COA PER ITEM(tunggu design table)=>SEMENTARA
+                        'LINE_DESCRIPTION' => 'DENDA', //NAMA ITEM PPH
+                        'SOURCE' => 'INTEGRATION', //DEFAULT
+                        'PAYMENT_METHOD_CODE' => 'PNM PAYMENT METHOD', //PNM PAYMENT METHOD
+                        'FAM_INVOICE_ID' => $ID_IAS //NO IAS -> UNTUK ASSET
+                    );
+                }
+//                ITEM & ASSET_ID
+                $N_Termin = $this->db->query("SELECT Top 1 PERSENTASE FROM TBL_T_TERMIN WHERE ID_PO_DETAIL=" . $ID_PO_DETAIL . " order by TERMIN desc")->row()->PERSENTASE;
+                $iPPN=$dtl[0]->HARGA_DISC*$dtl[0]->QTY * $N_Termin / 100 * $result4->PERSEN_PPN / 100;
+                $INV_AMOUNT=($dtl[0]->HARGA_DISC*$dtl[0]->QTY)+$iPPN-$iDPP;
+                for ($i = 0; $i < COUNT($dtl); $i++) {
+                    $update = array('STATUS' => 1);
+                    $this->db->where('ID', $dtl[$i]->FAM_ASSET_ID);
+                    $this->db->update('TBL_T_TB_DETAIL', $update);
+//                    $iAMOUNT = $iAMOUNT + $dtl[$i]->HARGA_DISC;
+
+                    $iiLine = $iiLine + 1;
+                    $arrData[] = array(
+                        'OPERATING_UNIT' => $result3->BRANCH_DESC,
+                        'INVOICE_NUM' => $invoice, //TBL_T_IAS_DOC=>NAMA_DOC=2(INVOICE)
+                        'INVOICE_TYPE' => 'STANDARD',
+                        'VENDOR_NAME' => $hdr->VendorName,
+                        'VENDOR_SITE_CODE' => $hdr->City, //huruf besar
+                        'INVOICE_DATE' => date('Y-m-d h:i:s'),
+                        'INVOICE_CURRENCY_CODE' => $hdr->Currency,
+                        'INVOICE_AMOUNT' => $INV_AMOUNT,
+                        'TERMS_NAME' => 'Immediate',
+                        'LIABILITY_ACCOUNT' => $result3->FLEX_VALUE_ . '-' . $dtl[$i]->AccountLiability . '-000000-00-0000-00-0000-0000-0000', //VENDOR 
+                        'INVOICE_DESCRIPTION' => $hdr->ProjectName, //NAMA PROJECT PR
+                        'FAKTUR_PAJAK' => $faktur, //
 //                        'NOMORPO' => 'PO/' . $hdr->ID_PO,
-                    'NOMORPO' => $ID_PO_DETAIL,
-                    'LINE_NUMBER' => $iLine,
-                    'LINE_TYPE_LOOKUP_CODE' => 'ITEM ', //ASER 'AWT' BARANG 'ITEM'
-                    'AMOUNT' => $dtl[$i]->HARGA, //$dtl->HARGA, //TAMBAH 1 ROW PPN
-                    'AKUN_DISTRIBUSI' => str_replace(" ", "", $dtl[$i]->Coa), //AMBIL DARI COA PER ITEM(tunggu design table)=>SEMENTARA
-                    'LINE_DESCRIPTION' => $dtl[$i]->NAMA_BARANG, //NAMA ITEM
+                        'NOMORPO' => $ID_PO_DETAIL,
+                        'LINE_NUMBER' => $iiLine,
+                        'LINE_TYPE_LOOKUP_CODE' => 'ITEM ', //ASER 'AWT' BARANG 'ITEM'
+                        'AMOUNT' => $dtl[$i]->HARGA_DISC, //$dtl->HARGA, //TAMBAH 1 ROW PPN
+                        'AKUN_DISTRIBUSI' => str_replace(" ", "", $dtl[$i]->Coa), //AMBIL DARI COA PER ITEM(tunggu design table)=>SEMENTARA
+                        'LINE_DESCRIPTION' => $dtl[$i]->NAMA_BARANG, //NAMA ITEM
 //                    'ITEM_DESCRIPTION' => '',
-                    'ASSET_BOOK_NAME' => 'PNM COMMERCIAL BOOK', //$result3->PARENT . ' COM BOOK', //PAREN COM BOOK
-                    'ASSET_CATEGORY' => $dtl[$i]->ClassCode, //ITEM CATEGORY ->ID
-                    'JENIS_BARANG' => $dtl[$i]->TypeCode, //ITEM TYPE ->ID
-                    'UMUR_FISKAL' => $dtl[$i]->umurfiskal, //ITEM CATEGORY 
-//                    'AMORTIZATION' => '',
-                    'FAM_ASSET_ID' => $dtl[$i]->FAM_ASSET_ID, // SN
+                        'ASSET_BOOK_NAME' => 'PNM COMMERCIAL BOOK', //$result3->PARENT . ' COM BOOK', //PAREN COM BOOK
+//                        'ASSET_CATEGORY' => '106', //ITEM CATEGORY ->ID
+//                        'JENIS_BARANG' => '01', //ITEM TYPE ->ID
+//                        'UMUR_FISKAL' => 'A1', //ITEM CATEGORY //masih kosong
+                        'ASSET_CATEGORY' => $dtl[$i]->ClassCode, //ITEM CATEGORY ->ID
+                        'JENIS_BARANG' => $dtl[$i]->TypeCode, //ITEM TYPE ->ID
+                        'UMUR_FISKAL' => $dtl[$i]->umurfiskal, //ITEM CATEGORY 
+////                    'AMORTIZATION' => '',
+                        'FAM_ASSET_ID' => $dtl[$i]->FAM_ASSET_ID, // SN
 //                    'DEFERRED_ACCTG_FLAG' => '',
 //                    'DEF_ACCTG_START_DATE' => '',
 //                    'DEF_ACCTG_END_DATE' => '',
-                    'SOURCE' => 'INTEGRATION', //DEFAULT
-                    'PAYMENT_METHOD_CODE' => 'PNM PAYMENT METHOD', //PNM PAYMENT METHOD
-                    'FAM_INVOICE_ID' => $ID_IAS //NO IAS
+                        'SOURCE' => 'INTEGRATION', //DEFAULT
+                        'PAYMENT_METHOD_CODE' => 'PNM PAYMENT METHOD', //PNM PAYMENT METHOD
+                        'FAM_INVOICE_ID' => $ID_IAS //NO IAS
 //                    'TGL_PENGAKUAN_BRG' => '',
 //                    'STATUS' => '',
 //                    'ERROR_CODE' => '',
 //                    'ERROR_MESSAGE' => '',
 //                    'PROCESS_ID' => ''
+                    );
+                }
+                //PPN
+                if ($result4->PPN > 0) {
+                    $iiLine = $iiLine + 1;
+                    $arrdt[] = array(
+                        'OPERATING_UNIT' => $result3->BRANCH_DESC,
+                        'INVOICE_NUM' => $invoice, //TBL_T_IAS_DOC=>NAMA_DOC=2(INVOICE)
+                        'INVOICE_TYPE' => 'STANDARD',
+                        'VENDOR_NAME' => $hdr->VendorName,
+                        'VENDOR_SITE_CODE' => $hdr->City, //kapital ?
+                        'INVOICE_DATE' => date('Y-m-d h:i:s'),
+                        'INVOICE_CURRENCY_CODE' => $hdr->Currency,
+                        'INVOICE_AMOUNT' => $INV_AMOUNT, //$result4->NILAI_DIBAYARKAN
+                        'TERMS_NAME' => 'Immediate',
+                        'LIABILITY_ACCOUNT' => $result3->FLEX_VALUE_ . '-' . $dtl[0]->AccountLiability . '-000000-00-0000-00-0000-0000-0000', //VENDOR paren-liability-9segmen ?
+                        'INVOICE_DESCRIPTION' => $hdr->ProjectName, //NAMA PROJECT PR
+                        'FAKTUR_PAJAK' => $faktur, //TBL_T_IAS_DOC=>NAMA_DOC=2(FAKTUR PAJAK)
+                        'NOMORPO' => $ID_PO_DETAIL,
+                        'LINE_NUMBER' => $iiLine,
+                        'LINE_TYPE_LOOKUP_CODE' => 'ITEM ', //ASER 'AWT' BARANG 'ITEM'
+                        'AMOUNT' => $iPPN, //$result4->PPN
+                        'AKUN_DISTRIBUSI' => $result3->FLEX_VALUE_ . '-1182000-000000-00-0000-00-0000-0000-0000', //AMBIL DARI COA PER ITEM(tunggu design table)=>SEMENTARA
+                        'LINE_DESCRIPTION' => 'PPN', //NAMA ITEM PPN
+                        'SOURCE' => 'INTEGRATION', //DEFAULT
+                        'PAYMENT_METHOD_CODE' => 'PNM PAYMENT METHOD', //PNM PAYMENT METHOD
+                        'FAM_INVOICE_ID' => $ID_IAS //NO IAS -> UNTUK ASSET
+                    );
+                }
+            } else {
+                //PPN
+                if ($result4->PPN > 0) {
+                    $iiLine = $iiLine + 1;
+                    $arrdt[] = array(
+                        'OPERATING_UNIT' => $result3->BRANCH_DESC,
+                        'INVOICE_NUM' => $invoice, //TBL_T_IAS_DOC=>NAMA_DOC=2(INVOICE)
+                        'INVOICE_TYPE' => 'STANDARD',
+                        'VENDOR_NAME' => $hdr->VendorName,
+                        'VENDOR_SITE_CODE' => $hdr->City, //kapital ?
+                        'INVOICE_DATE' => date('Y-m-d h:i:s'),
+                        'INVOICE_CURRENCY_CODE' => $hdr->Currency,
+                        'INVOICE_AMOUNT' => $result4->TTL_BYR, //$result4->NILAI_DIBAYARKAN,
+                        'TERMS_NAME' => 'Immediate',
+                        'LIABILITY_ACCOUNT' => $result3->FLEX_VALUE_ . '-' . $dtl[$i]->AccountLiability . '-000000-00-0000-00-0000-0000-0000', //VENDOR paren-liability-9segmen ?
+                        'INVOICE_DESCRIPTION' => $hdr->ProjectName, //NAMA PROJECT PR
+                        'FAKTUR_PAJAK' => $faktur, //TBL_T_IAS_DOC=>NAMA_DOC=2(FAKTUR PAJAK)
+                        'NOMORPO' => $ID_PO_DETAIL,
+                        'LINE_NUMBER' => $iiLine,
+                        'LINE_TYPE_LOOKUP_CODE' => 'ITEM ', //ASER 'AWT' BARANG 'ITEM'
+                        'AMOUNT' => $result4->PPN, //$dtl->HARGA, //TAMBAH 1 ROW PPN 1182001
+                        'AKUN_DISTRIBUSI' => $result3->FLEX_VALUE_ . '-1182001-000000-00-0000-00-0000-0000-0000', //AMBIL DARI COA PER ITEM(tunggu design table)=>SEMENTARA
+                        'LINE_DESCRIPTION' => 'PPN', //NAMA ITEM PPN
+                        'SOURCE' => 'INTEGRATION', //DEFAULT
+                        'PAYMENT_METHOD_CODE' => 'PNM PAYMENT METHOD', //PNM PAYMENT METHOD
+                        'FAM_INVOICE_ID' => $ID_IAS //NO IAS -> UNTUK ASSET
+                    );
+                }
+                //PPH
+                if ($result4->PPH > 0) {
+                    $iiLine = $iiLine + 1;
+                    $arrdt[] = array(
+                        'OPERATING_UNIT' => $result3->BRANCH_DESC,
+                        'INVOICE_NUM' => $invoice, //TBL_T_IAS_DOC=>NAMA_DOC=2(INVOICE)
+                        'INVOICE_TYPE' => 'STANDARD',
+                        'VENDOR_NAME' => $hdr->VendorName,
+                        'VENDOR_SITE_CODE' => $hdr->City, //kapital ?
+                        'INVOICE_DATE' => date('Y-m-d h:i:s'),
+                        'INVOICE_CURRENCY_CODE' => $hdr->Currency,
+                        'INVOICE_AMOUNT' => $result4->TTL_BYR,
+                        'TERMS_NAME' => 'Immediate',
+                        'LIABILITY_ACCOUNT' => $result3->FLEX_VALUE_ . '-' . $dtl[$i]->AccountLiability . '-000000-00-0000-00-0000-0000-0000', //VENDOR paren-liability-9segmen ?
+                        'INVOICE_DESCRIPTION' => $hdr->ProjectName, //NAMA PROJECT PR
+                        'FAKTUR_PAJAK' => $faktur, //TBL_T_IAS_DOC=>NAMA_DOC=2(FAKTUR PAJAK)
+                        'NOMORPO' => $ID_PO_DETAIL,
+                        'LINE_NUMBER' => $iiLine,
+                        'LINE_TYPE_LOOKUP_CODE' => 'AWT ', //ASER 'AWT' BARANG 'ITEM'
+                        'AMOUNT' => $result4->PPH, //$dtl->HARGA, //TAMBAH 1 ROW PPN
+                        'AKUN_DISTRIBUSI' => $result3->FLEX_VALUE_ . '-1181004-000000-00-0000-00-0000-0000-0000', //AMBIL DARI COA PER ITEM(tunggu design table)=>SEMENTARA
+                        'LINE_DESCRIPTION' => 'PPH', //NAMA ITEM PPH
+                        'SOURCE' => 'INTEGRATION', //DEFAULT
+                        'PAYMENT_METHOD_CODE' => 'PNM PAYMENT METHOD', //PNM PAYMENT METHOD
+                        'FAM_INVOICE_ID' => $ID_IAS //NO IAS -> UNTUK ASSET
+                    );
+                }
+                //DENDA
+                if ($result4->DENDA > 0) {
+                    $iiLine = $iiLine + 1;
+                    $arrdt[] = array(
+                        'OPERATING_UNIT' => $result3->BRANCH_DESC,
+                        'INVOICE_NUM' => $invoice, //TBL_T_IAS_DOC=>NAMA_DOC=2(INVOICE)
+                        'INVOICE_TYPE' => 'STANDARD',
+                        'VENDOR_NAME' => $hdr->VendorName,
+                        'VENDOR_SITE_CODE' => $hdr->City, //kapital ?
+                        'INVOICE_DATE' => date('Y-m-d h:i:s'),
+                        'INVOICE_CURRENCY_CODE' => $hdr->Currency,
+                        'INVOICE_AMOUNT' => $result4->TTL_BYR,
+                        'TERMS_NAME' => 'Immediate',
+                        'LIABILITY_ACCOUNT' => $result3->FLEX_VALUE_ . '-' . $dtl[$i]->AccountLiability . '-000000-00-0000-00-0000-0000-0000', //VENDOR paren-liability-9segmen ?
+                        'INVOICE_DESCRIPTION' => $hdr->ProjectName, //NAMA PROJECT PR
+                        'FAKTUR_PAJAK' => $faktur, //TBL_T_IAS_DOC=>NAMA_DOC=2(FAKTUR PAJAK)
+                        'NOMORPO' => $ID_PO_DETAIL,
+                        'LINE_NUMBER' => $iiLine,
+                        'LINE_TYPE_LOOKUP_CODE' => 'ITEM ', //ASER 'AWT' BARANG 'ITEM'
+                        'AMOUNT' => $result4->DENDA, //$dtl->HARGA, //TAMBAH 1 ROW PPN
+                        'AKUN_DISTRIBUSI' => $result3->FLEX_VALUE_ . '-2020300-000000-00-0000-00-0000-0000-0000', //AMBIL DARI COA PER ITEM(tunggu design table)=>SEMENTARA
+                        'LINE_DESCRIPTION' => 'DENDA', //NAMA ITEM PPH
+                        'SOURCE' => 'INTEGRATION', //DEFAULT
+                        'PAYMENT_METHOD_CODE' => 'PNM PAYMENT METHOD', //PNM PAYMENT METHOD
+                        'FAM_INVOICE_ID' => $ID_IAS //NO IAS -> UNTUK ASSET
+                    );
+                }
+                //DPP
+                $iiLine = $iiLine + 1;
+                $arrdt[] = array(
+                    'OPERATING_UNIT' => $result3->BRANCH_DESC,
+                    'INVOICE_NUM' => $invoice, //TBL_T_IAS_DOC=>NAMA_DOC=2(INVOICE)
+                    'INVOICE_TYPE' => 'STANDARD',
+                    'VENDOR_NAME' => $hdr->VendorName,
+                    'VENDOR_SITE_CODE' => $hdr->City, //kapital ?
+                    'INVOICE_DATE' => date('Y-m-d h:i:s'),
+                    'INVOICE_CURRENCY_CODE' => $hdr->Currency,
+                    'INVOICE_AMOUNT' => $result4->TTL_BYR,
+                    'TERMS_NAME' => 'Immediate',
+                    'LIABILITY_ACCOUNT' => $result3->FLEX_VALUE_ . '-' . $dtl[$i]->AccountLiability . '-000000-00-0000-00-0000-0000-0000', //VENDOR paren-liability-9segmen ?
+                    'INVOICE_DESCRIPTION' => $hdr->ProjectName, //NAMA PROJECT PR
+                    'FAKTUR_PAJAK' => $faktur, //TBL_T_IAS_DOC=>NAMA_DOC=2(FAKTUR PAJAK)
+                    'NOMORPO' => $ID_PO_DETAIL,
+                    'LINE_NUMBER' => $iiLine,
+                    'LINE_TYPE_LOOKUP_CODE' => 'ITEM ', //ASER 'AWT' BARANG 'ITEM'
+                    'AMOUNT' => $result4->DPP, //$dtl->HARGA, //TAMBAH 1 ROW PPN 1182001
+                    'AKUN_DISTRIBUSI' => $result3->FLEX_VALUE_ . '-1199099-000000-00-0000-00-0000-0000-0000', //AMBIL DARI COA PER ITEM(tunggu design table)=>SEMENTARA
+                    'LINE_DESCRIPTION' => 'DPP', //NAMA ITEM PPN
+                    'SOURCE' => 'INTEGRATION', //DEFAULT
+                    'PAYMENT_METHOD_CODE' => 'PNM PAYMENT METHOD', //PNM PAYMENT METHOD
+                    'FAM_INVOICE_ID' => $ID_IAS //NO IAS -> UNTUK ASSET
                 );
             }
             // $this->db->update_batch('TBL_T_TB_DETAIL', $update, 'ID');
             // print_r($this->db->last_query());exit();
 //            }
         }
-        array_push($arrData, $arrDataPPH[0]);
+        foreach ($arrdt as $arr) {
+            array_push($arrData, $arr);
+        }
 
 //        die();
 
         $data['data'] = $arrData;
         $curlurl = $result->LINK . "/insert_invoice";
-        print_r($data['data']);die();
+//        print_r($data['data']);
+//        die();
+
         foreach ($data['data'] as $value) {
             $idata['data'] = array($value);
             $ch = curl_init($curlurl);
@@ -238,12 +435,12 @@ class Api_m extends CI_Model {
         $Raw_ID = trim($this->input->post('Raw_ID'));
 
         $VendorID = trim($this->input->post('VendorID'));
-        $VendorName = trim($this->input->post('VendorName'));
+        $VendorName = strtoupper(trim(($this->input->post('VendorName'))));
         $VendorAlias = trim($this->input->post('VendorAlias'));
         $AFILIASI = trim($this->input->post('AFILIASI'));
         $NPWP = trim($this->input->post('NPWP'));
         $NamaProvinsi = trim($this->input->post('IdProvinsi'));
-        $NamaKabupaten = trim($this->input->post('IdKabupaten'));
+        $City = strtoupper(trim(($this->input->post('city'))));
         $CountryName = trim($this->input->post('ID_Country'));
         $ID_Branch = trim($this->input->get('sBranch'));
         $AccountLiability = trim($this->input->post('AccountLiability'));
@@ -272,26 +469,26 @@ class Api_m extends CI_Model {
         $query = $this->db->query("SELECT LINK FROM TBL_API_LINK WHERE API_NAME='CRUD ORACLE'");
         $result = $query->result()[0];
 
-        $query = $this->db->query("Select a.NamaKabupaten from Mst_Kabupaten a where IdKabupaten  ='" . $NamaKabupaten . "'");
-        $NamaKabupaten = $query->result()[0]->NamaKabupaten;
+        // $query = $this->db->query("Select a.NamaKabupaten from Mst_Kabupaten a where IdKabupaten  ='" . $NamaKabupaten . "'");
+        // $NamaKabupaten = $query->result()[0]->NamaKabupaten;
 
         $query = $this->db->query("Select a.NamaProvinsi from Mst_Provinsi a where IdProvinsi  ='" . $NamaProvinsi . "'");
         $NamaProvinsi = $query->result()[0]->NamaProvinsi;
 
         // $query = $this->db->query("Select a.BRANCH_DESC from TBL_M_BRANCH a where ID  ='" . $ID_Branch . "'");      
         // $BRANCH_DESC = $query->result()[0]->BRANCH_DESC;
-// print_r($response['data']);die();
+
         foreach ($iBranch as $data) {
             $data_oracle = array(
-                'VENDOR_NAME' => $VendorName,
-                'ALT_VENDOR_NAME' => $VendorAlias,
+                'VENDOR_NAME' => $VendorAlias,
+                'ALT_VENDOR_NAME' => $VendorName,
                 'NPWP' => $NPWP,
                 'ADDRESS1' => $VendorAddress,
-                'CITY' => $NamaKabupaten,
+                'City' => $City,
                 'PROVINCE' => $NamaProvinsi,
                 'COUNTRY' => $CountryName,
                 'BRANCH' => $data,
-                'SITE_NAME' => $NamaKabupaten,
+                'SITE_NAME' => $data,
                 'ACCOUNT_LIABILITY' => $AccountLiability,
                 'ACCOUNT_PREPAYMENT' => $AccountPrepayment,
                 'CURRENCY' => $Currency,
@@ -307,7 +504,8 @@ class Api_m extends CI_Model {
                 'NAMA_BANK3' => $NamaBank3,
                 'UPDATE_FLAG' => $update,
             );
-
+            print_r($data_oracle);
+            die();
             $curlurl = $result->LINK . "/insert_vendor";
 
             $ch = curl_init($curlurl);

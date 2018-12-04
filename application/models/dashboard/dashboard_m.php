@@ -39,7 +39,7 @@ class Dashboard_m extends CI_Model {
 
 
 
-public function getCdisplay() {
+public function getdisplay() {
         $sql = "select ket,nilai from(
         SELECT 'id_request' as ket, Count(*) as nilai        
         FROM TBL_REQUEST WHERE status='2-1' AND Is_trash =0        
@@ -50,14 +50,14 @@ public function getCdisplay() {
 		INNER JOIN TBL_T_PO_DETAIL as b on a.ID_PO_DETAIL = b.ID_PO_DETAIL
         INNER JOIN TBL_T_PO as c on b.ID_PO = c.ID_PO)
  union ALL
-		SELECT 'id_close' as ket,ISNULL(COUNT(*),0) as nilai
-		FROM(
-		select B.ID_PO
-		from TBL_T_IAS AS A INNER JOIN
-		TBL_T_PO_DETAIL as B on A.ID_PO_DETAIL = B.ID_PO_DETAIL
-		where A.IS_TRASH=0 
-		group by B.ID_PO
-		having SUM(A.NILAI_DIBAYARKAN) >= SUM(B.TTL_HARGA)) AS ZZ 
+        SELECT 'id_close' as ket,ISNULL(COUNT(*),0) as nilai
+        FROM(
+        select B.ID_PO
+        from TBL_T_IAS AS A INNER JOIN
+        TBL_T_PO_DETAIL as B on A.ID_PO_DETAIL = B.ID_PO_DETAIL
+        where A.IS_TRASH=0 
+        group by B.ID_PO
+        having SUM(A.NILAI_DIBAYARKAN) >= SUM(B.TTL_HARGA)) AS ZZ 
  union ALL
         select 'id_reject' as ket, count(*) as nilai 
         from TBL_REQUEST AS A left JOIN
@@ -71,7 +71,7 @@ public function getCdisplay() {
 
     
 
-    public function getdisplay() {
+    public function getdisplay_x() {
          $sql = "SELECT 'id_request' as ket, Count(*) as nilai
          FROM TBL_REQUEST WHERE status='2-1' AND Is_trash =0
     union

@@ -19,56 +19,50 @@
         iSearch = e;
     }
 
-    function loadGridHPS() {
-        // iZone = $("#dd_id_zone_A").val();
-        dataTable = $('#table_gridHPS').DataTable({
-            dom: 'C<"clear">l<"toolbar">frtip',
+     function loadGridHPS() {
+
+              dataTable = $('#table_gridHPS').DataTable({
+               // dom: 'C<"clear">l<"toolbar">frtip',
             initComplete: function () {
                 $("div.toolbar").append('<div class="col-md-8">\n\
             <div class="row">\n\
                 <div class="col-md-1"></div>\n\
-                <div class="col-md-3"><div id="branch"></div></div>\n\
-                <div class="col-md-3 text-right">Param</div>\n\
-                <div class="col-md-3">\n\
-                    <select id="cat_itemclass" name="cat_itemclass" onchange="search(this.value)" class="form-control">\n\
-                        <option value="ItemName">Item</option>\n\
-                        <option value="ZoneName">Zone</option>\n\
-                    </select>\n\
                 </div>\n\
             </div>\n\
         </div>');
-                dd_Zone("A");
+                // dd_Zone("A");
             }, "lengthMenu": [
                 [5, 10, 15, 20, -1],
                 [5, 10, 15, 20, "All"] // change per page values here
             ],
-//                // set the initial value
-            "pageLength": 5,
-            "processing": true,
-            "serverSide": true,
-            "ajax": {
-                url: "<?php echo base_url("/procurement/hps/ajax_GridHPS"); ?>", // json datasource
+                //                // set the initial value
+                "pageLength": 5,
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                url: "<?php echo base_url("/procurement/hps/ajax_GridHPS"); ?>",// json datasource
                 type: "post", // method  , by default get
                 data: function (z) {
                     z.sSearch = iSearch;
                     z.sZone = iZone;
-                },
+                  },
                 error: function () {  // error handling
-                    $(".table_gridHPS-error").html("");
+                  $(".table_gridHPS-error").html("");
                     // $("#lookup").append('<tbody class="employee-grid-error"><tr><th colspan="3">No data found in the server</th></tr></tbody>');
                     $('#table_gridHPS tbody').html('<tbody class="employee-grid-error"><tr><th colspan="4">No data found in the server</th></tr></tbody>');
                     $("#table_gridHPS_processing").css("display", "none");
-
-                }
-            },
-            "columnDefs": [
-                {"targets": [-1], "orderable": false, "searchable": false},
+                  }
+                },
+                "columnDefs": [
+                 {"targets": [-1], "orderable": false, "searchable": false},
 
                 {"targets": [6], "visible": false, "searchable": true},
 
-            ],
-        });
-    }
+                // {"targets": [0], "checkboxes": {"selectRow": true}},
+                ],
+                // "select": {"style": "multi"},
+              });
+          }
 
     $('#table_gridHPS').on('click', '#btnUpdate', function () {
         $('#mdl_Update').find('.modal-title').text('Update');

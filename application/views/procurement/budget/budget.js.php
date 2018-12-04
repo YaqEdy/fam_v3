@@ -1,13 +1,25 @@
 <script>
 function showQR() {
-    //alert(e);
-    $("#qr_code").empty();    
-    var qrcode = new QRCode("qr_code");
-    qrcode.makeCode($('#qrtext').val());
-    $("#qr_desc").text($('#qrtext').val());
+    var iid='8,9';
+        window.open("<?php echo base_url("/procurement/budget/print_qr/"); ?>?sId="+iid, "_blank");              
     
-//    document.getElementById("idcb").checked = true;
-    console.log(document.getElementById("idcb").checked);
+//$.ajax({
+//    url: "<?php echo base_url("/procurement/budget/print_qr"); ?>",
+//    type: "POST",
+//    async: false,
+//    success: function() {
+//        window.open('/procurement/budget/print_qr', '_blank');              
+//    }
+//});
+//    
+//    //alert(e);
+//    $("#qr_code").empty();    
+//    var qrcode = new QRCode("qr_code");
+//    qrcode.makeCode($('#qrtext').val());
+//    $("#qr_desc").text($('#qrtext').val());
+//    
+////    document.getElementById("idcb").checked = true;
+//    console.log(document.getElementById("idcb").checked);
 }
 
     
