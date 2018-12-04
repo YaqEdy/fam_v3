@@ -1125,7 +1125,7 @@ class Purchase_request extends CI_Controller {
 	}
 	
 	function app_requestproc_vendor_item() {
-		print_r($this->input->post('DokumenVendor'));die();
+		// print_r($this->input->post('DokumenVendor'));die();
 		$data['RequestID'] = $this->input->post('RequestID');
 		$data['flow_id'] = $this->input->post('flow_id');
 		$data['status'] = $this->input->post('status');

@@ -136,7 +136,7 @@ class Api_m extends CI_Model {
                         'LINE_NUMBER' => $iiLine,
                         'LINE_TYPE_LOOKUP_CODE' => 'ITEM ', //ASER 'AWT' BARANG 'ITEM'
                         'AMOUNT' => -$Ias_old[$d]->DPP, //$dtl->HARGA, //TAMBAH 1 ROW PPN 1182001
-                        'AKUN_DISTRIBUSI' => $result3->FLEX_VALUE_ . '-1190000-000000-00-0000-00-0000-0000-0000', //AMBIL DARI COA PER ITEM(tunggu design table)=>SEMENTARA
+                        'AKUN_DISTRIBUSI' => $result3->FLEX_VALUE_ . '-1199099-000000-00-0000-00-0000-0000-0000', //AMBIL DARI COA PER ITEM(tunggu design table)=>SEMENTARA
                         'LINE_DESCRIPTION' => 'DPP', //NAMA ITEM PPN
                         'SOURCE' => 'INTEGRATION', //DEFAULT
                         'PAYMENT_METHOD_CODE' => 'PNM PAYMENT METHOD', //PNM PAYMENT METHOD
@@ -231,12 +231,12 @@ class Api_m extends CI_Model {
                         'LINE_DESCRIPTION' => $dtl[$i]->NAMA_BARANG, //NAMA ITEM
 //                    'ITEM_DESCRIPTION' => '',
                         'ASSET_BOOK_NAME' => 'PNM COMMERCIAL BOOK', //$result3->PARENT . ' COM BOOK', //PAREN COM BOOK
-//                        'ASSET_CATEGORY' => '106', //ITEM CATEGORY ->ID
-//                        'JENIS_BARANG' => '01', //ITEM TYPE ->ID
-//                        'UMUR_FISKAL' => 'A1', //ITEM CATEGORY //masih kosong
-                        'ASSET_CATEGORY' => $dtl[$i]->ClassCode, //ITEM CATEGORY ->ID
-                        'JENIS_BARANG' => $dtl[$i]->TypeCode, //ITEM TYPE ->ID
-                        'UMUR_FISKAL' => $dtl[$i]->umurfiskal, //ITEM CATEGORY 
+                        'ASSET_CATEGORY' => '106', //ITEM CATEGORY ->ID
+                        'JENIS_BARANG' => '01', //ITEM TYPE ->ID
+                        'UMUR_FISKAL' => 'A1', //ITEM CATEGORY //masih kosong
+//                        'ASSET_CATEGORY' => $dtl[$i]->ClassCode, //ITEM CATEGORY ->ID
+//                        'JENIS_BARANG' => $dtl[$i]->TypeCode, //ITEM TYPE ->ID
+//                        'UMUR_FISKAL' => $dtl[$i]->umurfiskal, //ITEM CATEGORY 
 ////                    'AMORTIZATION' => '',
                         'FAM_ASSET_ID' => $dtl[$i]->FAM_ASSET_ID, // SN
 //                    'DEFERRED_ACCTG_FLAG' => '',
@@ -272,7 +272,7 @@ class Api_m extends CI_Model {
                         'LINE_NUMBER' => $iiLine,
                         'LINE_TYPE_LOOKUP_CODE' => 'ITEM ', //ASER 'AWT' BARANG 'ITEM'
                         'AMOUNT' => $iPPN, //$result4->PPN
-                        'AKUN_DISTRIBUSI' => $result3->FLEX_VALUE_ . '-1182000-000000-00-0000-00-0000-0000-0000', //AMBIL DARI COA PER ITEM(tunggu design table)=>SEMENTARA
+                        'AKUN_DISTRIBUSI' => $result3->FLEX_VALUE_ . '-1182001-000000-00-0000-00-0000-0000-0000', //AMBIL DARI COA PER ITEM(tunggu design table)=>SEMENTARA
                         'LINE_DESCRIPTION' => 'PPN', //NAMA ITEM PPN
                         'SOURCE' => 'INTEGRATION', //DEFAULT
                         'PAYMENT_METHOD_CODE' => 'PNM PAYMENT METHOD', //PNM PAYMENT METHOD
