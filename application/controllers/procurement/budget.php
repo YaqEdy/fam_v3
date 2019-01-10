@@ -22,12 +22,14 @@ class Budget extends CI_Controller {
     }
 
     public function index() {
-		$this->load->database();
-		  $PARAMS=array(
-            'BRANCH'=>'KTRPST'
-        );
-        $model = $this->global_m->sp_get("zsp_Get_History_PR ?",$PARAMS);
-		print_r($model);die();
+		// $this->load->database();
+		  // $PARAMS=array(
+            // 'BRANCH'=>'KTRPST',
+            // 'DIV'=>'PKPP',
+            // 'Jenis_budget'=>'0'
+        // );
+        // $model = $this->global_m->sp_get("zsp_Get_Budget ?,?,?",$PARAMS);
+		// print_r($model);die();
 		
         if ($this->auth->is_logged_in() == false) {
             $this->login();
@@ -35,7 +37,7 @@ class Budget extends CI_Controller {
             $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
 
             $this->template->set('title', 'Home');
-            $this->template->load('template/template1', 'global/index', $data);
+            //$this->template->load('template/template1', 'global/index', $data);
         }
     }
 

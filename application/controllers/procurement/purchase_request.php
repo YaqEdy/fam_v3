@@ -557,7 +557,7 @@ class Purchase_request extends CI_Controller {
 
     function get_list_close_check_request() {
         $status = $this->input->post('status');
-        $get_list = $this->global_m->tampil_data("select * from VW_PR_OUT_REQ where RequestID IN (select distinct RequestID from TBL_REQUEST_LOG where status_ke like '%".$status."%')");
+        $get_list = $this->global_m->tampil_data("select * from VW_PR_OUT_REQ where RequestID IN (select distinct RequestID from TBL_REQUEST_LOG where status_ke like '%".$status."%') and RequestID not in (select ID_PR from TBL_T_ATK)");
         //$get_list = $this->Requestproc_v3_mdl->get_list_request_after($grup)->result_array();
 
         echo '
