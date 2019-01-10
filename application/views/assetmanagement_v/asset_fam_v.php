@@ -16,7 +16,7 @@
                     <span class="caption-subject font-red sbold uppercase"><?php echo $menu_header; ?></span>
                 </div>
                 <div class="tools">
-                    <button class="btn btn-info" onclick="printQR()">Print QR</button>
+                    <button class="btn btn-info" onclick="printQR()"><i class="glyphicon glyphicon-qrcode"></i> Print QR</button>
                     <a href="javascript:;" class="collapse">
                     </a>
                     <a href="javascript:;" class="fullscreen">
@@ -846,9 +846,15 @@
 <script>
 
     function printQR() {
+		iID_ASSET="";
         var rows_selected = dataTable1.column(2).checkboxes.selected();
         iID_ASSET = iID_ASSET + rows_selected.join(",");
-        window.open("<?php echo base_url("/assetmanagement/asset_fam/print_qr/"); ?>?sId=" + iID_ASSET, "_blank");
+		console.log(iID_ASSET);
+		if(iID_ASSET!=""){
+			window.open("<?php echo base_url("/assetmanagement/asset_fam/print_qr/"); ?>?sId=" + iID_ASSET, "_blank");
+		}else{
+			alert("Pilih asset terlebih dahulu.!");
+		}
     }
 
     $("#id_PIC").select2({
