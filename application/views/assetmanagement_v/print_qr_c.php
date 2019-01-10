@@ -14,6 +14,12 @@
                 </tr>
                 <tr align="center"><td>PNM</td></tr>
                 <tr align="center"><td><div id="qr_desc<?php echo $i ?>"><?php echo $qr_code[$i]->QRCODE ?></div></td></tr>
+                <tr align="center" hidden><td><div id="qr_scan<?php echo $i ?>">
+										<?php echo 
+										"Nama : ".$qr_code[$i]->ItemName.
+										" Lokasi : ".$qr_code[$i]->DIV_DESC.
+										" Kondisi : ".$qr_code[$i]->KONDISI ?>
+										</div></td></tr>
             </table>
             <br>
 
@@ -40,7 +46,7 @@
                         width: 130,
                         height: 120
                     });
-                    qrcode.makeCode($("#qr_desc" + i).text());
+                    qrcode.makeCode($("#qr_scan" + i).text());
                 }
                 window.print();
             });
