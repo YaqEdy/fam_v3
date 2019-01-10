@@ -170,12 +170,12 @@ Class Budget_mdl extends CI_Model {
             $this->session->set_flashdata('msg', 'Error! Budget Failed Insert Data');
     }
 
-    function allBranch() {
+    function allBranch($branch) {
         $this->db2 = $this->load->database('config1', true);
         $division = $this->db2->query("SELECT 0 as COA,CASE WHEN B.PARENT_FLEX IS NULL THEN A.BRANCH_DESC ELSE A.BRANCH_DESC+' - '+B.DIV_DESC END AS BRANCH_DIV,A.FLEX_VALUE AS BRANCH_ID,B.FLEX_VALUE AS DIV_ID
                                         from TBL_M_BRANCH AS A FULL OUTER JOIN
                                         TBL_M_DIVISION AS B ON A.FLEX_VALUE=B.PARENT_FLEX
-                                        WHERE A.FLEX_VALUE='KTRPST'
+                                        WHERE A.FLEX_VALUE='".$branch."'
                                         ORDER BY B.DIV_DESC DESC");
 //        $division = $this->db2->query("SELECT ISNULL(div.DivisionCode,br.BranchCode) as coa,br.BranchID, br.BranchName, br.BranchCode,div.DivisionID, div.DivisionName
 //										FROM Mst_Branch br
@@ -186,8 +186,7 @@ Class Budget_mdl extends CI_Model {
 
     function simpan($year, $branch, $divisi, $budget, $jnsbudget) {
         $this->db2 = $this->load->database('config1', true);
-
-        $status = $this->db2->query("IF NOT EXISTS ( SELECT BudgetCOA, Year FROM Mst_Budget WHERE Year = '" . $year . "' AND (BranchID = '" . $branch . "' OR DivisionID = '" . $divisi . "'))
+        $status = $this->db2->query("IF NOT EXISTS ( SELECT Year, BranchID, DivisionID FROM Mst_Budget WHERE Year = '" . $year . "' AND BranchID = '" . $branch . "' AND DivisionID = '" . $divisi . "' AND Jenis_budget = '" . $jnsbudget . "')
 					BEGIN
 					    INSERT INTO Mst_Budget (Year, BranchID, DivisionID, BudgetValue, Jenis_budget, CreateDate, CreateBy, BudgetOwnID, BudgetUsed, Status, Is_trash) VALUES 
 					    ('" . $year . "', '" . $branch . "','" . $divisi . "','" . $budget . "','" . $jnsbudget . "','" . date('Y-m-d H:i:s') . "','" . $this->session->userdata('user_id') . "','0','0','0','0')
@@ -196,7 +195,7 @@ Class Budget_mdl extends CI_Model {
 					BEGIN 
 					    UPDATE Mst_Budget 
 					    SET BudgetValue = '" . $budget . "', UpdateDate ='" . date('Y-m-d H:i:s') . "' , UpdateBy = '" . $this->session->userdata('user_id') . "'
-					    WHERE Year = '" . $year . "' AND (BranchID = '" . $branch . "' OR DivisionID = '" . $divisi . "')
+					    WHERE Year = '" . $year . "' AND (BranchID = '" . $branch . "' OR DivisionID = '" . $divisi . "' AND Jenis_budget = '" . $jnsbudget . "')
 					END ");
 
         if ($status)

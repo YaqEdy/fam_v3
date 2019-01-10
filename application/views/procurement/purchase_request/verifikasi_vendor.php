@@ -22,7 +22,7 @@
             </div>
             <div class="portlet-body">
                 <div class="tab-content">
-					<h5 class="sbold uppercase"><?=$approve_pr->status_request?></h5>
+					<!-- <h5 class="sbold uppercase"><?=$approve_pr->status_request?></h5> -->
                         <div class="panel panel-inverse">
                             <hr class="dotted">
                             <!--tambahkan enctype="multipart/form-data" u/ upload-->
@@ -116,24 +116,26 @@
 							<hr class="dotted">
 							
 							<div class="col-md-12" style="margin-bottom:2em">
-								<div class="col-md-6">
-									<div class="col-sm-12">
-                                        <label class="control-label col-sm-4">Jenis Pengadaan </label>
+                                <div class="col-md-6">
+                                    <div class="col-sm-12">
+                                        <label class="control-label col-sm-4">Jenis Pengadaan : </label>
                                         <div class="col-sm-7">
                                             <?=$approve_pr->JenisPengadaan?>
                                         </div>
                                     </div>
-								</div>
-								<div class="col-md-6">
-									<div class="col-sm-12">
-                                        <label class="control-label col-sm-4">Dokumen Vendor </label>
+                                </div>
+                                <div class="col-md-6">
+									<?php if ($path_doc != ''){ ?>
+                                    <div class="col-sm-12">
+                                        <label class="control-label col-sm-4"></label>
                                         <div class="col-sm-7">
-											<div class="btn-group btn-group-xs btn-group-solid">
-                                                <button type="button" class="btn green"><i class="fa fa-download"> Download</i></button>
+                                            <div class="">
+                                                <a href="<?=$path_doc?>" class="btn btn-success"><i class="fa fa-download"></i> Download Dokumen Vendor</a>
                                             </div>
-										</div>
+                                        </div>
                                     </div>
-								</div>
+									<?php } ?>
+                                </div>
                             </div>
                             
 							<hr class="dotted">

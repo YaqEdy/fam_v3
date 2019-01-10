@@ -339,6 +339,8 @@ function home() {
                 'Status' => trim(element('statustypeAdd', $i_list)),
                 'AssetType' => $AssetType
             );
+
+            // print_r($data); die();
         }
 
         if (element('ItemID', $i_list) == "Generate") {

@@ -66,8 +66,30 @@ Class Requestproc_v3_mdl extends CI_Model {
 	}
 	
 	function get_flow($tipe,$action,$status_dari){
-		$this->db->like('nama_flow', $tipe);
+		 if( $this->session->userdata('usergroup')==17){
+		 $this->db->like('nama_flow', 'Cabang');
+		 }else{
+		$this->db->like('nama_flow', $tipe);			 
+		 }
 		$this->db->where('status_dari', $status_dari);
+		$this->db->where('action', $action);
+		$get = $this->db->get('MS_FLOW');
+		
+		return $get;
+	}
+
+	function get_flow_($tipe,$action){
+		 if( $this->session->userdata('usergroup')==17){
+			 if($this->input->post('BudgetUsed')<=25000000 && $this->input->post('opex_capex')=='OPEX'){
+				$this->db->like('nama_flow', 'Opex');
+			 }else if($this->input->post('opex_capex')=='SEWA MNM'){
+				 $this->db->like('nama_flow', 'SEWA MNM');
+			 }
+		 	 $this->db->where('status_dari', '17-5');
+		 }else{
+			$this->db->like('nama_flow', $tipe);			 
+			$this->db->where('status_dari', '1-1');
+		 }
 		$this->db->where('action', $action);
 		$get = $this->db->get('MS_FLOW');
 		
@@ -115,11 +137,12 @@ Class Requestproc_v3_mdl extends CI_Model {
 	}
 	
 	function update_status_po($data){
+		$ambil_flow_po = $this->db->query("SELECT * FROM TBL_T_PO WHERE ID_PO = ".$data['ID_PO'])->row();
 		$ambil_flow = $this->db->query("
 							SELECT * FROM MS_FLOW 
 							WHERE 
 								flow_id = ".$data['flow_id']."
-								and status_dari = '".$data['status_po']."' 
+								and status_dari = '".$ambil_flow_po->status."' 
 								and action = '".$data['action']."'
 						")->row();
         $up = $this->db->query("
@@ -127,6 +150,7 @@ Class Requestproc_v3_mdl extends CI_Model {
 							SET status = '".$ambil_flow->status_ke."'
 							WHERE ID_PO = ".$data['ID_PO']."	
 						");
+        //print_r($this->db->last_query());die();
 						
 		#log
 		
@@ -134,6 +158,7 @@ Class Requestproc_v3_mdl extends CI_Model {
 	}
 	
 	function update_pr_action($data,$action,$note){
+		//print_r($data);die();
 		$ambil_flow = $this->db->query("
 							SELECT * FROM MS_FLOW 
 							WHERE 
@@ -170,36 +195,59 @@ Class Requestproc_v3_mdl extends CI_Model {
 						->get('VW_PR_OUT_REQ')
 						->row();
 		
-		if($jns_pengadaan == null){$jns_pengadaan='ias';}
-		
+		if($jns_pengadaan == null){$jns_pengadaan='IAS';}
+		//print_r($req->status);die();
+		 //return $jns_pengadaan;die();
+		$flowid_cb = $this->db->query("SELECT * FROM MS_FLOW WHERE nama_flow like '%Cabang%' and flow_id='".$req->flow_id."'")->row();
+		if(sizeof($flowid_cb)>0){
+
 		$ambil_flow = $this->db->query("
-							SELECT * FROM MS_FLOW 
+							SELECT TOP 1 * FROM MS_FLOW 
 							WHERE 
-								tipe = '".$jns_pengadaan."'
+								nama_flow like '%Cabang%'
+								and nama_flow like '%".$req->OPEX_CAPEX."%'
+								and tipe like '%".$jns_pengadaan."%'
 								and min_hps < ".$req->BudgetUsed."
-								and max_hps > ".$req->BudgetUsed."
+								and max_hps >= ".$req->BudgetUsed."
+								and status_dari = '".$req->status."'
 						")->row();
-						
+		}else{
+
+		$ambil_flow = $this->db->query("
+							SELECT TOP 1 * FROM MS_FLOW 
+							WHERE 
+								tipe like '%".$jns_pengadaan."%'
+								and min_hps < ".$req->BudgetUsed."
+								and max_hps >= ".$req->BudgetUsed."
+								and status_dari = '".$req->status."'
+						")->row();
+		}
+		
+		// return $ambil_flow;die();
+		
 		$data['flow_id'] = $ambil_flow->flow_id;
+		$data['status'] = $ambil_flow->status_dari;
 		$data['UpdateDate'] = date('Y-m-d H:i:s');
 		$data['UpdateBy'] = $this->session->userdata('id_user');
+		
+		// return $data;die();
 		
 		$up = $this->db
 				->where('RequestID',$RequestID)
 				->update('TBL_REQUEST',$data);		
 		
-		return $up;
+		return $data;
 	}
 	
 	function set_pr_vendor($data){
 		$del_vendor_pr = $this->db->where('RequestID', $data['RequestID'])->delete('TBL_REQUEST_VENDOR');
 		
-		$VendorID = explode(",", $data['VendorID']);
-		$VendorPemenang = explode(",", $data['VendorPemenang']);
-		$HargaSebelumPenawaran = explode(",", $data['HargaSebelumPenawaran']);
-		$HargaSetelahPenawaran = explode(",", $data['HargaSetelahPenawaran']);
-		$VendorItemID = explode(",", $data['VendorItemID']);
-		$PPNVendor = explode(",", $data['PPNVendor']);
+		$VendorID = explode(";", $data['VendorID']);
+		$VendorPemenang = explode(";", $data['VendorPemenang']);
+		$HargaSebelumPenawaran = explode(";", $data['HargaSebelumPenawaran']);
+		$HargaSetelahPenawaran = explode(";", $data['HargaSetelahPenawaran']);
+		$VendorItemID = explode(";", $data['VendorItemID']);
+		$PPNVendor = explode(";", $data['PPNVendor']);
 		for($i = 0; $i < $data['row_vendor']; $i++){
 			$datain['RequestID'] = $data['RequestID'];
 			$datain['VendorID'] = $VendorID[$i];
@@ -210,7 +258,6 @@ Class Requestproc_v3_mdl extends CI_Model {
 			$datain['PPN'] = $PPNVendor[$i];
 			$in_vendor_pr = $this->db->insert('TBL_REQUEST_VENDOR',$datain);
 		}
-		#
 		
 		
 		return $in_vendor_pr;
@@ -239,14 +286,41 @@ Class Requestproc_v3_mdl extends CI_Model {
 		return $get;
 	}
 	
-	function get_list_approval($grup){
-		$this->db->like('status', $grup.'-', 'after');
-		$this->db->where('is_trash', 0);
-		// $get = $this->db->get('tbl_request');
-		$this->db->order_by('Priority', 'desc');
-		$this->db->order_by('CreateDate', 'desc');
-		$get = $this->db->get('VW_PR_OUT_REQ');
+	function get_list_approval($grup,$divid){
+		  //$this->db->like('status', $grup.'-', 'after');
+		  //$this->db->where('is_trash', 0);
+		 if($grup==0 || $grup==5 || $grup==6 || $grup==13 || $grup==14 || $grup==15){
+			  $DIV="%";
+			 // $this->db->where('DivisionID', $divid);							
+		 }else{
+			  $DIV=$divid;
+		 }
+		// // $get = $this->db->get('tbl_request');
+		 //$this->db->order_by('Priority', 'desc');
+		 //$this->db->order_by('CreateDate', 'desc');
+		 //$get = $this->db->get('VW_PR_OUT_REQ');
 		
+		$get=$this->db->query("SELECT * FROM VW_PR_OUT_REQ 
+		WHERE DivisionID LIKE (case when ProjectName !='ATK PR GROUP' then '%".$DIV."%' ELSE '%' END) AND status LIKE '".$grup."-%'
+		ORDER BY Priority DESC,CreateDate DESC");
+		//print_r($this->db->last_query());die();
+		
+		return $get;
+	}
+	
+	function get_list_approval_cek_req($grup,$divid){
+		 if($grup!=0){
+			 $DIV=$divid;
+		 }else{
+			  $DIV="%";
+		 }
+		
+		$get=$this->db->query("SELECT * FROM VW_PR_OUT_REQ 
+		WHERE DivisionID LIKE (case when ProjectName !='ATK PR GROUP' then '%".$DIV."%' ELSE '%' END) AND status LIKE '".$grup."-%'
+		AND RequestID NOT IN (SELECT DISTINCT Z.ID_PR FROM (SELECT ID_PR FROM TBL_T_ATK union all select DISTINCT RequestID from VW_ATK_PR)AS Z)
+		ORDER BY Priority DESC,CreateDate DESC");
+		//print_r($this->db->last_query());die();
+				
 		return $get;
 	}
 	
@@ -291,7 +365,27 @@ Class Requestproc_v3_mdl extends CI_Model {
 		return $get;
 	}
 	
+//	function get_list_approval_status($status){
+//		$this->db->where('status', $status);
+//		$this->db->where('is_trash', 0);
+//		$get = $this->db->get('VW_PR_OUT_REQ');
+//		
+//		return $get;
+//	}
 	function get_list_approval_status($status){
+		if($this->session->userdata('groupid') != 0 && $this->uri->segment(3) == 'get_list_pemilihan_vendor'){
+			$this->db->where('PIC_PO', $this->session->userdata('user_id'));
+		}
+		
+		$this->db->where('status', $status);
+		$this->db->where('is_trash', 0);
+		$get = $this->db->get('VW_PR_OUT_REQ');
+		
+		return $get;
+	}
+        
+	function get_list_approval_status2($status,$nik){
+		$this->db->where('PIC_PO', $nik);
 		$this->db->where('status', $status);
 		$this->db->where('is_trash', 0);
 		$get = $this->db->get('VW_PR_OUT_REQ');

@@ -184,14 +184,8 @@ display: none;
                                 <a class="btn btn-sm btn-primary" href="#" id="btnAdd" data-toggle="modal" data-target="#mdl_Update">Add Vendor List</a>
                                 <!-- <button class="btn btn-sm btn-default">Add Item Category</button> -->
                             </div>
-                            <div class="col-md-2">
-                                <select id="cat_itemclass" name="cat_itemclass" onchange="search(this.value)" class="form-control">
-                                    <option value="%">--All--</option>
-                                    <option value="1">Vendor Type ID</option>
-                                    <option value="2">Vendor Type Name</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
+                       
+                            <div class="col-md-4">
                                 <select id="statustype" name="statustype" onchange="status(this.value)" class="form-control">
                                     <option value="%">--All--</option>
                                     <option value="1">Active</option>
@@ -418,7 +412,7 @@ display: none;
         <div class="form-group">
             <label class="control-label col-sm-4">NPWP</label>
             <div class="col-sm-8">
-             <input type="text" class="form-control" id="id_NPWP" name="NPWP" onkeypress="return isNumber(event)">
+             <input type="text" class="form-control" id="id_NPWP" name="NPWP">
          </div>
      </div>
  </div>
@@ -492,14 +486,16 @@ display: none;
     <label class="control-label col-sm-4">Account Liability</label>
     <div class="col-sm-8">
         <select   name="AccountLiability" class="form-control" required 
-        id="id_AccountLiability">
-        <option value="">--Pilih--</option>
+        id="id_AccountLiability" disabled>
         <option value="2159998">2159998</option>
-        >
+        <!-- <option value="">--Pilih--</option> -->
+       
+        
     </select>
 </div>
 </div>
 </div>
+
 </div>
 
 
@@ -542,8 +538,8 @@ display: none;
 <div class="form-group">
     <label class="control-label col-sm-4">Account Prepayment</label>
     <div class="col-sm-8">
-        <select   name="AccountPrepayment" class="form-control"  id="id_AccountPrepayment" required>
-            <option value="">--Pilih--</option>
+        <select   name="AccountPrepayment" class="form-control"  id="id_AccountPrepayment" required disabled>
+       
             <option value="1209098">1209098</option>
 
         </select>
@@ -853,8 +849,8 @@ $("#btnAdd").click(function () {
     $("#id_city").val("");
     $("#id_CountryName").val("");
     $("#id_ID_Branch").select2("val","");
-    $("#id_AccountLiability").val("");
-    $("#id_AccountPrepayment").val("");
+    // $("#id_AccountLiability").val("");
+    // $("#id_AccountPrepayment").val("");
     $("#id_Terms").val("");
     $("#id_Currency").val("");
     $("#id_NoRekening").val("");
@@ -1142,19 +1138,19 @@ $('#formVendorList').submit(function(e){
             backdrop: true
         });
     }else{
-     $.ajax({
-       url: "<?php echo base_url("/master/master_vendorlist/ajax_UpdateImage"); ?>?sBranch="+idata,
-       type:"POST",
-       data:new FormData(this),
-       dataType: "JSON",
-       processData:false,
-       contentType:false,
-       cache:false,
-             // async:false,
-             success: function(e){
-
-                // alert(e);
-
+        var myform = $('#formVendorList');
+        var disabled = myform.find(':input:disabled').removeAttr('disabled');
+        $.ajax({
+           url: "<?php echo base_url("/master/master_vendorlist/ajax_UpdateImage"); ?>?sBranch="+idata,
+           type:"POST",
+           data:new FormData(this),
+           dataType: "JSON",
+           processData:false,
+           contentType:false,
+           cache:false,
+           // async:false,
+           success: function(e){
+            // alert(e);
                 if (e.msgType == true) {
                     bootbox.alert({
                         message: e.msg,
@@ -1171,8 +1167,9 @@ $('#formVendorList').submit(function(e){
                     alert(e.msgTitle);
                 } 
             }
-        });  
- }
+        });
+        disabled.attr('disabled', 'disabled'); 
+ }  
 
 
 
@@ -1316,6 +1313,47 @@ $("#id_NomorRekening3").val(idata[30]);
     $(".status").hide();
 
 });
+
+
+// jQuery(document).ready(function () {
+//     dataTable = $('#table_gridCategory').DataTable({
+//             "order": [[ 0, "asc" ],[6, "desc" ]],
+//             "columnDefs": [
+//             {"targets": [-1], "searchable": false, "orderable": false},
+//             {"targets": [1], "visible": false, "searchable": false, "orderable": false},
+//             {"targets": [4], "searchable": false, "orderable": false},
+//             ],
+//             "lengthMenu": [
+//             [5, 10, 15, 20, 100000],
+//                     [5, 10, 15, 20, "All"] // change per page values here
+//                     ],
+//     //                // set the initial value
+//     "pageLength": 5,
+//     "processing": true,
+//     "serverSide": true,
+//     "ajax": {
+//                     url: "<?php echo base_url("/master/master_vendorlist/get_server_side"); ?>", // json datasource
+//                     type: "post", // method  , by default get
+//                     data: function (z) {
+//                         z.sStatus = iStatus;
+//                         z.sSearch = iSearch;
+//                     },
+
+//                     error: function () {  // error handling
+//                         $(".table_gridCategory-error").html("");
+//                         // $("#lookup").append('<tbody class="employee-grid-error"><tr><th colspan="3">No data found in the server</th></tr></tbody>');
+//                         $('#table_gridCategory tbody').html('<tbody class="employee-grid-error"><tr><th colspan="4">No data found in the server</th></tr></tbody>');
+//                         $("#table_gridCategory_processing").css("display", "none");
+
+//                     }
+//                 }
+//             });
+
+
+// });
+
+
+
 jQuery(document).ready(function () {
     dataTable = $('#table_gridCategory').DataTable({
         "order": [[ 0, "asc" ],[22, "desc" ]],
@@ -1325,7 +1363,7 @@ jQuery(document).ready(function () {
         {"targets": [4], "searchable": false, "orderable": false},
         ],
         "lengthMenu": [
-        [5, 10, 15, 20, -1],
+        [5, 10, 15, 20, 100000],
             [5, 10, 15, 20, "All"] // change per page values here
             ],
 //                // set the initial value
@@ -1349,6 +1387,7 @@ jQuery(document).ready(function () {
             }
         }
     });
+    
     // dataTable.on('click', 'tbody tr', function () {
     //             $("#navitab_2_2").trigger('click');
     //             var IClassID = $(this).find("td").eq(0).html();

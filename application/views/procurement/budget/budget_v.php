@@ -19,7 +19,7 @@
         ?>
     </select>
 </div>-->
-<div class="task-checkbox">
+<!--<div class="task-checkbox">
     <label class="mt-checkbox mt-checkbox-single mt-checkbox-outline">
         <input id="idcb" type="checkbox" class="checkboxes" >
         <span></span>
@@ -31,7 +31,7 @@
 </div>
 <br>
 <input type="text" id="qrtext">
-<button onclick="showQR()">QR</button>
+<button onclick="showQR()">QR</button>-->
 
 <div class="row">
     <div class="col-md-12">
@@ -108,7 +108,7 @@
                                 <div class="col-md-12">
                                     <br>
                                     <a class="btn btn-sm btn-primary" href="#" id="btnAdd" data-toggle="modal" data-target="#myadd">Upload Budget</a>
-                                    <a class="btn btn-sm btn-success" href="<?php echo base_url("/procurement/budget/downloadTemplate"); ?>">Download Template Budget</a>
+                                    <a id="id_template" class="btn btn-sm btn-success" href="<?php echo base_url("/procurement/budget/downloadTemplate"); ?>">Download Template Budget</a>
                                     <!-- <button class="btn btn-sm btn-default">Add Item Category</button> -->
                                 </div>
                                 <div class="col-md-12" >

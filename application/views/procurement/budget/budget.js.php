@@ -1,32 +1,8 @@
 <script>
-function showQR() {
-    var iid='8,9';
-        window.open("<?php echo base_url("/procurement/budget/print_qr/"); ?>?sId="+iid, "_blank");              
-    
-//$.ajax({
-//    url: "<?php echo base_url("/procurement/budget/print_qr"); ?>",
-//    type: "POST",
-//    async: false,
-//    success: function() {
-//        window.open('/procurement/budget/print_qr', '_blank');              
-//    }
-//});
-//    
-//    //alert(e);
-//    $("#qr_code").empty();    
-//    var qrcode = new QRCode("qr_code");
-//    qrcode.makeCode($('#qrtext').val());
-//    $("#qr_desc").text($('#qrtext').val());
-//    
-////    document.getElementById("idcb").checked = true;
-//    console.log(document.getElementById("idcb").checked);
-}
 
-    
-    
     var dataTable;
     var iStatus = '%';
-    var iSearch = 'BudgetCOA';
+    var iSearch = 'BranchName';
     var iBranch = '';
     var iJnsBudget = '';
     var iTahun = new Date().getFullYear();
@@ -43,6 +19,7 @@ function showQR() {
 
     function ddFTBrabch(e) {
         iBranch = e;
+		$("#id_template").attr("href", "<?php echo base_url("/procurement/budget/downloadTemplate"); ?>/"+e);
     }
     function ddFTJnsBudget(e) {
         iJnsBudget = e;
@@ -73,7 +50,6 @@ function showQR() {
                 <div class="col-md-3 text-right">Search Param</div>\n\
                 <div class="col-md-3">\n\
                     <select id="cat_itemclass" name="cat_itemclass" onchange="search(this.value)" class="form-control">\n\
-                        <option value="BudgetCOA">Coa</option>\n\
                         <option value="BranchName">Branch Name</option>\n\
                         <option value="DivisionName">Division Name</option>\n\
                     </select>\n\

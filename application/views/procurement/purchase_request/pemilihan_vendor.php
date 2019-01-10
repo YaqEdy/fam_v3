@@ -27,7 +27,7 @@
             </div>
             <div class="portlet-body">
                 <div class="tab-content">
-                    <h5 class="sbold uppercase"><?= $approve_pr->status_request ?></h5>
+                   <!--  <h5 class="sbold uppercase"><?= $approve_pr->status_request ?></h5> -->
                     <div class="panel panel-inverse">
                         <hr class="dotted">
                         <!--tambahkan enctype="multipart/form-data" u/ upload-->
@@ -163,6 +163,18 @@
                             <hr class="dotted">
 
                             <div class="validator-form form-horizontal" style="margin-top:2em">
+							
+							<?php if ($path_doc != ''){ ?>
+									<div class="form-group">
+                                        <label class="control-label col-sm-3"></label>
+                                        <div class="col-md-7">
+                                            <div class="">
+                                                <a href="<?=$path_doc?>" class="btn btn-success"><i class="fa fa-download"></i> Download Dokumen Vendor</a>
+                                            </div>
+										</div>
+                                    </div>
+								<?php } ?>
+								
                                 <div class="form-group">
                                     <label class="control-label col-sm-3">Dokumen Vendor </label>
                                     <div class="col-md-7">
@@ -203,14 +215,16 @@
                                         <!--
                                         <button type="submit" class="btn btn-primary" id="appreq" name="appreq" value="Submit" >Submit</button>       
                                         -->
-                                        <a class="btn btn-primary" onclick="submit_app()">Submit</a>       
-                                        <a class="btn btn-danger" onclick="go_to_list()">Back</a>       
+                                        <button class="btn btn-primary" onclick="submit_app()" id="idsubmit" disabled>Submit</button>        
+                                      <!--   <a class="btn btn-primary" onclick="upload_file()" hidden >Upload</a>       
+                                        <a class="btn btn-danger" onclick="go_to_list()" hidden>Back</a>      -->  
                                     </div>
                                 </div>
                             </div>
                         </form>
                     </div>
-
+					
+					<!-- <div id="show1">aaa</div> -->
 
 
                     <div tabindex="-1" id="mdl_Add" class="modal fade draggable-modal" role="dialog" aria-hidden="true">
@@ -271,18 +285,42 @@
         });
     });
 
+    function submitbtn(){
+        var rows = document.getElementById('table_gridVendorProcess').getElementsByTagName("tr").length - 1;
+        var nilai = 0;
+        for (b = 1; b <= rows; b++) {
+            var status = $('#pemenang_'+ b).val();
+            if (status == '1'){
+                nilai = nilai + 1;
+            }
+        }
+        if (nilai > 0){
+            $('#idsubmit').prop("disabled", false);
+        } else {
+            $('#idsubmit').prop("disabled", true);
+        }
+    }
+
     function go_to_list() {
         $(location).attr("href", "<?php echo base_url("/procurement/purchase_request/list_pemilihan_vendor") ?>");
     }
 	
-	// function submit_app(){
-		// fetch('<?= base_url("/procurement/purchase_request/app_requestproc_vendor_item"); ?>', {
-			// method: 'POST',
-			// body: formData
-		// }).then(response => {
-			// console.log(response);
-		// });
-	// }
+	function upload_file(){
+		jQuery.ajax({
+			type: 'POST',
+			url:"<?= base_url("/procurement/purchase_request/vendor_doc"); ?>",
+			data: new FormData($("#fm_apppr")[0]),
+			processData: false, 
+			contentType: false, 
+			success: function(returnval) {
+                bootbox.alert(returnval);
+					// $("#show1").html(returnval);
+					// $('#show1').show();
+					// alert(returnval);
+					 go_to_list();
+				}
+		});
+	}
 	
     function submit_app() {
         var action = document.getElementById('action').value;
@@ -291,50 +329,20 @@
         var status = document.getElementById('status').value;
         var notes = document.getElementById('notes').value;
         var JenisPengadaan = document.getElementById('JenisPengadaan').value;
-        // var VendorPemenang = document.getElementById('VendorPemenang').value;
-        // var HargaVendor = document.getElementById('HargaVendor').value;
-        // var ppn = document.getElementById('ppn').value;
         var VendorID = VendorPemenang = HargaSetelahPenawaran = HargaSebelumPenawaran = VendorItemID = PPNVendor = '';
-        // var row_vendor = document.getElementById('row_vendor').value;
-        // var row_vendor = document.querySelector('#row_vendor');
-        // var row_vendor = document.getElementsByName("row_vendor").value;
         var row_vendor_array = $("input[name='row_vendor[]']").map(function(){return $(this).val();}).get();
 		for (b = 0; b < row_vendor_array.length; b++) { 
 			row_vendor = row_vendor_array[b];
 		}
 
         for (i = 1; i <= row_vendor; i++) {
-            VendorID = VendorID + document.getElementById('VendorID_' + i).value + ',';
-            VendorPemenang = VendorPemenang + document.getElementById('pemenang_' + i).value + ',';
-            HargaSebelumPenawaran = HargaSebelumPenawaran + document.getElementById('pricevendorawal_' + i).value + ',';
-            HargaSetelahPenawaran = HargaSetelahPenawaran + document.getElementById('pricevendor_' + i).value + ',';
-            VendorItemID = VendorItemID + document.getElementById('itemvendor_' + i).value + ',';
-            PPNVendor = PPNVendor + document.getElementById('ppnvendor_' + i).value + ',';
+            VendorID = VendorID + document.getElementById('VendorID_' + i).value + ';';
+            VendorPemenang = VendorPemenang + document.getElementById('pemenang_' + i).value + ';';
+            HargaSebelumPenawaran = HargaSebelumPenawaran + document.getElementById('pricevendorawal_' + i).value + ';';
+            HargaSetelahPenawaran = HargaSetelahPenawaran + document.getElementById('pricevendor_' + i).value + ';';
+            VendorItemID = VendorItemID + document.getElementById('itemvendor_' + i).value + ';';
+            PPNVendor = PPNVendor + document.getElementById('ppnvendor_' + i).value + ';';
         }
-        // console.log(row_vendor);
-		
-		// var fileInput = document.querySelector("#DokumenVendor");
-		// var DokumenVendor = fileInput.files;
-        // console.log(DokumenVendor);
-		
-		// var dv = document.querySelector('[type=file]').files;
-        // console.log(dv[0]);
-		// var fdv = new FormData();
-	
-		// for (let i = 0; i < files.length; i++) {
-			// let file = files[i];
-	
-			// fdv.append("files", dv[0]);
-			// fdv.append("username", "Groucho");
-			// fdv.append("accountnum", 123456);
-		// }
-        // console.log(fdv);
-		// fetch('<?= base_url("/procurement/purchase_request/app_requestproc_vendor_item_doc"); ?>', {
-			// method: 'POST',
-			// body: formDataDokumenVendor
-		// }).then(response => {
-			// console.log(response);
-		// });
 
         $.post('<?= base_url("/procurement/purchase_request/app_requestproc_vendor_item"); ?>', {
             action: action,
@@ -350,12 +358,12 @@
             VendorItemID: VendorItemID,
             PPNVendor: PPNVendor,
             row_vendor: row_vendor
-
         },
         function (data) {
+			upload_file();
             alert(data);
             go_to_list();
-        })
+        });
     }
 
     function VendorList() {
@@ -457,6 +465,7 @@
                 {"targets": [6], "orderable": false}
             ],
             initComplete: function () {
+				readyToStart();
                 $(".select2").select2({
                     placeholder: "Please Select",
                     width: 'resolve'
@@ -468,6 +477,7 @@
 
 
     }
+	
 
     function deleteItem(e) {
         var arrItemDel = [];

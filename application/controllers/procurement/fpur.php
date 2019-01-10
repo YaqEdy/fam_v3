@@ -20,6 +20,7 @@ class Fpur extends CI_Controller {
             $this->load->model('procurement/fpur_mdl');
             $this->load->model('api/api_m');
             $this->load->model('datatables_custom');
+            $this->load->model('datatables');
         }
     }
 
@@ -62,7 +63,7 @@ class Fpur extends CI_Controller {
         }
         // print_r($iwhere); die();
         $iorder = array('RequestID' => 'asc');
-        $list = $this->datatables_custom->get_datatables('VW_PR_FPUR_FPUM', $icolumn, $iorder, $iwhere, $ilike);
+        $list = $this->datatables->get_datatables('VW_PR_FPUR', $icolumn, $iorder, $iwhere, $ilike);
 
         $data = array();
         $no = $_POST['start'];
@@ -72,16 +73,14 @@ class Fpur extends CI_Controller {
             $row = array();
 
             $row[] = $idatatables->RequestID;
-            $row[] = $idatatables->Tgl_Req;
+            $row[] = date('d-m-Y', strtotime($idatatables->Tgl_Req) ); 
             $row[] = $idatatables->ReqTypeName;
-            $row[] = $idatatables->HargaHPS;
+            $row[] = 'Rp.'.number_format(($idatatables->HargaHPS),2);
+            $row[] = 'Rp.'.number_format(($idatatables->HargaHPS),2);
             $row[] = $idatatables->Kelengkapan;
-            $row[] = $idatatables->Jns_pengadaan;
-            $row[] = $idatatables->Tipe_pembayaran;
-            $row[] = ' 
-
-            <button value="'.$idatatables->RequestID.'" id="idAddSetting" onclick="add_fpur(this.value)" class="btn btn-primary" data-toggle="modal" data-target="#mdl_fpur">Add FPUR</button>
-            ';
+            // $row[] = $idatatables->Jns_pengadaan;
+            // $row[] = $idatatables->Tipe_pembayaran;
+            $row[] = '<button value="'.$idatatables->RequestID.'" id="idAddSetting" onclick="add_fpur(this.value)" class="btn btn-primary" data-toggle="modal" data-target="#mdl_fpur">Add FPUR</button>';
             // <a href="'.base_url().'procurement/fpur/detail_fpur/'.$idatatables->RequestID.'" class="btn btn-primary">VIEW</a>
 
             $data[] = $row;
@@ -89,8 +88,8 @@ class Fpur extends CI_Controller {
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->datatables_custom->count_all(),
-            "recordsFiltered" => $this->datatables_custom->count_filtered(),
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
             "data" => $data,
         );
         //output to json format
@@ -99,40 +98,118 @@ class Fpur extends CI_Controller {
 
 
     public function ajax_table_fpum() {
-      
-        $list = $this->datatables_custom->get_vm_fpur();
-        // print_r($list[0]); die();
+        $icolumn = array('ID_PR', 'Tgl_Req', 'ReqTypeName', 'HargaHPS', 'Kelengkapan', 'Jns_pengadaan', 'Tipe_pembayaran','TYPE_FPUR','NO_FPUR');
+        $ilike = array(
+            $this->input->post('sSearch') => $_POST['search']['value']
+        );
+
+        if (!empty($this->input->post('sMulai')) && !empty($this->input->post('sSampai'))) {
+            $iwhere = array(
+                'Tgl_Req <' => date("Y-m-d", strtotime($this->input->post('sMulai'))),
+                'Tgl_Req >' => date("Y-m-d", strtotime($this->input->post('sSampai')))
+            );
+        }else{
+            $iwhere = array();
+        }
+        // print_r($iwhere); die();
+        $iorder = array('ID_PR' => 'asc');
+        $list = $this->datatables->get_datatables('VW_PR_FPUM', $icolumn, $iorder, $iwhere, $ilike);
+
         $data = array();
         $no = $_POST['start'];
-        foreach ($list as $idatatables => $idatatable) {
+        foreach ($list as $idatatables) {
 
             $no++;
             $row = array();
 
-            $row[] = $idatatable->RequestID;
-            $row[] = $idatatable->Tgl_Req;
-            $row[] = $idatatable->ReqTypeName;
-            $row[] = $idatatable->HargaHPS;
-            $row[] = $idatatable->Kelengkapan;
-            $row[] = $idatatable->Jns_pengadaan;
-            $row[] = $idatatable->Tipe_pembayaran;
+            $row[] = $idatatables->ID_PR;
+            // $row[] = $idatatables->TYPE_FPUR;
+            $row[] = $idatatables->NO_FPUR;
+            $row[] = date('d-m-Y', strtotime($idatatables->Tgl_Req) ); 
+            $row[] = $idatatables->ReqTypeName;
+            $row[] = 'Rp.'.number_format(($idatatables->HargaHPS),2);
+            $row[] = 'Rp.'.number_format(($idatatables->HargaHPS),2);
+            $row[] = $idatatables->Kelengkapan;
+            // $row[] = $idatatables->Jns_pengadaan;
+            // $row[] = $idatatables->Tipe_pembayaran;
             $row[] = ' 
-            <button class="btn btn-primary" data-toggle="modal" data-target="#mdl_fpum">Add FPUM</button>
-            <a href="'.base_url().'procurement/fpur/detail_fpur/'.$idatatable->RequestID.'" class="btn btn-primary">VIEW</a>';
+
+            <button value="'.$idatatables->NO_FPUR.'" id="idAddSetting" onclick="add_fpum(this.value)" class="btn btn-primary" data-toggle="modal" data-target="#mdl_fpum">Add FPUM</button>
+            ';
+            // <a href="'.base_url().'procurement/fpur/detail_fpur/'.$idatatables->RequestID.'" class="btn btn-primary">VIEW</a>
 
             $data[] = $row;
         }
 
         $output = array(
             "draw" => $_POST['draw'],
-            // "recordsTotal" => $this->datatables_custom->count_all(),
-            // "recordsFiltered" => $this->datatables_custom->count_filtered(),
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
             "data" => $data,
         );
         //output to json format
         echo json_encode($output);
     }
+    
+    
+    public function ajax_table_fpur_fpum() {
+        $icolumn = array('RequestID', 'Tgl_Req', 'ReqTypeName', 'HargaHPS', 'Kelengkapan', 'Jns_pengadaan', 'Tipe_pembayaran','TYPE_FPUR','NO_FPURFPUM');
+        $ilike = array(
+            $this->input->post('sSearch') => $_POST['search']['value']
+        );
 
+        if (!empty($this->input->post('sMulai')) && !empty($this->input->post('sSampai'))) {
+            $iwhere = array(
+                'Tgl_Req <' => date("Y-m-d", strtotime($this->input->post('sMulai'))),
+                'Tgl_Req >' => date("Y-m-d", strtotime($this->input->post('sSampai')))
+            );
+        }else{
+            $iwhere = array();
+        }
+        // print_r($iwhere); die();
+        $iorder = array('RequestID' => 'asc');
+        $list = $this->datatables->get_datatables('VW_PR_FPUR_FPUM', $icolumn, $iorder, $iwhere, $ilike);
+
+        $data = array();
+        $no = $_POST['start'];
+        foreach ($list as $idatatables) {
+
+            $no++;
+            $row = array();
+
+            $row[] = $idatatables->RequestID;
+            // $row[] = $idatatables->TYPE_FPUR;
+            $row[] = $idatatables->NO_FPURFPUM;
+            $row[] = date('d-m-Y', strtotime($idatatables->Tgl_Req) ); 
+            $row[] = $idatatables->ReqTypeName;
+            $row[] = 'Rp.'.number_format(($idatatables->HargaHPS),2);
+            $row[] = $idatatables->Kelengkapan;
+            $row[] = $this->get_status_fpur($idatatables->NO_FPURFPUM);
+            $row[] = $idatatables->Tipe_pembayaran;
+          
+            // <a href="'.base_url().'procurement/fpur/detail_fpur/'.$idatatables->RequestID.'" class="btn btn-primary">VIEW</a>
+
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
+            "data" => $data,
+        );
+        //output to json format
+        echo json_encode($output);
+    }
+    
+    function get_status_fpur($NO){
+        $idata=$this->api_m->get_status_fpur($NO);
+        if($idata="VALIDATED"){$istatus="PROSES";}
+        if($idata="CANCELLED"){$istatus="REJECT";}
+        if($idata="FULLY APPLIED"){$istatus="DONE";}
+        return $istatus;
+    }
+    
     public function ajax_table_fpum_() {
         $icolumn = array('ID_PO', 'ID_PR', 'NAMA_BARANG', 'STATUS_CEK', 'status_ke', 'TGL_PR', 'BranchID', 'BRANCH_DESC');
         $ilike = array(
@@ -334,6 +411,7 @@ class Fpur extends CI_Controller {
     public function save_fpur(){
         
 //         die('in');
+        $name_file_up = $_FILES['doc_kelengkapan']['name'];
         $head['ID_PR'] = $this->input->post("id_pr");
         $head['TYPE_FPUR'] = $this->input->post("type_fpur");
         $head['NO_FPUR'] = $this->input->post("no_fpur");
@@ -342,10 +420,10 @@ class Fpur extends CI_Controller {
         $head['NO_REK'] = $this->input->post("no_rekening");
         $head['NAMA_BANK'] = $this->input->post("bank");
         $head['ALAMAT_BANK'] = $this->input->post("alamat_bank");
-        $head['DOC_FPUR_PATH'] = $this->input->post("doc_kelengkapan");
+        $head['DOC_FPUR_PATH'] =$name_file_up;
         // print_r($_POST); die();
 
-        $name_file_up = $_FILES['doc_kelengkapan']['name'];
+
         $ext_file_up = strtoupper(end((explode(".", $name_file_up))));
         // die($ext_file_up);
         if (empty($name_file_up)) {
@@ -362,7 +440,7 @@ class Fpur extends CI_Controller {
             $config['upload_path'] = "./uploads/fpur/";
             $config['allowed_types'] = '*';
             $config['max_size'] = '0';
-//                                die($config);
+                               // die($config);
             $this->load->library('upload', $config);
             if ($this->upload->do_upload("doc_kelengkapan")) {
                 // print_r('1'); die();
@@ -377,23 +455,82 @@ class Fpur extends CI_Controller {
                 $iremarks = $this->upload->display_errors();
             }
         }
-        $result = $this->fpur_mdl->save_fpur($head);
-        if ($result) {
-            $result = array('istatus' => true, 'type' => 'success', 'iremarks' => 'Transfer Success.!'); //, 'body'=>'Data Berhasil Disimpan');
-        } else {
-             $result = array('istatus' => false, 'type' => 'error', 'iremarks' => 'Transfer Gagal.!'); //, 'body'=>'Data Berhasil Disimpan');
-        }
 
-        redirect('procurement/fpur/',$result);
+
+
+
+
+
+
+
+        //old
+
+//         $name_file_up = $_FILES['doc_kelengkapan']['name'];
+//         $ext_file_up = strtoupper(end((explode(".", $name_file_up))));
+//         // print_r($_FILES); die();
+//         if (empty($name_file_up)) {
+//                                // print_r('tes'); die();
+//         // } else if ($ext_file_up !== 'ZIP' && $ext_file_up !== 'RAR') {
+//         //     print_r('Kosong'); die();
+//         //     $istatus = false;
+//         //     $iremarks = 'FAID! Eksistensi File tidak diizinkan !. Harus Zip atau Rar !';
+// //                    $this->session->set_flashdata('math', 'FAID! Eksistensi File tidak diizinkan !. Harus Zip atau Rar !');
+//             //echo "Eksistensi File tidak diizinkan !. Harus Zip atau Rar !";
+// //                    redirect('requestproc_tab');
+//         } else {
+//             // print_r('ada'); die();
+//             $config['upload_path'] = "./uploads/fpur/";
+//             $config['allowed_types'] = '*';
+//             $config['max_size'] = '0';
+// //                                die($config);
+//             $this->load->library('upload', $config);
+//             if ($this->upload->do_upload("doc_kelengkapan")) {
+//                 // print_r('1'); die();
+//                 $error = array('array' => $this->upload->display_errors());
+//                 $data = $this->upload->data();
+//                 $source = "./uploads/fpur/" . $data['file_name'];
+//                 chmod($source, 0777);
+//                 $paydata = $data['file_name'];
+//             } else {
+//                 // print_r('2'); die();
+//                 $istatus = false;
+//                 $iremarks = $this->upload->display_errors();
+//             }
+//         }
+        $result = $this->fpur_mdl->save_fpur($head);
+        // if ($result) {
+        //     $result = array('istatus' => true, 'type' => 'success', 'iremarks' => 'Transfer Success.!'); //, 'body'=>'Data Berhasil Disimpan');
+        // } else {
+        //      $result = array('istatus' => false, 'type' => 'error', 'iremarks' => 'Transfer Gagal.!'); //, 'body'=>'Data Berhasil Disimpan');
+        // }
+        if ($result) {
+            $notifikasi = Array(
+                'msgType' => 'success',
+                'msgTitle' => 'Success',
+                'msg' => 'Data Berhasil Disimpan'
+            );
+        } else {
+            $notifikasi = Array(
+                'msgType' => 'error',
+                'msgTitle' => 'Error',
+                'msg' => 'Data Gagal Disimpan'
+            );
+        }
+        $this->session->set_flashdata('notif', $notifikasi);
+            redirect('procurement/fpur/');
+
+       
         
     }
 
     public function get_fpur($idfpur){
-       $data = $this->global_m->tampil_data("SELECT * FROM TBL_T_FPUR where ID_FPUR='$idfpur'");
+        // die($idfpur);
+       $data = $this->global_m->tampil_data("SELECT * FROM TBL_T_FPUR where NO_FPUR='$idfpur'");
+       // print_r($data); die();
        foreach ($data as $value) {
-            $fpur='<input type="text" name="id_fpur" id="id_pr" value="'.$value->ID_FPUR.'" class="form-control hidden">
+            $fpur='<input type="text" name="id_fpur" id="id_pr" value="'.$value->ID_FPUR.'" class="form-control hidden" >
                     <div class="form-group">
-                        <label class="control-label col-sm-3">Type FPUR</label>
+                        <label class="control-label col-sm-3" >Type FPUR</label>
                         <div class="col-sm-7">
                             <input type="radio" name="type_fpur" value="1"> Reimbursement &nbsp;
                             <input type="radio" name="type_fpur" value="2" checked="checked"> UM-FPUR 
@@ -402,43 +539,43 @@ class Fpur extends CI_Controller {
                     <div class="form-group">
                         <label class="control-label col-sm-3">No. FPUR</label>
                         <div class="col-sm-7">
-                            <input type="text" name="no_fpur" value="'.$value->NO_FPUR.'" class="form-control">
+                            <input type="text" name="no_fpur" value="'.$value->NO_FPUR.'" class="form-control" readonly>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3">Jumlah</label>
-                        <div class="col-sm-7">
-                            <input type="text" name="jml" value="'.$value->JML.'" class="form-control">
+                        <label class="control-label col-sm-3">Jumlah (Rp.)</label>
+                        <div class="col-sm-7"> 
+                            <input type="text" name="jml" value="'.number_format(($value->JML), 2).'" class="form-control" readonly>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="control-label col-sm-3">Nama Rekening</label>
                         <div class="col-sm-7">
-                            <input type="text" name="nm_rekening" value="'.$value->NAMA_REK.'" class="form-control">
+                            <input type="text" name="nm_rekening" value="'.$value->NAMA_REK.'" class="form-control" readonly/>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="control-label col-sm-3">No. Rekening</label>
                         <div class="col-sm-7">
-                            <input type="text" name="no_rekening" value="'.$value->NO_REK.'" class="form-control">
+                            <input type="text" name="no_rekening" value="'.$value->NO_REK.'" class="form-control" readonly>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="control-label col-sm-3">Bank</label>
                         <div class="col-sm-7">
-                            <input type="text" name="bank" value="'.$value->NAMA_BANK.'" class="form-control">
+                            <input type="text" name="bank" value="'.$value->NAMA_BANK.'" class="form-control" readonly>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="control-label col-sm-3">Alamat bank</label>
                         <div class="col-sm-7">
-                            <textarea name="alamat_bank" class="form-control">'.$value->ALAMAT_BANK.'</textarea>
+                            <textarea name="alamat_bank" class="form-control" readonly>'.$value->ALAMAT_BANK.'</textarea>
                         </div>
                     </div>
                     
                     <div class="form-group">
                         <label class="control-label col-sm-3">Document Kelengkapan</label>
-                         <label class="control-label col-sm-5">'.$value->DOC_FPUR_PATH.'</label>
+                         <label class="control-label col-sm-5" readonly>'.$value->DOC_FPUR_PATH.'</label>
                         <div class="col-sm-2">
                             <button type="submit" class="btn btn-success"><i class="fa fa-eye style="font-size:3px""></i></button>
                         </div>
@@ -449,13 +586,14 @@ class Fpur extends CI_Controller {
                     <div class="form-group">
                         <label class="control-label col-sm-3">No. FPUM</label>
                         <div class="col-sm-7">
-                            <label class="control-label">'.$value->NO_FPUR.'</label>
+                            <!-- <label class="control-label">'.$value->NO_FPUR.'</label> -->
+                            <input type="text" name="no_fpum" class="form-control">
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="control-label col-sm-3">Jumlah Petanggungan</label>
                         <div class="col-sm-7">
-                            <label class="control-label">'.$value->JML.'</label>
+                            <label class="control-label">Rp. '.number_format(($value->JML), 2).'</label>
                         </div>
                     </div>
                     <div class="form-group">
@@ -493,7 +631,7 @@ class Fpur extends CI_Controller {
         // die('in');
         $name_file_up = $_FILES['doc_kel_fpum']['name'];
         $head['ID_FPUR'] = $this->input->post("id_fpur");
-        $head['NO_FPUM'] = $this->input->post("no_fpur");
+        $head['NO_FPUM'] = $this->input->post("no_fpum");
         $head['KET_JML'] = $this->input->post("ket");
         $head['JUMLAH'] = $this->input->post("jml_l_k");
         $head['DOC_FPUM_PATH'] =$name_file_up;
@@ -534,12 +672,20 @@ class Fpur extends CI_Controller {
         }
         $result = $this->fpur_mdl->save_fpum($head);
         if ($result) {
-            $result = array('istatus' => true, 'type' => 'success', 'iremarks' => 'Transfer Success.!'); //, 'body'=>'Data Berhasil Disimpan');
+            $notifikasi = Array(
+                'msgType' => 'success',
+                'msgTitle' => 'Success',
+                'msg' => 'Data Berhasil Disimpan'
+            );
         } else {
-             $result = array('istatus' => false, 'type' => 'error', 'iremarks' => 'Transfer Gagal.!'); //, 'body'=>'Data Berhasil Disimpan');
+            $notifikasi = Array(
+                'msgType' => 'error',
+                'msgTitle' => 'Error',
+                'msg' => 'Data Gagal Disimpan'
+            );
         }
 
-        redirect('procurement/fpur/',$result);
+        redirect('procurement/fpur/');
         
     }
 

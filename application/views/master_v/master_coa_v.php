@@ -164,11 +164,18 @@
                     <i class="icon-settings font-red"></i>
                     <span class="caption-subject font-red sbold uppercase"><?php echo $menu_header; ?></span>
                 </div>
-                <div class="tools">
+               <!--  <div class="tools">
                     <a href="javascript:;" class="collapse">
                     </a>
                     <a href="javascript:;" class="fullscreen">
                     </a>
+                </div> -->
+                 <div class="tools">
+                     <button class="btn green-meadow" onclick="sys_coa()">Button Sync API <i class="fa fa-refresh green"></i></button>
+                    <!-- <a href="javascript:;" class="collapse"> -->
+                    <!-- </a> -->
+                    <!-- <a href="javascript:;" class="fullscreen"> -->
+                    <!-- </a> -->
                 </div>
             </div>
             <div class="portlet-body">
@@ -740,7 +747,7 @@
                          foreach ($dd_zonasi as $k) :
                             $data[$k->ZoneID] = $k->ZoneName;
                             endforeach;
-                            echo form_dropdown('ZoneName', $data, '', 'id="id_zonasi" name="id_zonasi" class="form-control" required');
+                            echo form_dropdown('ZoneName', $data, '', 'id="id_zonasi" name="id_zonasi" class="form-control " required');
                         ?>
                             <!-- <input type="text" class="form-control" id="id_zonasi" nama="id_zonasi"> -->
                         </div>
@@ -1531,6 +1538,21 @@
 
 
     // }
+
+function sys_coa(){
+
+ $.ajax({
+        type: "POST",
+        url: "<?php echo site_url('master/master_coa/getfamdatabranch'); ?>",
+        // data: form.serialize(), // <--- THIS IS THE CHANGE
+        dataType: "JSON",
+        success: function(data){
+             $('#table_gridCategory').DataTable().ajax.reload();
+        },
+        error: function() { alert("Sinkronisasi Berhasil."); }
+   });
+
+}
 
 
 </script>

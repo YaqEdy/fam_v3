@@ -33,7 +33,7 @@ class pr extends CI_Controller {
 //        print_r($this->session->userdata('usergroup'));
 //        die();
 //        die($this->session->userdata('DivisionID'));
-        $menuId = $this->home_m->get_menu_id('procurement/po/home');
+        $menuId = $this->home_m->get_menu_id('procurement/pr/home');
         $data['menu_id'] = $menuId[0]->menu_id;
         $data['menu_parent'] = $menuId[0]->parent;
         $data['menu_nama'] = $menuId[0]->menu_nama;
@@ -110,15 +110,17 @@ class pr extends CI_Controller {
         $this->output->set_output(json_encode($data));
     }
 
-    public function savedata()
-    {
-        $data['TANGGAL'] = date("Y-m-d", strtotime($this->input->post('tgl')));
+    public function savedata(){
+        $a = explode('/', $this->input->post('tgl'));
+        $TANGGAL = $a[2]."-".$a[1]."-".$a[0];
+        // $data['TANGGAL'] = trim($this->input->post('tgl'));
+        $data['TANGGAL'] = $TANGGAL;
         $data['DIVISI'] = $this->input->post('divisi');
         $data['NAMA_BARANG'] = $this->input->post('nama');
         $data['JUMLAH'] = $this->input->post('jml');
         $data['SPESIFIKASI'] = $this->input->post('spek');
         $data['STATUS'] = 'PENGAJUAN';
-print_r($data);die();
+// print_r($data);die();
         $po_id = $this->master_pr_m->save_tiket($data);
 
         redirect('procurement/pr/home');

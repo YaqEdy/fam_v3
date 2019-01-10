@@ -226,7 +226,7 @@ Class Hps_mdl extends CI_Model {
 
     function getAllItem() {
         $this->db2 = $this->load->database('config1', true);
-        $division = $this->db2->query("SELECT B.ItemID, B.ItemName, A.StartDate, A.EndDate, A.Price
+        $division = $this->db2->query("SELECT distinct B.ItemID, B.ItemName, A.StartDate, A.EndDate, A.Price
                         FROM       
                         Mst_HPS AS A RIGHT OUTER JOIN
                         Mst_ItemList AS B ON B.ItemID = A.ItemID INNER JOIN

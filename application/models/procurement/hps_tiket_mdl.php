@@ -64,6 +64,12 @@ Class hps_tiket_mdl extends CI_Model {
         $division->close();
     }
 
+    public function getItemTypeID($kab) {
+        $sql = "SELECT ItemTypeID, concat(ItemTypeName,' - ',UmurFiskal) as ItemTypeName FROM Mst_ItemType where IClassID = '$kab' and Is_trash = 0";
+        $query = $this->db->query($sql);
+        return $query->result();
+    }
+
      function tiketband($wheres = '', $limit = '', $offset = '') {
 
         $this->db->select('SQL_CALC_FOUND_ROWS null as rows, id_tiket_hps, tanggal, divisi,nama_barang, jumlah, spesifikasi, status', false);

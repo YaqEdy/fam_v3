@@ -28,10 +28,10 @@
                         <a href="#tab_2_1" data-toggle="tab" id="navitab_2_1" class="anavitab">
                             Upload IAS </a>
                     </li>
-                    <li class="linav" id="linav2">
+<!--                    <li class="linav" id="linav2">
                         <a href="#tab_2_2" data-toggle="tab" id="navitab_2_2" class="anavitab">
                             Payment </a>
-                    </li>
+                    </li>-->
 
                 </ul> 
                 <div class="tab-content">
@@ -78,7 +78,8 @@
                                                 <th rowspan="2" valign="bottom">JML TERMIN</th>
                                                 <th rowspan="2" valign="bottom">ACT TERMIN</th>
                                                 <th colspan="3">PEMBAYARAN</th>
-                                                <th rowspan="2" valign="bottom">Aksi</th>
+                                                <th rowspan="2" valign="bottom">INTEGRASI ORACLE</th>
+                                                <th rowspan="2" valign="bottom">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Aksi</th>
                                             </tr>
                                             <tr>
                                                 <th>PROCESS</th>
@@ -145,13 +146,18 @@
             </div>
             <div class="modal-body" >
                 <form action="#" id="formsn" class="form-horizontal">
-                    <table class="table table-bordered" id="table_sn">
+                    <table class="table table-bordered" id="table_his">
                         <thead>
-                            <th>ID PO</th>
-                            <th>ID TB</th>
-                            <th>ITEM ID</th>
-                            <th>QTY</th>
-                            <th>Serial Number</th>
+                            <th>ID PR</th>
+                            <th>ID PO DETAIL</th>
+                            <th>TERMIN</th>
+                            <th>VendorName</th>
+                            <th>DPP</th>
+                            <th>PPN</th>
+                            <th>PPH</th>
+                            <th>DENDA</th>
+                            <th>NILAI DIBAYARKAN</th>
+                            <th>ACT.</th>
                         </thead>
                         <tbody>
                             

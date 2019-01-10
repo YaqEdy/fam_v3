@@ -90,13 +90,22 @@ class master_flow extends CI_Controller {
 
         $id_flow_id = trim($this->input->post('id_flow_id'));
         $id_nama_flow = trim($this->input->post('id_nama_flow'));
-        $id_status_dari = trim($this->input->post('id'));
+        $id_status_dari = trim($this->input->post('id_status_dari'));
         $id_aksi = trim($this->input->post('id_aksi'));
-        $id_status_ke = trim($this->input->post('id'));
+        $id_status_ke = trim($this->input->post('id_status_ke'));
         $id_tipe = trim($this->input->post('ID_TYPE'));
-        $id_min_hps = trim($this->input->post('id_min_hps'));
-        $id_max_hps = trim($this->input->post('id_max_hps'));
 
+        $min_hps = trim($this->input->post('id_min_hps'));
+        $id_min_hps = str_replace(',', '', $min_hps);
+        
+        $max_hps = trim($this->input->post('id_max_hps'));
+        $id_max_hps = str_replace(',', '', $max_hps);
+      
+
+        // $id_max_hps = trim($this->input->post('id_max_hps'));
+
+
+      
 
       // print_r($grup_status);die();
         
@@ -120,8 +129,10 @@ class master_flow extends CI_Controller {
                 'action' => $id_aksi,
                 'status_ke' => $id_status_ke,
                 'tipe' => $id_tipe,
-                'min_hps' => $id_min_hps,
-                'max_hps' => $id_max_hps,
+
+                'min_hps' =>  $id_min_hps,
+                'max_hps' =>  $id_max_hps,
+
         );
             
      
@@ -192,6 +203,7 @@ class master_flow extends CI_Controller {
         $data = array();
         $no = $_POST['start'];
         foreach ($list as $idatatables) {
+            $id = $idatatables->id;
             $flow_id = $idatatables->flow_id;
             $nama_flow = $idatatables->nama_flow;
             $status_dari = $idatatables->status_dari;
@@ -200,20 +212,21 @@ class master_flow extends CI_Controller {
             $tipe = $idatatables->tipe;
             $min_hps = $idatatables->min_hps;
             $max_hps = $idatatables->max_hps;
-            $kmp = $flow_id."#".$nama_flow."#".$status_dari."#".$action."#".$status_ke."#".$tipe."#".$min_hps."#".$max_hps;
+            $kmp = $id."#".$flow_id."#".$nama_flow."#".$status_dari."#".$action."#".$status_ke."#".$tipe."#".$min_hps."#".$max_hps;
 
          
             $no++;
             $row = array();
             $row[] = $no;
+            // $row[] = $idatatables->id;
             $row[] = $idatatables->flow_id;
             $row[] = $idatatables->nama_flow;
             $row[] = $idatatables->status_dari;
             $row[] = $idatatables->action;
             $row[] = $idatatables->status_ke;
             $row[] = $idatatables->tipe;
-            $row[] = $idatatables->min_hps;
-            $row[] = $idatatables->max_hps;
+            $row[] = 'Rp.'.number_format(($idatatables->min_hps),2);
+            $row[] = 'Rp.'.number_format(($idatatables->max_hps),2);
             
             $row[] = '<button title="Ubah" value="'.$kmp.'" onclick="show_flow_(this.value)" type="button" class="btn btn-warning btn-xs" id="updateflow">Update</button>
            
@@ -425,18 +438,26 @@ class master_flow extends CI_Controller {
         // die('aa');
         // print_r($_POST);die();
        // print_r(trim($this->input->post('user_id'))) ; die();
+        $id_data = trim($this->input->post('id_data',TRUE));
         $id_flow_id = trim($this->input->post('id_flow_id',TRUE));
         $id_nama_flow = trim($this->input->post('id_nama_flow',TRUE));
-        $id_status_dari = trim($this->input->post('id',TRUE));
+        $id_status_dari = trim($this->input->post('id_status_dari',TRUE));
         $id_aksi = trim($this->input->post('id_aksi',TRUE));
-        $id_status_ke = trim($this->input->post('id',TRUE));
+        $id_status_ke = trim($this->input->post('id_status_ke',TRUE));
         $id_tipe= trim($this->input->post('ID_TYPE',TRUE));
-        $id_min_hps = trim($this->input->post('id_min_hps',TRUE));
-        $id_max_hps = trim($this->input->post('id_max_hps',TRUE));
+        // $id_min_hps = trim($this->input->post('id_min_hps',TRUE));
+        // $id_max_hps = trim($this->input->post('id_max_hps',TRUE));
+
+        $min_hps = trim($this->input->post('id_min_hps'));
+        $id_min_hps = str_replace(',', '', $min_hps);
+        
+        $max_hps = trim($this->input->post('id_max_hps'));
+        $id_max_hps = str_replace(',', '', $max_hps);
         
 
 
         $datax = array(
+            // 'id' => $id_data,
             'flow_id' => $id_flow_id,
             'nama_flow' => $id_nama_flow,
             'status_dari' => $id_status_dari,
@@ -450,9 +471,9 @@ class master_flow extends CI_Controller {
             );
          // print_r($datax); die();
            $table = "MS_FLOW";
-           $id_kolom = "flow_id";
-           $id_data = $id_flow_id;
-          $model = $this->global_m->ubah($table,$datax, $id_kolom,$id_data);
+           $id_kolom = "id";
+           $id_dataaa = $id_data;
+          $model = $this->global_m->ubah($table,$datax, $id_kolom,$id_dataaa);
           // redirect('atk/atk/home');
            if ($model) {
             $array = array(

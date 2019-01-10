@@ -19,6 +19,7 @@ class ias extends CI_Controller {
             $this->load->model('procurement/cek_barang_mdl');
             $this->load->model('api/api_m');
             $this->load->model('datatables_custom');
+            $this->load->model('datatables');
         }
     }
 
@@ -40,7 +41,7 @@ class ias extends CI_Controller {
     }
 
     function home() {
-        $menuId = $this->home_m->get_menu_id('procurement/budget/home');
+        $menuId = $this->home_m->get_menu_id('procurement/ias/home');
         $data['menu_id'] = $menuId[0]->menu_id;
         $data['menu_parent'] = $menuId[0]->parent;
         $data['menu_nama'] = $menuId[0]->menu_nama;
@@ -80,7 +81,7 @@ class ias extends CI_Controller {
         }
         $data['doc'] = $doc_val;
 
-        $menuId = $this->home_m->get_menu_id('procurement/budget/home');
+        $menuId = $this->home_m->get_menu_id('procurement/ias/home');
         $data['menu_id'] = $menuId[0]->menu_id;
         $data['menu_parent'] = $menuId[0]->parent;
         $data['menu_nama'] = $menuId[0]->menu_nama;
@@ -100,6 +101,7 @@ class ias extends CI_Controller {
         $data['detail'] = $this->cek_barang_mdl->get_detail($id_detail);
         $data['barang'] = $this->cek_barang_mdl->get_one_barang($id_detail);
         $data['ias'] = $this->ias_mdl->get_ias($data['detail']->ID_PO);
+//        print_r($data['ias']);die();
         $all_termin = $this->ias_mdl->get_all_termin($id_detail);
         // var_dump($data['quant']->quant.' '.$data['dpp']->TTL_QTY);exit();
         if ((count($all_termin) - 1) == count($get_ias)) {
@@ -142,12 +144,12 @@ class ias extends CI_Controller {
 //        $head['NO_PA'] = $this->input->post('id_pa');
         $head['TERMIN'] = $this->global_m->tampil_data("SELECT COUNT(ID_PO_DETAIL)+1 TERMIN FROM TBL_T_IAS WHERE ID_PO_DETAIL=".$id_po_detail)[0]->TERMIN;
         $head['ID_PO_DETAIL'] = $id_po_detail;
-        $head['DPP'] = $this->input->post('dpp');
-        $head['PPN'] = $this->input->post('ppn');
+        $head['DPP'] = str_replace(',', '',$this->input->post('dpp'));
+        $head['PPN'] = str_replace(',', '',$this->input->post('ppn'));
         $head['PERSEN_PPN'] = $this->input->post('presentase');
-        $head['PPH'] = $this->input->post('pph');
-        $head['DENDA'] = $this->input->post('denda');
-        $head['NILAI_DIBAYARKAN'] = $this->input->post('dibayarkan');
+        $head['PPH'] = str_replace(',', '',$this->input->post('pph'));
+        $head['DENDA'] = str_replace(',', '',$this->input->post('denda'));
+        $head['NILAI_DIBAYARKAN'] = str_replace(',', '',$this->input->post('dibayarkan'));
         $head['CREATE_BY'] = $this->session->userdata('user_id');
         $head['CREATE_DATE'] = date('Y-m-d H:i:s');
 //        $head['NILAI_VENDOR'] = $this->input->post('akhir');
@@ -194,8 +196,9 @@ class ias extends CI_Controller {
 //
 //            $this->ias_mdl->save_penilaian($nilai);
 //        }
-        if($insert_ias){
-            $this->insert_ias_orc($this->input->post('id_po'), $id_ias, $this->input->post('id_po_detail'));            
+        $integrasi = $this->global_m->tampil_data("SELECT INTEGRASI_ORACLE FROM VW_IAS_GRID WHERE ID_PO_DETAIL=".$id_po_detail)[0]->INTEGRASI_ORACLE;
+        if($insert_ias && $integrasi==1){
+            $this->insert_ias_orc($this->input->post('id_po'), $id_ias, $this->input->post('id_po_detail'));
         }
         $this->session->set_flashdata('success', 'Data Berhasil Disimpan');
         redirect('procurement/ias/home');
@@ -206,7 +209,7 @@ class ias extends CI_Controller {
     }
 
     public function ajax_GridBudgetCapex() {
-        $icolumn = array( 'ID_PR', 'TGL_PR','ID_PO', 'ID_PO_DETAIL');
+        $icolumn = array( 'ID_PR', 'TGL_PR','ID_PO', 'ID_PO_DETAIL','INTEGRASI_ORACLE','NILAI','ACT_TERMIN');
 //        $icolumn = array('BudgetID');
         $ilike = array(
             $this->input->post('sSearch') => $_POST['search']['value']
@@ -237,11 +240,74 @@ class ias extends CI_Controller {
             $row[] = $idatatables->ID_PR;
             $row[] = $idatatables->ID_PO_DETAIL;
             $row[] = $termin->jml;
-            $row[] = '';
+            $row[] = $idatatables->ACT_TERMIN;
             $row[] = $this->get_status_ias($idatatables->ID_PO_DETAIL, 'VALIDATED');
             $row[] = $this->get_status_ias($idatatables->ID_PO_DETAIL, 'FULLY APPLIED');
             $row[] = $this->get_status_ias($idatatables->ID_PO_DETAIL, 'CANCELLED');
-            $row[] = '<a href="' . base_url() . 'procurement/ias/ias_form/' . $idatatables->ID_PO_DETAIL . '" class="btn btn-primary">Upload</a><a href="javascript:void(0)" title="Edit" onclick="edit_sn(' . $idatatables->ID_PO . ', ' . $idatatables->ID_PO . ')" class="btn btn-primary">History</a>';
+
+            if($idatatables->INTEGRASI_ORACLE == '0' && $idatatables->ACT_TERMIN==0){
+                $row[] = "<select class='form-control' onchange='update(this.value, ". $idatatables->ID_PO_DETAIL.",". $idatatables->ID_PO.")'>
+                <option value='0' selected>TIDAK</option>
+                <option value='1'>YA</option></select>";
+            } else if($idatatables->INTEGRASI_ORACLE == '1' && $idatatables->ACT_TERMIN==0){
+                $row[] = "<select class='form-control' onchange='update(this.value, ". $idatatables->ID_PO_DETAIL.",". $idatatables->ID_PO.")'>
+                <option value='0'>TIDAK</option>
+                <option value='1' selected>YA</option></select>";
+            }else if( $idatatables->ACT_TERMIN>0){
+				if($idatatables->INTEGRASI_ORACLE==1){
+					 $row[] = "<select class='form-control' onchange='update(this.value, ". $idatatables->ID_PO_DETAIL.",". $idatatables->ID_PO.")' disabled>
+					<option value='0'>TIDAK</option>
+					<option value='1' selected>YA</option></select>";
+				}else{
+					 $row[] = "<select class='form-control' onchange='update(this.value, ". $idatatables->ID_PO_DETAIL.",". $idatatables->ID_PO.")' disabled>
+					<option value='0' selected>TIDAK</option>
+					<option value='1'>YA</option></select>";
+				}
+				
+			}
+
+            if($idatatables->NILAI >= $termin->jml){
+                $row[] = '<a href="#" class="btn btn-primary" disabled>Upload</a> <a href="javascript:void(0)" title="Edit" onclick="History(' . $idatatables->ID_PO_DETAIL . ')" class="btn btn-primary">History</a>'.'
+                <a <div class="col-md-15">
+                            <div class="form-group">
+                            <div class="col-sm-20">
+                            <select  onchange="generate_rpt(this.value);"
+                            name="rpt" class="form-control" 
+                            id="id_rpt">
+                            <option value="">--Pilih--</option>
+
+                            <option value="'. base_url() . 'procurement/ias/report_fam/'.$idatatables->ID_PR.'">PR</option>
+                            <option value="'. base_url() . 'procurement/ias/cetak_pa/'.$idatatables->ID_PR.'">PA</option>
+                            <option value="'. base_url() . 'procurement/ias/cetak_po/'.$idatatables->ID_PO_DETAIL.'">PO</option>
+                            <option value="'. base_url() . 'procurement/ias/ctk_slip/'.$idatatables->ID_PO_DETAIL.'">Routing Slip</option>  
+                        </select>
+                    </div>
+                </div>
+            </div>
+            </a>';
+                // .'<a href="' . base_url() . 'procurement/ias/ctk_slip/'.$idatatables->ID_PO_DETAIL.'" class="btn btn-primary" target="_blank">Cetak Slip</a>'
+                ;
+            } else {
+                $row[] = '<a href="' . base_url() . 'procurement/ias/ias_form/' . $idatatables->ID_PO_DETAIL . '" class="btn btn-primary">Upload</a>'
+                . '<a href="javascript:void(0)" title="Edit" onclick="History(' . $idatatables->ID_PO_DETAIL . ')" class="btn btn-primary">History</a>'.'
+                <a <div class="col-md-15">
+                            <div class="form-group">
+                            <div class="col-sm-20">
+                            <select  onchange="generate_rpt(this.value);"
+                            name="rpt" class="form-control" 
+                            id="id_rpt">
+                            <option value="">--Pilih--</option>
+
+                            <option value="'. base_url() . 'procurement/ias/report_fam/'.$idatatables->ID_PR.'">PR</option>
+                            <option value="'. base_url() . 'procurement/ias/cetak_pa/'.$idatatables->ID_PR.'">PA</option>
+                            <option value="'. base_url() . 'procurement/ias/cetak_po/'.$idatatables->ID_PO_DETAIL.'">PO</option>
+                            <option value="'. base_url() . 'procurement/ias/ctk_slip/'.$idatatables->ID_PO_DETAIL.'">Routing Slip</option>  
+                        </select>
+                    </div>
+                </div>
+            </div>
+            </a>';;
+            }
 
             $data[] = $row;
         }
@@ -256,181 +322,283 @@ class ias extends CI_Controller {
         echo json_encode($output);
     }
 
-    function get_status_ias($ID_PO_DETAIL, $STATUS) {
+
+      public function report_fam($idAssets) {
+
+        // $idAssets = $this->input->get('');
+        // print_r($idAssets); die();
+        $data['qr_code'] = $this->global_m->tampil_data("SELECT * FROM VW_G_PR WHERE RequestID = " . $idAssets . "");    
+        // print_r($data); 
+        // exit();x
+        $this->load->view('procurement/generate_rpt/laporan_inv_v',$data);
+    }
+
+    public function cetak_pa($idAssets) {
+         // die('asd');
+
+    // $data['cetak_pa1'] = $this->ias_mdl->get_cetak_pa($id);
+    $data['cetak_pa1'] = $this->global_m->tampil_data("SELECT * FROM VW_G_PA WHERE RequestID = " . $idAssets . "");  
+    // echo "<pre>";
+    // print_r($data); die(); 
+    // echo $this->db->last_query(); die('');
+    $this->load->view('procurement/generate_rpt_pa_v/cetak_rpt_pa_v',$data);
+    }
+
+
+    public function ctk_slip($idAssets) {
+
+         $data['cetak_slip'] = $this->global_m->tampil_data("SELECT * FROM VW_G_ROUTING_SLIP WHERE ID_PO_DETAIL = " . $idAssets . "ORDER BY [order]");  
+        // print_r($data);die();
+         // echo $this->db->last_query(); die('');
+        $this->load->view('procurement/routing_slip/ctk_slip',$data);
+    }
+
+      public function cetak_po($idAssets) {
+
+         $data['cetak_po_1'] = $this->global_m->tampil_data("SELECT * FROM VW_IAS_TO_ORC_DETAIL WHERE ID_PO_DETAIL = " . $idAssets . "");  
+        // echo $this->db->last_query(); die('');
+        $this->load->view('procurement/po/cetak_po',$data);
+    }
+
+    public function ajax_Updateias() {
+        $id_po_detail = $this->input->post('iID_PO_DETAIL');
+        $status = $this->input->post('status');
+        $id_po = $this->input->post('iID_PO');
+        $this->ias_mdl->updatedatadetailpo($id_po_detail,$status,$id_po);
+    $result = array('istatus' => true, 'iremarks' => 'Success! Detail PO: ' . $id_po_detail . ' Success Update data'); //, 'body'=>'Data Berhasil Disimpan');
+    echo json_encode($result);
+}
+
+function get_status_ias($ID_PO_DETAIL, $STATUS) {
 //    $STATUS='VALIDATED';
 //    $ID_PO_DETAIL = 'PO1823';
 //        print_r($this->api_m->get_status_ias($ID_PO_DETAIL,$STATUS));die();
-        return $this->api_m->get_status_ias($ID_PO_DETAIL, $STATUS);
+    return $this->api_m->get_status_ias($ID_PO_DETAIL, $STATUS);
+}
+
+public function get_sn($id_tb, $id_po) {
+    $data = $this->cek_barang_mdl->get_sn($id_tb, $id_po);
+
+    echo json_encode($data);
+}
+
+public function ajax_GridHistory() {
+    $icolumn = array( 'ID_PR','ID_IAS', 'ID_PO_DETAIL', 'TERMIN', 'VendorName', 'DPP', 'PPN', 'PPH', 'DENDA', 'NILAI_DIBAYARKAN');
+    $iwhere = array(
+        'ID_PO_DETAIL' => $this->input->post('sID_PO_DETAIL')
+    );
+    $iorder = array('ID_PR' => 'asc');
+    $list = $this->datatables->get_datatables('VW_IAS_HISTORY', $icolumn, $iorder, $iwhere);
+
+    $data = array();
+    $no = $_POST['start'];
+    foreach ($list as $idatatables) {
+
+        $no++;
+        $row = array();
+//            $row[] = $no;
+
+        $row[] = $idatatables->ID_PR;
+        $row[] = $idatatables->ID_PO_DETAIL;
+        $row[] = $idatatables->TERMIN;
+        $row[] = $idatatables->VendorName;
+        $row[] = 'Rp.'.number_format(($idatatables->DPP),2);
+        $row[] = 'Rp.'.number_format(($idatatables->PPN),2);
+        $row[] = 'Rp.'.number_format(($idatatables->PPH),2);
+        $row[] = 'Rp.'.number_format(($idatatables->DENDA),2);
+        $row[] = 'Rp.'.number_format(($idatatables->NILAI_DIBAYARKAN),2);$idatatables->NILAI_DIBAYARKAN;
+        $row[] = '<a href="' . base_url() . 'procurement/ias/cetak_ias/'.$idatatables->ID_IAS.'" class="btn btn-primary" target="_blank">Cetak</a>';
+//            $row[] = $idatatables->DOC_PATH;
+
+        $data[] = $row;
     }
 
-    public function get_sn($id_tb, $id_po) {
-        $data = $this->cek_barang_mdl->get_sn($id_tb, $id_po);
+    $output = array(
+        "draw" => $_POST['draw'],
+        "recordsTotal" => $this->datatables->count_all(),
+        "recordsFiltered" => $this->datatables->count_filtered(),
+        "data" => $data,
+    );
+        //output to json format
+    echo json_encode($output);
+}
 
-        echo json_encode($data);
+public function cetak_ias($id) {
+    // die($id);
+    $data['tes'] = $this->ias_mdl->get_cetak_ias($id);
+     // print_r($data); die();
+    // echo $this->db->last_query(); die('');
+    $this->load->view('procurement/ias/cetak_ias',$data);
+}
+
+
+
+
+
+
+
+public function get_var() {
+    $ops = $this->ias_mdl->get_var();
+    $ret_val = "<option disabled selected>Pilih Variable</option>";
+    foreach ($ops as $op) {
+        $ret_val .= "<option value='" . $op->BOBOT . '-' . $op->ID_VNILAI . "'>" . $op->VARIABEL . "</option>";
     }
 
-    public function get_var() {
-        $ops = $this->ias_mdl->get_var();
-        $ret_val = "<option disabled selected>Pilih Variable</option>";
-        foreach ($ops as $op) {
-            $ret_val .= "<option value='" . $op->BOBOT . '-' . $op->ID_VNILAI . "'>" . $op->VARIABEL . "</option>";
-        }
+    echo $ret_val;
+}
 
-        echo $ret_val;
-    }
+public function readExcel() {
+    $config['upload_path'] = "./uploads/";
+    $config['allowed_types'] = 'xlsx|xls';
+    $config['max_size'] = '25000';
+    $config['file_name'] = 'BUDGET-' . date('YmdHis');
 
-    public function readExcel() {
-        $config['upload_path'] = "./uploads/";
-        $config['allowed_types'] = 'xlsx|xls';
-        $config['max_size'] = '25000';
-        $config['file_name'] = 'BUDGET-' . date('YmdHis');
-
-        $this->load->library('upload', $config);
+    $this->load->library('upload', $config);
 
 
-        if ($this->upload->do_upload("namafile")) {
-            $data = $this->upload->data();
-            $file = './uploads/' . $data['file_name'];
+    if ($this->upload->do_upload("namafile")) {
+        $data = $this->upload->data();
+        $file = './uploads/' . $data['file_name'];
 
             //load the excel library
-            $this->load->library('excel/phpexcel');
+        $this->load->library('excel/phpexcel');
             //read file from path
-            $objPHPExcel = PHPExcel_IOFactory::load($file);
+        $objPHPExcel = PHPExcel_IOFactory::load($file);
             //get only the Cell Collection
-            $cell_collection = $objPHPExcel->getActiveSheet()->getCellCollection();
+        $cell_collection = $objPHPExcel->getActiveSheet()->getCellCollection();
             //extract to a PHP readable array format
-            foreach ($cell_collection as $cell) {
-                $column = $objPHPExcel->getActiveSheet()->getCell($cell)->getColumn();
-                $row = $objPHPExcel->getActiveSheet()->getCell($cell)->getRow();
-                $data_value = $objPHPExcel->getActiveSheet()->getCell($cell)->getValue();
+        foreach ($cell_collection as $cell) {
+            $column = $objPHPExcel->getActiveSheet()->getCell($cell)->getColumn();
+            $row = $objPHPExcel->getActiveSheet()->getCell($cell)->getRow();
+            $data_value = $objPHPExcel->getActiveSheet()->getCell($cell)->getValue();
                 //header will/should be in row 1 only. of course this can be modified to suit your need.
-                if ($row == 1) {
-                    $header[$row][$column] = $data_value;
-                } else {
-                    $arr_data[$row][$column] = $data_value;
-                }
+            if ($row == 1) {
+                $header[$row][$column] = $data_value;
+            } else {
+                $arr_data[$row][$column] = $data_value;
             }
+        }
             // BudgetCOA, Year, BranchID, BisUnitID, DivisionID, BudgetValue, CreateDate, CreateBy, BudgetOwnID, BudgetUsed, Status, Is_trash
-            $data = '';
-            $flag = 1;
-            $date = date('Y-m-d');
-            $by = $this->session->userdata('user_id');
+        $data = '';
+        $flag = 1;
+        $date = date('Y-m-d');
+        $by = $this->session->userdata('user_id');
 
-            foreach ($arr_data as $key => $value) {
-                if (!empty($value["F"]) && $value["F"] != "-" && $value["F"] != "" && !empty($value["A"])) {
-                    $this->ias_mdl->simpan($value["A"], $value["B"], $value["D"], $value["E"], $value["F"]);
-                }
+        foreach ($arr_data as $key => $value) {
+            if (!empty($value["F"]) && $value["F"] != "-" && $value["F"] != "" && !empty($value["A"])) {
+                $this->ias_mdl->simpan($value["A"], $value["B"], $value["D"], $value["E"], $value["F"]);
             }
+        }
 
             // $this->ias_mdl->simpanData($data);	
-        } else {
-            $this->session->set_flashdata('msg', $this->upload->display_errors());
-        }
-        echo json_encode(TRUE);
+    } else {
+        $this->session->set_flashdata('msg', $this->upload->display_errors());
     }
+    echo json_encode(TRUE);
+}
 
-    public function downloadWord() {
-        $this->load->helper('download');
+public function downloadWord() {
+    $this->load->helper('download');
 
-        $this->load->library('excel/phpexcel');
+    $this->load->library('excel/phpexcel');
 
         //membuat objek
-        $objPHPExcel = new PHPExcel();
+    $objPHPExcel = new PHPExcel();
         //activate worksheet number 1
-        $objPHPExcel->setActiveSheetIndex(0);
+    $objPHPExcel->setActiveSheetIndex(0);
         //name the worksheet
-        $objPHPExcel->getActiveSheet()->setTitle('budget worksheet');
+    $objPHPExcel->getActiveSheet()->setTitle('budget worksheet');
 
         // $users = (array)$users[0];
         //set cell A1 content with some text
-        $objPHPExcel->getActiveSheet()->setCellValue('A1', 'COA');
-        $objPHPExcel->getActiveSheet()->setCellValue('B1', 'YEAR');
-        $objPHPExcel->getActiveSheet()->setCellValue('C1', 'Branch - (Divisi)');
-        $objPHPExcel->getActiveSheet()->setCellValue('D1', 'BranchID');
-        $objPHPExcel->getActiveSheet()->setCellValue('E1', 'DivisionID');
-        $objPHPExcel->getActiveSheet()->setCellValue('F1', 'BudgetValue');
+    $objPHPExcel->getActiveSheet()->setCellValue('A1', 'COA');
+    $objPHPExcel->getActiveSheet()->setCellValue('B1', 'YEAR');
+    $objPHPExcel->getActiveSheet()->setCellValue('C1', 'Branch - (Divisi)');
+    $objPHPExcel->getActiveSheet()->setCellValue('D1', 'BranchID');
+    $objPHPExcel->getActiveSheet()->setCellValue('E1', 'DivisionID');
+    $objPHPExcel->getActiveSheet()->setCellValue('F1', 'BudgetValue');
 
-        $objPHPExcel->getActiveSheet()->setCellValue('I1', 'LENGKAPI DATA HANYA DI BAGIAN COA, YEAR DAN BUDGET VALUE');
-        $objPHPExcel->getActiveSheet()->setCellValue('I2', 'DILARANG MENGUBAH DATA SELAIN KOLOM YANG DISEBUTKAN DIATAS');
+    $objPHPExcel->getActiveSheet()->setCellValue('I1', 'LENGKAPI DATA HANYA DI BAGIAN COA, YEAR DAN BUDGET VALUE');
+    $objPHPExcel->getActiveSheet()->setCellValue('I2', 'DILARANG MENGUBAH DATA SELAIN KOLOM YANG DISEBUTKAN DIATAS');
 
         //make the font become bold
-        $objPHPExcel->getActiveSheet()->getStyle('A1')->getFont()->setBold(true);
-        $objPHPExcel->getActiveSheet()->getStyle('B1')->getFont()->setBold(true);
-        $objPHPExcel->getActiveSheet()->getStyle('C1')->getFont()->setBold(true);
-        $objPHPExcel->getActiveSheet()->getStyle('D1')->getFont()->setBold(true);
-        $objPHPExcel->getActiveSheet()->getStyle('E1')->getFont()->setBold(true);
-        $objPHPExcel->getActiveSheet()->getStyle('F1')->getFont()->setBold(true);
-        $data = $this->ias_mdl->allBranch();
-        $counter = 2;
-        foreach ($data as $key) {
+    $objPHPExcel->getActiveSheet()->getStyle('A1')->getFont()->setBold(true);
+    $objPHPExcel->getActiveSheet()->getStyle('B1')->getFont()->setBold(true);
+    $objPHPExcel->getActiveSheet()->getStyle('C1')->getFont()->setBold(true);
+    $objPHPExcel->getActiveSheet()->getStyle('D1')->getFont()->setBold(true);
+    $objPHPExcel->getActiveSheet()->getStyle('E1')->getFont()->setBold(true);
+    $objPHPExcel->getActiveSheet()->getStyle('F1')->getFont()->setBold(true);
+    $data = $this->ias_mdl->allBranch();
+    $counter = 2;
+    foreach ($data as $key) {
 
-            $objPHPExcel->getActiveSheet()->setCellValue('A' . $counter, " " . $key->coa);
-            $objPHPExcel->getActiveSheet()->setCellValue('B' . $counter, date("Y"));
-            $objPHPExcel->getActiveSheet()->setCellValue('C' . $counter, ((int) $key->BranchCode == 00000) ? $key->BranchName . "-" . $key->DivisionName : $key->BranchName);
-            $objPHPExcel->getActiveSheet()->setCellValue('D' . $counter, $key->BranchID);
-            $objPHPExcel->getActiveSheet()->setCellValue('E' . $counter, ((int) $key->BranchCode == 00000) ? $key->DivisionID : " ");
-            $objPHPExcel->getActiveSheet()->setCellValue('F' . $counter, "");
-            $objPHPExcel->getActiveSheet()->getStyle('A1:A' . $counter)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
-            $counter++;
-        }
+        $objPHPExcel->getActiveSheet()->setCellValue('A' . $counter, " " . $key->coa);
+        $objPHPExcel->getActiveSheet()->setCellValue('B' . $counter, date("Y"));
+        $objPHPExcel->getActiveSheet()->setCellValue('C' . $counter, ((int) $key->BranchCode == 00000) ? $key->BranchName . "-" . $key->DivisionName : $key->BranchName);
+        $objPHPExcel->getActiveSheet()->setCellValue('D' . $counter, $key->BranchID);
+        $objPHPExcel->getActiveSheet()->setCellValue('E' . $counter, ((int) $key->BranchCode == 00000) ? $key->DivisionID : " ");
+        $objPHPExcel->getActiveSheet()->setCellValue('F' . $counter, "");
+        $objPHPExcel->getActiveSheet()->getStyle('A1:A' . $counter)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+        $counter++;
+    }
 
-        ob_end_clean();
+    ob_end_clean();
         //Header
-        $filename = "budget.xlsx";
-        header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-        header("Content-type: application/vnd.ms-excel");
-        header('Content-Disposition: attachment; filename="' . $filename . '"');
-        header("Pragma: no-cache");
-        header("Expires: 0");
+    $filename = "budget.xlsx";
+    header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+    header("Content-type: application/vnd.ms-excel");
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header("Pragma: no-cache");
+    header("Expires: 0");
 
         //Save ke .xlsx, kalau ingin .xls, ubah 'Excel2007' menjadi 'Excel5'
-        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+    $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         //Download
-        $objWriter->save("php://output");
+    $objWriter->save("php://output");
+}
+
+public function ddBranchTF() {
+    $iAsal = $this->input->post('sDivAsal');
+    $ddBranchTujuan = $this->global_m->tampil_data("SELECT DivisionID, DivisionName FROM Mst_Division where Is_trash=0 and DivisionID!=$iAsal");
+    $options = "<select id='dd_tf_tujuan' name='tf_tujuan' class='form-control input-sm select2me'>";
+    $options .= "<option value=''>-- Select --</option>";
+    foreach ($ddBranchTujuan as $k) {
+        $options .= "<option  value='" . $k->DivisionID . "'>" . $k->DivisionName . "</option>";
     }
+    $options .= "</select>";
 
-    public function ddBranchTF() {
-        $iAsal = $this->input->post('sDivAsal');
-        $ddBranchTujuan = $this->global_m->tampil_data("SELECT DivisionID, DivisionName FROM Mst_Division where Is_trash=0 and DivisionID!=$iAsal");
-        $options = "<select id='dd_tf_tujuan' name='tf_tujuan' class='form-control input-sm select2me'>";
-        $options .= "<option value=''>-- Select --</option>";
-        foreach ($ddBranchTujuan as $k) {
-            $options .= "<option  value='" . $k->DivisionID . "'>" . $k->DivisionName . "</option>";
-        }
-        $options .= "</select>";
+    echo json_encode($options);
+}
 
-        echo json_encode($options);
+public function ddBranch() {
+    $ddBranch = $this->ias_mdl->getBranch();
+    $options = "<select id='dd_id_branch' class='form-control' onchange='dd_Divisi(this.id)'>";
+    $options .= "<option value=''>-- Select --</option>";
+    foreach ($ddBranch as $k) {
+        $options .= "<option  value='" . $k->BranchID . "'>" . $k->BranchName . "</option>";
     }
+    $options .= "</select>";
 
-    public function ddBranch() {
-        $ddBranch = $this->ias_mdl->getBranch();
-        $options = "<select id='dd_id_branch' class='form-control' onchange='dd_Divisi(this.id)'>";
-        $options .= "<option value=''>-- Select --</option>";
-        foreach ($ddBranch as $k) {
-            $options .= "<option  value='" . $k->BranchID . "'>" . $k->BranchName . "</option>";
-        }
-        $options .= "</select>";
+    echo json_encode($options);
+}
 
-        echo json_encode($options);
-    }
-
-    public function ddDivisi() {
-        $BranchID = $this->input->post('sBranchID');
-        $ddDivisi = $this->ias_mdl->getdivisi($BranchID);
-        $options = "<select id='dd_id_divisi' class='form-control'>";
+public function ddDivisi() {
+    $BranchID = $this->input->post('sBranchID');
+    $ddDivisi = $this->ias_mdl->getdivisi($BranchID);
+    $options = "<select id='dd_id_divisi' class='form-control'>";
 //        $options .= "<option value=''>-- Pilih Project --</option>";
-        foreach ($ddDivisi as $k) {
-            $options .= "<option  value='" . $k->DivisionID . "'>" . $k->DivisionName . "</option>";
-        }
-        $options .= "</select>";
-
-        echo json_encode($options);
+    foreach ($ddDivisi as $k) {
+        $options .= "<option  value='" . $k->DivisionID . "'>" . $k->DivisionName . "</option>";
     }
+    $options .= "</select>";
 
-    public function ajax_Update() {
-        $budgetid = $this->input->post('BudgetID');
-        $COA = $this->input->post('BudgetCOA');
-        $this->ias_mdl->updatedata($budgetid);
+    echo json_encode($options);
+}
+
+public function ajax_Update() {
+    $budgetid = $this->input->post('BudgetID');
+    $COA = $this->input->post('BudgetCOA');
+    $this->ias_mdl->updatedata($budgetid);
 
         $result = array('istatus' => true, 'iremarks' => 'Success! budget COA: ' . $COA . ' Success Update data'); //, 'body'=>'Data Berhasil Disimpan');
 

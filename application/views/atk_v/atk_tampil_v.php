@@ -42,7 +42,9 @@
                     <div class="tab-pane fade active in" id="tab_2_1">
                         <!--<div class="scroller" style="height:400px; ">-->
                         <div class="row">
-                            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+
+                <!-- DI HIDE SEMENTARA  -->
+                     <!--        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
                                 <a class="dashboard-stat dashboard-stat-v2 blue" href="#">
                                     <div class="visual">
                                         <i class="fa fa-comments"></i>
@@ -79,7 +81,7 @@
                                         <div class="desc"> PR Group-Done </div>
                                     </div>
                                 </a>
-                            </div>
+                            </div> -->
                             <div class="col-md-12">
                                 <?php if($this->session->flashdata('success')): ?>
                                     <div class="alert alert-success">
@@ -95,20 +97,7 @@
                             </div>
                         </div>
                         <br>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="row">
-                                <div class="form-group">
-                                    <div class="col-md-3">
-                                             <label>Mulai</label>
-                                                    <input class="form-control form-control-inline input-medium date-picker" size="16" type="text" value="" id="StartDate" name="StartDate" />
-                                                </div>
-                                             <label>Sampai</label>
-                                                    <input class="form-control form-control-inline input-medium date-picker" size="16" type="text" value="" id="enddate" name="enddate" />
-                                                </div>
-                                            </div> 
-                                        </div>
-                            </div>
+                        
 
                    <div class="row">
                       &nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-md btn-primary" name="" id="" data-toggle="modal" data-target="#myModal" >Pilih</button>
@@ -126,7 +115,7 @@
                                                 <th>Branch</th>
                                                 <!-- <th>Divisi</th> -->
                                                 <th>Status Akhir</th>
-                                                <th>Aksi</th>
+                                                <!-- <th>Aksi</th> -->
                                             </tr>
                                         </thead>
                                         <tbody>  
@@ -147,7 +136,7 @@
                     <div class="tab-pane fade" id="tab_2_2">
                         <!--<div class="scroller" style="height:400px; ">-->
                         <div class="row">
-                            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                           <!--  <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
                                 <a class="dashboard-stat dashboard-stat-v2 blue" href="#">
                                     <div class="visual">
                                         <i class="fa fa-comments"></i>
@@ -184,7 +173,7 @@
                                         <div class="desc"> Jumlah PR Belum Tergroup </div>
                                     </div>
                                 </a>
-                            </div>
+                            </div> -->
                             <div class="col-md-12">
                                 <?php if($this->session->flashdata('success')): ?>
                                     <div class="alert alert-success">
@@ -201,16 +190,7 @@
                         </div>
                         <br>
                         <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group col-md-2">
-                                    <label>Mulai</label>
-                                    <input type="text" required="" name="mulai" id="mulai" class="form-control input-sm date-picker" data-date-format="dd/mm/yyyy">
-                                </div>
-                                <div class="form-group col-md-2">
-                                    <label>Sampai</label>
-                                    <input type="text" required="" name="sampai" id="sampai" class="form-control input-sm date-picker" data-date-format="dd/mm/yyyy">
-                                </div>
-                         </div>
+                            <!--  -->
                             <div id="divBudget">
                                 <div class="col-md-12" >
                                     <br>

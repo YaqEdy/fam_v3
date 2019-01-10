@@ -48,20 +48,29 @@
                                     <a class="btn btn-sm btn-primary" href="#" id="btnAdd" data-toggle="modal" data-target="#mdl_Update">Add Item Type</a>
                                      <!-- <button class="btn btn-sm btn-default">Add Item Category</button> -->
                                  </div>
-                                 <div class="col-md-2">
+
+
+                                 <div class="col-md-4">
                                         <select id="statustype" name="statustype" onchange="status(this.value)" class="form-control">
                                             <option value="%">--All--</option>
                                             <option value="1">Active</option>
                                             <option value="0">Non-Active</option>
                                         </select>
                                     </div>
-                                 <div class="col-md-2">
+
+                                </br>
+                                    
+                                </br>
+                                    </br>                                
+
+
+                         <!--         <div class="col-md-2">
                                         <select id="cat_itemclass" name="cat_itemclass" onchange="search(this.value)" class="form-control">
                                             <option value="%">--All--</option>
                                             <option value="1">Item Type Code</option>
                                             <option value="2">Item Type Name</option>
                                         </select>
-                                    </div>
+                                    </div> -->
                                 <div class="col-md-12">
                                     <table class="table table-striped table-bordered table-hover text_kanan" id="table_gridType">
                                         <thead>
@@ -141,7 +150,7 @@
                 foreach ($ddCategory as $k) :
                     $data[$k->IClassID] = $k->IClassName;
                 endforeach;
-                echo form_dropdown('ddCategory', $data, '', 'id="txtCategory" class="form-control" required');
+                echo form_dropdown('ddCategory', $data, '', 'id="txtCategory" class="form-control " required');
                 ?>
                 <!-- <input type="text" class="form-control" id="txtCategory"> -->
             </div>
@@ -344,7 +353,7 @@
                   {"targets":[ 4 ],"searchable":false,"orderable": false},
               ],
             "lengthMenu": [
-                [5, 10, 15, 20, -1],
+                [5, 10, 15, 20, 100000],
                 [5, 10, 15, 20, "All"] // change per page values here
             ],
 //                // set the initial value

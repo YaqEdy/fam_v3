@@ -59,6 +59,102 @@ class master_vendorlist extends CI_Controller {
     }
 
 
+
+ // public function get_server_side() {    
+
+ //       $icolumn = array('Raw_ID', 'VendorID', 'VendorName', 'Performance', 'VendorAlias', 'AFILIASI','NPWP','AccountLiability','AccountPrepayment','Terms','Currency','NomorRekening','NamaBank','MasaBerlakuTDP','Image','AlamatNPWP','AlamatSupplier','VendorAddress','Status','NamaBank2','Image', 
+ //        'CreateDate','IdProvinsi','ID_Branch','ID_Country','ID_Branch','IdKabupaten','PKP','NamaRekening','NamaRekening2','NomorRekening2','NamaRekening3','NamaBank3','NomorRekening3','NamaProvinsi','NamaKabupaten','CountryName','BRANCH_DESC','City');
+ //        // $iwhere = array('STATUS' => 0);
+ //        $iorder = array('ID' => 'asc');
+ //        $list = $this->datatables_custom->get_datatables('VW_VENDOR', $icolumn, $iorder,array(),array());
+ //        $iStatus=$this->input->post('sStatus');
+ //        $iSearch=$this->input->post('sSearch');
+ //            // print_r($list);
+ //            // die();
+ //        $data = array();
+ //        $no = $_POST['start'];
+ //        foreach ($list as $idatatables) {
+
+ //            $no++;
+ //            $row = array();
+ //            $row[] = $no;
+
+
+
+ //            $row[] = $idatatables->Raw_ID;
+ //            $row[] = $idatatables->VendorID;
+ //            $row[] = $idatatables->VendorName;
+ //            $row[] = $idatatables->VendorAlias;
+ //            $row[] = $idatatables->AFILIASI;
+ //            $row[] = $idatatables->NPWP;
+ //            $row[] = $idatatables->NamaProvinsi;
+ //            $row[] = $idatatables->City;
+ //            $row[] = $idatatables->CountryName;
+ //            $row[] = $idatatables->ID_Branch;
+ //            $row[] = $idatatables->AccountLiability;
+ //            $row[] = $idatatables->AccountPrepayment;
+ //            $row[] = $idatatables->Terms;
+ //            $row[] = $idatatables->Currency;
+ //            $row[] = $idatatables->NomorRekening;
+
+ //            $row[] = $idatatables->NamaBank;
+ //            $row[] = $idatatables->MasaBerlakuTDP;
+         
+ //            $row[] = '<a href="' . base_url() . 'uploads/vendorlist/' . $idatatables->Image . '" >Download '.$idatatables->Image.'</a>';
+ //            $row[] = $idatatables->AlamatNPWP;
+ //            $row[] = $idatatables->AlamatSupplier;
+ //            $row[] = $idatatables->VendorAddress;
+ //            $row[] = $idatatables->Performance;
+
+ //            $row[] = $idatatables->PKP;
+ //            $row[] = $idatatables->NamaRekening;
+ //            $row[] = $idatatables->NamaRekening2;
+ //            $row[] = $idatatables->NamaBank2;
+   
+
+ //            $row[] = $idatatables->NomorRekening2;
+ //            $row[] = $idatatables->NamaRekening3;
+ //            $row[] = $idatatables->NamaBank3;
+ //            $row[] = $idatatables->NomorRekening3;
+
+
+    
+         
+
+ //            if($idatatables->Status==0)
+ //        {
+ //            $row[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate" data-toggle="modal" data-target="#mdl_Update">Update</a><a class="btn  btn-sm btn-danger" id="btnAktiv" href="#">Aktivate</a>';
+ //        }
+ //        else
+ //        {
+ //            $row[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_Update">Detail</a><a class="btn btn-sm btn-warning" href="#" id="btnUpdate" data-toggle="modal" data-target="#mdl_Update">Update<a class="btn btn-sm green-meadow" id="btnDeactivate" href="#">Deactivate</a>';
+ //        }
+
+ //            $row[] = $idatatables->IdProvinsi;
+ //            $row[] = $idatatables->ID_Branch;
+ //            $row[] = $idatatables->ID_Country;
+ //            $row[] = $idatatables->ID_Branch;
+      
+ //            $data[] = $row;
+
+
+ //        }
+
+ //        $output = array(
+ //            "draw" => $_POST['draw'],
+ //            "recordsTotal" => $this->datatables_custom->count_all(),
+ //            "recordsFiltered" => $this->datatables_custom->count_filtered(),
+ //            "data" => $data,
+
+            
+ //        );
+
+ //        //output to json format
+ //        echo json_encode($output);
+ //    }
+
+
+
     function get_server_side() {
         $requestData = $_REQUEST;
         //  echo "<pre>";
@@ -116,7 +212,7 @@ class master_vendorlist extends CI_Controller {
 
      );
 
-        $sql = "select a.Raw_ID, a.VendorID, a.VendorName, a.City, a.NamaRekening2, a.NamaBank2, a.NomorRekening2, a.NamaRekening3,  a.NamaBank3, a.NomorRekening3, a.ID_Country, a.ID_Branch, a.PKP, b.FLEX_VALUE, b.BRANCH_DESC, a.AFILIASI, a.NPWP, c.NamaProvinsi, 
+        $sql = "select a.Raw_ID, a.VendorID, a.VendorName, a.City, a.NamaRekening2, a.NamaBank2, a.NomorRekening2, a.NamaRekening3,  a.NamaBank3, a.NomorRekening3, a.ID_Country, a.ID_Branch, a.PKP, b.FLEX_VALUE, b.BRANCH_DESC, a.AFILIASI, a.NPWP, c.NamaProvinsi,
         d.NamaKabupaten, a.Terms, a.Currency, a.NomorRekening, a.NamaRekening, a.NamaBank, a.Image,
         a.Performance, a.VendorAlias, a.AlamatNPWP, a.AlamatSupplier,a.VendorAddress,a.IdProvinsi, a.IdKabupaten, 
         a.ID_Country,a.MasaBerlakuTDP, e.CountryName,  a.Status, a.AccountLiability, a.AccountPrepayment, a.CreateDate
@@ -128,28 +224,40 @@ class master_vendorlist extends CI_Controller {
         $totalData = $this->global_m->tampil_semua_array($sql)->num_rows(); 
         $totalFiltered = $totalData;
 
-        if (!empty($requestData['search']['value'])) { 
-            if ($iSearch=='1'){
-                $sql = "SELECT * from Mst_Vendor where Status like '%".$iStatus."%'and AFILIASI like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='2'){
-                $sql = "SELECT * from Mst_Vendor where Status like '%".$iStatus."%'and VendorID  like '%".$requestData['search']['value']."%'";
-            }else if ($iSearch=='3'){
-                $sql = "SELECT * from Mst_Vendor where Status like '%".$iStatus."%'and VendorName like '%".$requestData['search']['value']."%'";
-            }else{
-                $sql = "SELECT * from Mst_Vendor where Status like '%".$iStatus."%'"; 
-                $sql .= "and AFILIASI like '%".$requestData['search']['value']."%'"; 
-                $sql .= "or VendorID like '%".$requestData['search']['value']."%'";
-                $sql .= "or VendorName like '%".$requestData['search']['value']."%'";
-                $sql .= "or VendorAddress like '%".$requestData['search']['value']."%'";
-                $sql .= "or NoTlp like '%".$requestData['search']['value']."%'";
-                $sql .= "or Location like '%".$requestData['search']['value']."%'";
-                $sql .= "or NoRekening like '%".$requestData['search']['value']."%'";
-                $sql .= "or JoinDate like '%".$requestData['search']['value']."%'";
-                $sql .= "or CreateDate like '%".$requestData['search']['value']."%'";
-                $sql .= "or CreateBy like '%".$requestData['search']['value']."%'";
-                $sql .= "or Is_trash like '%".$requestData['search']['value']."%'";
-                $sql .= "or bank like '%".$requestData['search']['value']."%'";  
-
+        if (!empty($requestData['search']['value'])) {
+            if ($iSearch == '1') {
+                $sql = "select a.Raw_ID, a.VendorID, a.VendorName, a.City, a.NamaRekening2, a.NamaBank2, a.NomorRekening2, a.NamaRekening3,  a.NamaBank3, a.NomorRekening3, a.ID_Country, a.ID_Branch, a.PKP, b.FLEX_VALUE, b.BRANCH_DESC, a.AFILIASI, a.NPWP, c.NamaProvinsi,
+        d.NamaKabupaten, a.Terms, a.Currency, a.NomorRekening, a.NamaRekening, a.NamaBank, a.Image,
+        a.Performance, a.VendorAlias, a.AlamatNPWP, a.AlamatSupplier,a.VendorAddress,a.IdProvinsi, a.IdKabupaten, 
+        a.ID_Country,a.MasaBerlakuTDP, e.CountryName,  a.Status, a.AccountLiability, a.AccountPrepayment, a.CreateDate
+        from Mst_Vendor a 
+        left join TBL_M_BRANCH b on a.ID_Branch = b.FLEX_VALUE  
+        left join Mst_Provinsi c on a.IdProvinsi = c.IdProvinsi
+        left join Mst_Kabupaten d on a.IdKabupaten = d.IdKabupaten
+        left join TBL_CountryNew e on a.ID_Country = e.ID_Country where Status like '%" . $iStatus . "%'and VendorID like '%" . $requestData['search']['value'] . "%'";
+            } else if ($iSearch == '2') {
+                $sql = "select a.Raw_ID, a.VendorID, a.VendorName, a.City, a.NamaRekening2, a.NamaBank2, a.NomorRekening2, a.NamaRekening3,  a.NamaBank3, a.NomorRekening3, a.ID_Country, a.ID_Branch, a.PKP, b.FLEX_VALUE, b.BRANCH_DESC, a.AFILIASI, a.NPWP, c.NamaProvinsi,
+        d.NamaKabupaten, a.Terms, a.Currency, a.NomorRekening, a.NamaRekening, a.NamaBank, a.Image,
+        a.Performance, a.VendorAlias, a.AlamatNPWP, a.AlamatSupplier,a.VendorAddress,a.IdProvinsi, a.IdKabupaten, 
+        a.ID_Country,a.MasaBerlakuTDP, e.CountryName,  a.Status, a.AccountLiability, a.AccountPrepayment, a.CreateDate
+        from Mst_Vendor a 
+        left join TBL_M_BRANCH b on a.ID_Branch = b.FLEX_VALUE  
+        left join Mst_Provinsi c on a.IdProvinsi = c.IdProvinsi
+        left join Mst_Kabupaten d on a.IdKabupaten = d.IdKabupaten
+        left join TBL_CountryNew e on a.ID_Country = e.ID_Country where Status like '%" . $iStatus . "%'and VendorName like '%" . $requestData['search']['value'] . "%'";
+            } else {
+                $sql = "select a.Raw_ID, a.VendorID, a.VendorName, a.City, a.NamaRekening2, a.NamaBank2, a.NomorRekening2, a.NamaRekening3,  a.NamaBank3, a.NomorRekening3, a.ID_Country, a.ID_Branch, a.PKP, b.FLEX_VALUE, b.BRANCH_DESC, a.AFILIASI, a.NPWP, c.NamaProvinsi,
+        d.NamaKabupaten, a.Terms, a.Currency, a.NomorRekening, a.NamaRekening, a.NamaBank, a.Image,
+        a.Performance, a.VendorAlias, a.AlamatNPWP, a.AlamatSupplier,a.VendorAddress,a.IdProvinsi, a.IdKabupaten, 
+        a.ID_Country,a.MasaBerlakuTDP, e.CountryName,  a.Status, a.AccountLiability, a.AccountPrepayment, a.CreateDate
+        from Mst_Vendor a 
+        left join TBL_M_BRANCH b on a.ID_Branch = b.FLEX_VALUE  
+        left join Mst_Provinsi c on a.IdProvinsi = c.IdProvinsi
+        left join Mst_Kabupaten d on a.IdKabupaten = d.IdKabupaten
+        left join TBL_CountryNew e on a.ID_Country = e.ID_Country where Status like '%" . $iStatus . "%'";
+                $sql .= "and VendorID like '%" . $requestData['search']['value'] . "%'";
+                $sql .= "or VendorName like '%" . $requestData['search']['value'] . "%'";
+                $sql .= "or VendorAlias like '%" . $requestData['search']['value'] . "%'";
             }
 
             $sql.=" ORDER BY " . $columns[$requestData['order'][1]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET ". $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
@@ -168,8 +276,6 @@ class master_vendorlist extends CI_Controller {
      foreach ($row as $row) {
             # code...
             // preparing an array
-
-
 
         $nestedData = array();
         $nestedData[] = $no++;

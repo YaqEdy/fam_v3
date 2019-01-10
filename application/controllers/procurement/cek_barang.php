@@ -33,7 +33,7 @@ class cek_barang extends CI_Controller {
     }
 
     function home() {
-        $menuId = $this->home_m->get_menu_id('procurement/budget/home');
+        $menuId = $this->home_m->get_menu_id('procurement/cek_barang/home');
         $data['menu_id'] = $menuId[0]->menu_id;
         $data['menu_parent'] = $menuId[0]->parent;
         $data['menu_nama'] = $menuId[0]->menu_nama;
@@ -67,7 +67,7 @@ class cek_barang extends CI_Controller {
 
         $data['var'] = $ret_val;
 
-        $menuId = $this->home_m->get_menu_id('procurement/budget/home');
+        $menuId = $this->home_m->get_menu_id('procurement/cek_barang/home');
         $data['menu_id'] = $menuId[0]->menu_id;
         $data['menu_parent'] = $menuId[0]->parent;
         $data['menu_nama'] = $menuId[0]->menu_nama;
@@ -82,7 +82,8 @@ class cek_barang extends CI_Controller {
         // var_dump($data['barang']);exit();
         $barang = $this->cek_barang_mdl->get_barang($id);
 
-        // var_dump($data['ias']);exit();
+        $data['termin'] = $this->cek_barang_mdl->get_termin2($id);
+        $data['list_datatermin'] = $this->cek_barang_mdl->get_termin_row($id)->result();
 
         $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
         $data['menu_all'] = $this->user_m->get_menu_all(0);
@@ -127,7 +128,16 @@ class cek_barang extends CI_Controller {
             $pr = $this->cek_barang_mdl->getpr($this->input->post('id_pr'));
             $data['RequestID'] = $id_pr;
             $data['flow_id'] = $pr->flow_id;
-            $data['status'] = $pr->status;
+//            $data['status'] = $pr->status;
+            if( $this->session->userdata('usergroup')==17){
+                $data['status'] = $this->global_m->getNextFlow($this->input->post('id_pr'),'9-1');
+                $head['flow_id'] = $pr->flow_id;
+                $head['status'] = '7-2';
+            }else{
+                $data['status'] = $this->global_m->getNextFlow($this->input->post('id_pr'),'17-2');
+                $head['flow_id'] = $pr->flow_id;
+                $head['status'] = '17-1';
+            }
             $data['BranchID'] = $pr->BranchID;
             $data['DivisionID'] = $pr->DivisionID;
             $data['ReqTypeID'] = $pr->ReqTypeID;
@@ -141,8 +151,6 @@ class cek_barang extends CI_Controller {
             $id_po = $this->global_m->getIdMax('ID_PO','TBL_T_PO');
             $head['ID_PO'] = $id_po;
             $head['ID_PR'] = $this->input->post('id_pr');
-            $head['flow_id'] = 1;
-            $head['status'] = '7-2';
             $this->master_po_m->save_po($head);
         }elseif(isset($_POST['simpan'])){
             for ($i=0; $i < count($_POST['qty']); $i++) {
@@ -150,9 +158,18 @@ class cek_barang extends CI_Controller {
                     $id_barang = $this->global_m->getIdMax('ID','TBL_T_TERIMA_BARANG');
                     $barang['ID'] = $id_barang;
                     $barang['ID_PO_DETAIL'] =  $_POST['podetail'][$i];
+                    $nilaitermin =  $_POST['nilaitermin'][$i];
+
                     $barang['ITEM_ID'] = $_POST['itemid'][$i];
                     $barang['NAMA_BARANG'] = $_POST['nama_barang'][$i];
-                    $barang['QTY'] = $_POST['qty'][$i];
+                    if($nilaitermin > 0){
+                        $barang['PERSENTASE_TERIMA_BRG'] = $_POST['qty'][$i];
+                        $barang['QTY'] = 0;
+                    } else {
+                        $barang['QTY'] = $_POST['qty'][$i];
+                        $barang['PERSENTASE_TERIMA_BRG'] = 0;
+                    }
+
                     $barang['TGL_TERIMA'] = DateTime::createFromFormat('d/m/Y', $_POST['tgl_terima'][$i])->format('Y-m-d');
                     $barang['CREATE_BY'] = $this->session->userdata("user_id");
                     $this->cek_barang_mdl->save_barang($barang);
@@ -170,6 +187,21 @@ class cek_barang extends CI_Controller {
                     }
                 }
             }
+            if( $this->session->userdata('usergroup')==17){
+                $updatePO['status'] = $this->global_m->getNextFlow($this->input->post('id_pr'),'17-2'); 
+            }else{
+                $updatePO['status'] = $this->global_m->getNextFlow($this->input->post('id_pr'),'9-1'); 
+            }
+
+            // $icek=$this->global_m->tampil_data("SELECT (SELECT SUM(QTY) FROM TBL_T_PO_DETAIL where ID_PO_DETAIL=".$barang['ID_PO_DETAIL'].")- (select SUM(QTY) from TBL_T_TERIMA_BARANG where ID_PO_DETAIL=".$barang['ID_PO_DETAIL'].") AS QTY")[0]->QTY; 
+            // $icek2=$this->global_m->tampil_data("SELECT CASE WHEN SUM(ISNULL(PERSENTASE_TERIMA_BRG,0))!=0
+            //     THEN 100 - SUM(ISNULL(PERSENTASE_TERIMA_BRG,0))
+            //     ELSE 0 END AS PERSEN_BRG
+            //     FROM TBL_T_TERIMA_BARANG WHERE ID_PO_DETAIL=".$barang['ID_PO_DETAIL'])[0]->PERSEN_BRG; 
+            
+            // if($icek==0 && $icek2==0){
+            $this->global_m->ubah('TBL_T_PO',$updatePO,ID_PR,$this->input->post('id_pr'));
+            // }
         }
         redirect('procurement/cek_barang/home');
     }

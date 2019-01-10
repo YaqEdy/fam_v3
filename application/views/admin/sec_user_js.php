@@ -1,5 +1,35 @@
 <script>
 
+$("#userGroup").select2({
+placeholder: "Please Select",
+width:'100%'
+});
+
+$("#id_groupUser_edit").select2({
+placeholder: "Please Select",
+width:'100%'
+});
+
+var iuserGroup='';
+$('#userGroup').on('change', function() {
+  var iVal = $("#userGroup").val();      
+  if(iVal!=null){
+   iuserGroup=iVal.join();          
+  }
+});
+
+
+var iid_groupUser_edit='';
+$('#id_groupUser_edit').on('change', function() {
+  var iVal = $("#id_groupUser_edit").val();      
+  if(iVal!=null){
+   iid_groupUser_edit=iVal.join();          
+  }
+});
+
+
+
+
 
     $("#id_btnSimpan").click(function () {
         $('#idTmpAksiBtn').val('1');
@@ -31,7 +61,7 @@
         var r = confirm('Do you want to save this file ?');
         if (r == true) {
             $.ajax({
-                url: "simpan_popup", // json datasource
+                url: "simpan_popup?id_group="+iuserGroup, // json datasource
                 type: 'POST',
                 data: new FormData(this),
                 async: false,
@@ -67,7 +97,18 @@
 
     $('#id_btnBatal').click(function () {
         btnStart();
+
     });
+
+    function btl() {
+        // // alert('dsds');
+        $("#id_branch").select2("val", "");
+        $("#id_division").select2("val", "");
+        $("#id_position").select2("val", "");
+        $("#id_zone").select2("val", "");
+        $("#userGroup").select2("val", "");
+        $("#id_statusUser").select2("val", "");
+    }
 
 
     jQuery(document).ready(function () {
@@ -108,17 +149,18 @@
     function loadGridUpdateUSER() {
         // iZone = $("#dd_id_zone_A").val();
         dataTable = $('#table_gridUpdateUser').DataTable({
-            dom: 'C<"clear">l<"toolbar">frtip',
-            initComplete: function () {
-                sync_user_fam();
-                $("div.toolbar").append('<div class="col-md-8">\n\
-            <div class="row">\n\
-                <div class="col-md-1"></div>\n\
-                </div>\n\
-            </div>\n\
-        </div>');
-                // dd_Zone("A");
-            }, "lengthMenu": [
+        //     dom: 'C<"clear">l<"toolbar">frtip',
+        //     initComplete: function () {
+        //          //sync_user_fam();
+        //         $("div.toolbar").append('<div class="col-md-8">\n\
+        //     <div class="row">\n\
+        //         <div class="col-md-1"></div>\n\
+        //         </div>\n\
+        //     </div>\n\
+        // </div>');
+        //         // dd_Zone("A");
+        //     }, 
+            "lengthMenu": [
                 [5, 10, 15, 20, -1],
                 [5, 10, 15, 20, "All"] // change per page values here
             ],
@@ -216,8 +258,11 @@
         });
     }
 
+
+    // ================================================================
+
     function editData(input) {
-        // alert('erv');
+        // alert('jgj');
         $('#myModaleki').trigger("click");
         // $('#table_gridUSER').on('click', '#btnUpdate2');
         $.post("tampil_data",
@@ -225,19 +270,19 @@
                     'user_id': input //id yang dilempar
                 },
                 function (data) {
-                    console.log(data);
+                  
                     if (data.data_res.length > 0) {
-                        // $group = '1';
+                     
                         for (i = 0; i < data.data_res.length; i++) {
-                            // alert(data.data_res[i].);
-                            // console.log(data.data_res[i].DivisionID);
+
+                            console.log(data.data_res[i].user_groupid);
                             $('#idsdm2').val(data.data_res[i].idsdm);
                             $('#user_id2').val(data.data_res[i].user_id);
                             $('#nik_edit').val(data.data_res[i].nik);
                             $('#user_name_edit').val(data.data_res[i].user_name);
                             $('#name_edit').val(data.data_res[i].name);
                             $('#email_edit').val(data.data_res[i].user_email);
-                            $('#id_groupUser_edit').select2('val', data.data_res[i].user_groupid);
+                            $('#id_groupUser_edit').select2('val', data.data_res[i].user_groupid.split(','));
                             $('#id_division_edit').select2('val', data.data_res[i].DivisionID);
                             $('#id_branch_edit').select2('val', data.data_res[i].BranchID);
                             $('#id_statusUser_edit').select2('val', data.data_res[i].status);
@@ -253,14 +298,18 @@
 
     }
 
+
+    // =================================================================
+
     $('#idFormUser2').submit(function (event) {
         // alert('asd')  
+        // event.preventDefault();
         var iclosestRow = $(this).closest('tr');
         var idata = dataTable.row(iclosestRow).data();
         var r = confirm('Apakah anda ingin merubah data ini ?');
         if (r == true) {
             $.ajax({
-                url: "ubah", // json datasource
+                url: "ubah?id_group1="+iid_groupUser_edit, // json datasource
                 type: 'POST',
                 data: new FormData(this),
                 async: false,
@@ -269,31 +318,35 @@
                 processData: false,
                 dataType: "JSON",
                 success: function (e) {
-                    if (e.act) {
+                    // if (e.act) {
                         UIToastr.init(e.tipePesan, e.pesan);
-                        iPID = e.iPid;
-                        console.log(idata);
-                        $('#idsdm2').val(data.data_res[i].idsdm);
-                        // $('#user_id2').val(data.data_res[i].user_id);
-                        $('#nik_edit').val(data.data_res[i].nik);
-                        $('#user_name_edit').val(data.data_res[i].user_name);
-                        $('#name_edit').val(data.data_res[i].name);
-                        $('#email_edit').val(data.data_res[i].email);
-                        $('#edit_usergroup').val(data.data_res[i].user_groupid);
-                        $('#DivisionID2').val(data.data_res[i].DivisionID);
-                        $('#status2').val(data.data_res[i].status);
-                        $('#id_btnUbah').attr("disabled", false);
-                        $('#id_btnSimpan').attr("disabled", true);
-                        // $('#id_data').val(input);
-                    } else {
-                        UIToastr.init(e.tipePesan, e.pesan);
-                    }
+                        $('#table_gridUSER').DataTable().ajax.reload();
+                    //     iPID = e.iPid;
+                    //     console.log(idata);
+                    //     $('#idsdm2').val(data.data_res[i].idsdm);
+                    //     // $('#user_id2').val(data.data_res[i].user_id);
+                    //     $('#nik_edit').val(data.data_res[i].nik);
+                    //     $('#user_name_edit').val(data.data_res[i].user_name);
+                    //     $('#name_edit').val(data.data_res[i].name);
+                    //     $('#email_edit').val(data.data_res[i].email);
+                    //     $('#edit_usergroup').val(data.data_res[i].user_groupid);
+                    //     $('#DivisionID2').val(data.data_res[i].DivisionID);
+                    //     $('#status2').val(data.data_res[i].status);
+                    //     $('#id_btnUbah').attr("disabled", false);
+                    //     $('#id_btnSimpan').attr("disabled", true);
+                    //     // $('#id_data').val(input);
+                    // } else {
+                    //     UIToastr.init(e.tipePesan, e.pesan);
+                    // }
                 },
                 complete: function (e) {
                     $('#table_gridUSER').DataTable().ajax.reload();
                 }
             });
             event.preventDefault();
+            setTimeout(function (){
+                location.reload();
+            },1500);
         } else {//if(r)
             return false;
         }

@@ -12,6 +12,7 @@ class sec_user extends CI_Controller {
         $this->load->model('admin/konfigurasi_menu_status_user_m');
         $this->load->model('global_m');
         $this->load->model('datatables_custom');
+        $this->load->model('datatables');
         $this->load->model('admin/sec_user_m');
         $this->load->model('api/api_m');
 
@@ -53,6 +54,7 @@ class sec_user extends CI_Controller {
         $data['dd_Branch'] = $this->global_m->tampil_data("SELECT FLEX_VALUE, BRANCH_DESC FROM TBL_M_BRANCH");
         $data['dd_Zona'] = $this->global_m->tampil_data("SELECT ZoneID, ZoneName FROM Mst_Zonasi");
         $data['dd_Position'] = $this->global_m->tampil_data("SELECT PositionID, PositionName FROM Mst_Position");
+        $data['item_branch'] = $this->sec_user_m->tampil_branch();
         // $data['dd_grup'] = $this->global_m->tampil_data("SELECT id, grup FROM MS_GRUP");
         // print_r($data['dd_Position']); die();
         $this->template->set('title', 'Konfigurasi User');
@@ -97,7 +99,7 @@ class sec_user extends CI_Controller {
         //     $this->input->post('sSearch') => $_POST['search']['value']
         // );
         $iorder = array('idsdm' => 'asc');
-        $list = $this->datatables_custom->get_datatables('user', $icolumn, $iorder, $iwhere);
+        $list = $this->datatables->get_datatables('user', $icolumn, $iorder, $iwhere);
         // print_r($list);
         // die('asd');
         $data = array();
@@ -112,7 +114,7 @@ class sec_user extends CI_Controller {
             $row[] = $idatatables->user_name;
             $row[] = $idatatables->name;
             $row[] = $idatatables->user_groupid;
-            $row[] = '<button class="btn btn-xs btn-warning" value="<?php echo $idatatables->idsm; ?>" href="#" id="btnUpdate2" onclick="editData(' . $idatatables->user_id . ')" data-toggle="modal" data-target="#myModaleki"">Update</button>';
+            $row[] = '<button class="btn btn-xs btn-warning" value="<?php echo $idatatables->idsm; ?>" href="#" id="btnUpdate" onclick="editData(' . $idatatables->user_id . ')" data-toggle="modal" data-target="#myModaleki"">Update</button>';
             //         . '<a class="btn btn-xs btn-danger" href="#" id="btnDelete">Delete</a>';
             // $row[] = '<button type="button" id="btnUpdate"  class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModalsha">View</button>'; 
             $row[] = $idatatables->idsdm;
@@ -125,8 +127,8 @@ class sec_user extends CI_Controller {
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->datatables_custom->count_all(),
-            "recordsFiltered" => $this->datatables_custom->count_filtered(),
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
             "data" => $data,
         );
         //output to json format
@@ -142,7 +144,7 @@ class sec_user extends CI_Controller {
              'profile_nama' => $_POST['search']['value']
          );
         $iorder = array('idsdm' => 'asc');
-        $list = $this->datatables_custom->get_datatables('TBL_M_USER_FAM', $icolumn, $iorder,array(), $iLike);
+        $list = $this->datatables->get_datatables('TBL_M_USER_FAM', $icolumn, $iorder,array(), $iLike);
         // print_r($list);
         // die('asd');
         $data = array();
@@ -167,8 +169,8 @@ class sec_user extends CI_Controller {
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->datatables_custom->count_all(),
-            "recordsFiltered" => $this->datatables_custom->count_filtered(),
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
             "data" => $data,
         );
         //output to json format
@@ -249,7 +251,7 @@ class sec_user extends CI_Controller {
         $FLEX_VALUE_DIVISI = trim($this->input->post('FLEX_VALUE_DIVISI'));
         $PositionID = trim($this->input->post('PositionID'));
         $ZoneID = trim($this->input->post('ZoneID'));
-        $user_groupid = trim($this->input->post('userGroup'));
+        $user_groupid = trim($this->input->get('id_group'));
         $status = trim($this->input->post('statusUser'));
 
         $idsdm = trim($this->input->post('idsdm'));
@@ -276,20 +278,28 @@ class sec_user extends CI_Controller {
         // print_r($data); die();
         $table = "user";
 
-        $model = $this->global_m->simpan($table, $data);
-        if ($model) {
-            $array = array(
-                'act' => 1,
-                'tipePesan' => 'success',
-                'pesan' => 'File has been saved.'
-            );
-        } else {
-            $array = array(
-                'act' => 0,
-                'tipePesan' => 'error',
-                'pesan' => 'Data gagal disimpan.'
-            );
+        $model = $this->global_m->simpansec_user($table, $data);
+
+        if ($cek_nik > 0) {
+            $this->session->set_flashdata('message', 'Nomor KTP Sudah digunakan sebelumnya');
+            redirect(site_url('welcome/Registrasi_akun'));
+        }else{
+        //insert db
         }
+
+        // if ($model) {
+        //     $array = array(
+        //         'act' => 1,
+        //         'tipePesan' => 'success',
+        //         'pesan' => 'File has been saved.'
+        //     );
+        // } else {
+        //     $array = array(
+        //         'act' => 0,
+        //         'tipePesan' => 'error',
+        //         'pesan' => 'Data gagal disimpan.'
+        //     );
+        // }
         $this->output->set_output(json_encode($array));
     }
 
@@ -368,15 +378,14 @@ class sec_user extends CI_Controller {
     }
 
     function ubah() {
-        // die('kiw');
-
         $nik = trim($this->input->post('nik'));
         $user_name = trim($this->input->post('user_name'));
         $name = trim($this->input->post('name'));
         $email = trim($this->input->post('email'));
         $user_id = trim($this->input->post('user_id'));
         $idsdm = trim($this->input->post('idsdm'));
-        $user_groupid = trim($this->input->post('userGroup'));
+        $user_groupid = trim($this->input->get('id_group1'));
+        // print_r($user_groupid);die();
         $status = trim($this->input->post('statusUser'));
         $FLEX_VALUE_DIVISI = trim($this->input->post('FLEX_VALUE_DIVISI'));
         $FLEX_VALUE_BRANCH = trim($this->input->post('FLEX_VALUE_BRANCH'));
@@ -403,7 +412,7 @@ class sec_user extends CI_Controller {
             'idsdm' => $idsdm
         );
 
-        // print_r($datax); die('asd');
+        print_r($datax); 
         // print_r($id_kolom);die();
         $table = "user";
         $id_kolom = "nik";

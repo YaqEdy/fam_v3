@@ -129,7 +129,7 @@ table#idTabeldetail td:nth-child(2){
 
         <hr>
                
-                <div class="row">
+<!--                 <div class="row">
 
 <div class="col-md-4">
     <div class="form-group">
@@ -155,9 +155,9 @@ table#idTabeldetail td:nth-child(2){
 </div>
 
  <button type="button"  class="btn btn-success" id="reqsave" onclick="getsavekerusakan()" name="reqsave" value="Submit" >Process</button>
-             </div>
+             </div> -->
 
-             <hr>
+             
 
           <div class="row">
           
@@ -173,7 +173,7 @@ table#idTabeldetail td:nth-child(2){
                                     <th>Nama PIC</th>
                                     <th>Jumlah Item</th>
                                     <th>Wilayah Balai Lelang</th>
-                                    <th>Harga Perkiraan</th>
+                                    <!-- <th>Harga Perkiraan</th> -->
                                     <th>Status</th>
                                     
                                     <th>Aksi</th>
@@ -296,11 +296,11 @@ table#idTabeldetail td:nth-child(2){
                      </div>
 
                       <div class="row">
-                       <div class="col-md-6">
+                      <!--  <div class="col-md-6">
                          <label>Harga Perkiraan</label>
                          <td>:</td>
                          <label id="id_HARGA_PERKIRAAN"></label>
-                           </div>
+                           </div> -->
 
                            <div class="col-md-6">
                          <label>Jumlah Item</label>

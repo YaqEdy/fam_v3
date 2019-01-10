@@ -42,13 +42,14 @@ class Hps extends CI_Controller {
         $this->auth->restrict($data['menu_id']);
         $this->auth->cek_menu($data['menu_id']);
         $data['group_user'] = $this->konfigurasi_menu_status_user_m->get_status_user();
-        $data ['ItemID'] = $this->input->post('ItemID', true);
-        $data ['Price'] = $this->input->post('Price', true);
-        $data ['StartDate'] = $this->input->post('StartDate', true);
-        $data ['EndDate'] = $this->input->post('EndDate', true);
+        $data ['ItemID'] = $this->input->post('ItemID',true);
+        $data ['Price'] = $this->input->post('Price',true);
+        $data ['StartDate'] = $this->input->post('StartDate',true);
+        $data ['EndDate'] = $this->input->post('EndDate',true);
         //$data['level_user'] = $this->sec_user_m->get_level_user();
         $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
         $data['menu_all'] = $this->user_m->get_menu_all(0);
+        $data['dd_BRANCH'] = $this->global_m->tampil_data("SELECT FLEX_VALUE, BRANCH_DESC FROM TBL_M_BRANCH");
 //            $data['karyawan'] = $this->global_m->tampil_id_desk('master_karyawan', 'id_kyw', 'nama_kyw', 'id_kyw');
 //            $data['goluser'] = $this->global_m->tampil_id_desk('sec_gol_user', 'goluser_id', 'goluser_desc', 'goluser_id');
 //            $data['statususer'] = $this->global_m->tampil_id_desk('sec_status_user', 'statususer_id', 'statususer_desc', 'statususer_id');
@@ -56,6 +57,7 @@ class Hps extends CI_Controller {
         $this->template->set('title', 'HPS');
         $this->template->load('template/template_dataTable', 'procurement/hps/hps_v', $data);
     }
+
 
     function tampil_data() {
         $id = trim($this->input->post('id', true));
@@ -68,14 +70,11 @@ class Hps extends CI_Controller {
     }
 
     public function ajax_GridHPS() {
-        $icolumn = array('HpsID', 'ItemName', 'Price', 'StartDate', 'EndDate');
+        $icolumn = array('HpsID', 'ItemName', 'BranchID', 'Price', 'StartDate', 'EndDate');
 //        $icolumn = array('HpsID');
-        $iwhere = array(
-                // 'ItemID' => $this->input->post('sItemID'),
-                // $this->input->post('sSearch') => $_POST['search']['value']
-        );
+        $iwhere = array();
         $iorder = array('HpsID' => 'asc');
-        $list = $this->datatables->get_datatables('VW_M_HPS', $icolumn, $iorder, $iwhere);
+        $list = $this->datatables_custom->get_datatables('VW_M_HPS', $icolumn, $iorder, $iwhere);
         // print_r($list); die ();
         $data = array();
         $no = $_POST['start'];
@@ -85,12 +84,13 @@ class Hps extends CI_Controller {
             $row = array();
             $row[] = $no;
 
-            $row[] = $idatatables->ItemName;
-            $row[] = $idatatables->Price;
-            $row[] = $idatatables->StartDate;
-            $row[] = $idatatables->EndDate;
-            $row[] = '<a class="btn btn-xs btn-warning" href="#" id="btnUpdate" data-toggle="modal" data-target="#mdl_Update">Update</a>'
-                    . '<a class="btn btn-xs btn-danger" href="#" id="btnDelete">Delete</a>';
+        $row[] = $idatatables->ItemName;
+            $row[] = $idatatables->BranchID;
+            $row[] = 'Rp.'.number_format(($idatatables->Price),2);
+            $row[] = date('d-m-Y', strtotime($idatatables->StartDate));  
+            $row[] = date('d-m-Y', strtotime($idatatables->EndDate));  
+            $row[] = '<a class="btn btn-xs btn-warning" onclick="editData('.$idatatables->HpsID.')" href="#" id="btnUpdate" data-toggle="modal" data-target="#mdl_Update">Update</a>';
+            $row[] ='<a class="btn btn-xs btn-danger" value="" onclick="hapus_hps_js('.$idatatables->HpsID.')"  href="#" id="btnDelete">Delete</a>';
             $row[] = $idatatables->HpsID;
             // $row[] = $idatatables->ZoneID;
 
@@ -99,8 +99,8 @@ class Hps extends CI_Controller {
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->datatables->count_all(),
-            "recordsFiltered" => $this->datatables->count_filtered(),
+            "recordsTotal" => $this->datatables_custom->count_all(),
+            "recordsFiltered" => $this->datatables_custom->count_filtered(),
             "data" => $data,
         );
         //output to json format
@@ -139,18 +139,23 @@ class Hps extends CI_Controller {
     }
 
     public function ajax_Delete() {
-        $id = $this->input->post('sID');
-        // print_r($id); die();
-        $result = $this->hps->deletedata($id);
+        $Hps_id = $this->input->post('HpsID');
+         // print_r($Hps_id); die();
+        // $result = $this->hps->deletedata($Hps_id);
+        $result = $this->hps->deletedata($Hps_id);
 
 //        $this->session->set_flashdata('msg', 'Success! HPS ID: ' . $id . ' Success Delete data');
         if ($result == true) {
-            $result = array('istatus' => true, 'iremarks' => 'Success! HPS ID: ' . $id . ' Success Delete data');
+            $result = array('istatus' => true, 'iremarks' => 'Success! HPS ID: ' . $Hps_id . ' Success Delete data');
+        
         } else {
-            $result = array('istatus' => false, 'iremarks' => 'Failed! HPS ID: ' . $id . 'Failed Delete data');
+            $result = array('istatus' => false, 'iremarks' => 'Failed! HPS ID: ' . $Hps_id . 'Failed Delete data');
         }
         echo json_encode($result);
     }
+
+   
+
 
     public function branch() {
         $ddZone = $this->hps->getzone3();
@@ -169,6 +174,7 @@ class Hps extends CI_Controller {
 
         echo json_encode($options);
     }
+
 
     public function readExcela() {
         $config['upload_path'] = "./uploads/hps/";
@@ -210,17 +216,17 @@ class Hps extends CI_Controller {
             $date = date('Y-m-d');
             $by = $this->session->userdata('id_user');
             // $zone = $this->input->get('sZone');
-            // print_r($arr_data );die();
+                // print_r($arr_data );die();
 
             foreach ($arr_data as $key => $value) {
-                // print_r($value['E'] );die();
+                 print_r($value['E'] );die();
                 // if ($value["E"] != '-' && !empty($value["E"])) {
-                // $this->hps->simpanData($zone, $value['A'],  $value['B'],  $value['C'],  $value['D'],  $value['E'] );
-                if (PHPExcel_Shared_Date::ExcelToPHP($value["E"]) < 0) {
-                    // $this->hps->simpanData( $value['A'], $value['B'], $value['C'], $value['D'], $value['E']);
-                } else {
-                    $this->hps->simpanData($value["A"], $value["B"], date($format = "Y-m-d", PHPExcel_Shared_Date::ExcelToPHP($value["C"])), date($format = "Y-m-d", PHPExcel_Shared_Date::ExcelToPHP($value["D"])), $value["E"]);
-                }
+                    // $this->hps->simpanData($zone, $value['A'],  $value['B'],  $value['C'],  $value['D'],  $value['E'] );
+                    if (PHPExcel_Shared_Date::ExcelToPHP($value["E"]) < 0) {
+                        $this->hps->simpanData( $value['A'], $value['B'], $value['C'], $value['D'], $value['E']);
+                    } else {
+                        $this->hps->simpanData( $value["A"], $value["B"], date($format = "Y-m-d", PHPExcel_Shared_Date::ExcelToPHP($value["C"])), date($format = "Y-m-d", PHPExcel_Shared_Date::ExcelToPHP($value["D"])), $value["E"]);
+                    }
                 // }
             }
 
@@ -349,6 +355,43 @@ class Hps extends CI_Controller {
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         //Download
         $objWriter->save("php://output");
+    }
+
+        function tampil_dataHPS() {
+        $HpsID = ($this->input->post('HpsID', true));
+        $sql = "select HpsID, ItemName
+        FROM VW_M_HPS
+        WHERE HpsID='$HpsID'";
+        $query = $this->db->query($sql)->result();
+        $rows['data_res'] = $query;
+        return $this->output->set_output(json_encode($rows));
+    }
+
+      function hapushps () { //hapus
+        // die('asd');
+        $id_data = trim($this->input->post('data'));
+        $HpsID = trim($this->input->post('HpsID'));
+       // print_r($HpsID);die();
+       
+        $table = "Mst_HPS";
+        $id_kolom = "HpsID";
+      
+        
+        $model = $this->global_m->deleteUser($table, $id_kolom, $id_data);
+        if ($model) {
+            $array = array(
+                'act' => 1,
+                'tipePesan' => 'success',
+                'pesan' => 'Data berhasil dinon-aktifkan.'
+            );
+        } else {
+            $array = array(
+                'act' => 1,
+                'tipePesan' => 'success',
+                'pesan' => 'File has been removed.'
+            );
+        }
+        $this->output->set_output(json_encode($array));
     }
 
 }

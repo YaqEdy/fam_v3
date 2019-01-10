@@ -63,9 +63,9 @@ function home() {
             0 => 'IClassID',
             1 => 'ClassCode',
             2 => 'IClassName',
-            3 => 'umurfiskal',
-            4 => 'Priod',
-            5 => 'Status'
+            // 3 => 'umurfiskal',
+            3 => 'Priod',
+            4 => 'Status'
         );
 
         $sql = "SELECT * from Mst_ItemClass where Status like '%" . $iStatus . "%'";
@@ -105,7 +105,7 @@ function home() {
             $nestedData[] = $row["IClassID"];
             $nestedData[] = $row["ClassCode"];
             $nestedData[] = $row["IClassName"];
-            $nestedData[] = $row["umurfiskal"];
+            // $nestedData[] = $row["umurfiskal"];
             $nestedData[] = $row["Priod"];
             // $nestedData[] = $row["Status"];
 
@@ -175,7 +175,7 @@ function home() {
         $ClassCode = trim(element('ClassCode', $i_list));
         $IClassName = element('IClassName', $i_list);
         $Priod = trim(element('Priod', $i_list));
-        $umurfiskal = trim(element('umurfiskal', $i_list));
+        // $umurfiskal = trim(element('umurfiskal', $i_list));
         $iStatus = trim(element('Status', $i_list));
 
         if (element('IClassID', $i_list) == "Generate") {
@@ -184,7 +184,7 @@ function home() {
                 'IClassID' => $id,
                 'ClassCode' => $ClassCode,
                 'IClassName' => $IClassName,
-                'umurfiskal' => $umurfiskal,
+                // 'umurfiskal' => $umurfiskal,
                 'Priod' => $Priod,
                 'Status' => $iStatus,
                 'CreateBy' => $id_kyw,
@@ -196,7 +196,7 @@ function home() {
                 //'IClassID' => trim(element('IClassID',$i_list)),
                 'ClassCode' => $ClassCode,
                 'IClassName' => $IClassName,
-                'umurfiskal' => $umurfiskal,
+                // 'umurfiskal' => $umurfiskal,
                 'Priod' => $Priod,
                 'UpdateBy' => $id_kyw,
                 'UpdateDate' => date('Y-m-d H:i:s'),
@@ -248,7 +248,7 @@ function home() {
                 'IClassID' => trim($roq->IClassID),
                 'ClassCode' => trim($row->ClassCode),
                 'IClassName' => trim($row->IClassName),
-                'umurfiskal' => trim($row->umurfiskal),
+                // 'umurfiskal' => trim($row->umurfiskal),
                 'Priod' => trim($row->Priod)
             );
 

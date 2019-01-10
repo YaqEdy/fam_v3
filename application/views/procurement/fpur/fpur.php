@@ -1,3 +1,15 @@
+<style type="text/css">
+
+
+
+    table#table_fpum th:nth-child(7){
+        display: none;
+    } 
+    table#table_fpum td:nth-child(7){
+        display: none;
+    }
+</style>
+
 <input type="hidden" id="id_userName" value="<?php echo $this->session->userdata('user_name'); ?>">
 <input type="hidden" id="id_posisi" value="<?php echo $this->session->userdata('posisi_desc'); ?>">
 <div class="row">
@@ -16,7 +28,7 @@
                     </a>
                 </div>
             </div>
-            <div class="portlet-body">
+              <div class="portlet-body">
                 <ul class="nav nav-pills">
                     <li class="linav active" id="linav1">
                         <a href="#tab_2_1" data-toggle="tab" id="navitab_2_1" class="anavitab">
@@ -34,160 +46,98 @@
                 </ul> 
                  
                     
-                </div>
+            
                 <div class="tab-content">
 
                     <div class="tab-pane fade active in" id="tab_2_1">
+                        <div class="scroller" style="height:400px; ">
+                            <div class="col-md-12">
+                          
+                            </div>
+                             <br>&nbsp;
+                    
+                                <table class="table table-striped table-bordered table-hover text_kanan" id="table_fpur" style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>NO PR</th>   
+                                            <th>Tanggal Request</th>
+                                            <th>Request Type</th>
+                                            <th>Total HPS</th>
+                                            <th>HPS/Item</th>
+                                            <th>Kelengkapan</th>
+                                            <!-- <th>Jenis Pengadaan</th> -->
+                                            <!-- <th>Tipe Pembayaran</th> -->
+                                            <th>ACT</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                    <tfoot></tfoot>
+                                </table>
+                        </div>
+                    </div>
+
+
+                    <div class="tab-pane fade" id="tab_2_2">
+                    <div class="scroller" style="height:400px; ">
                         <div class="col-md-12">
-                            <div class="form-group col-md-3">
-                                <label>Mulai</label>
-                                <input type="text" required="" name="mulai" id="mulai" onchange="ddMulai(this.value)" class="form-control input-sm date-picker" data-date-format="dd/mm/yyyy">
-                            </div>
-                            <div class="form-group col-md-3">
-                                <label>Sampai</label>
-                                <input type="text" required="" name="sampai" id="sampai" onchange="ddSampai(this.value)" class="form-control input-sm date-picker" data-date-format="dd/mm/yyyy">
-                            </div>
+                           
                         </div>
                         <br>&nbsp;
-                        <table class="table table-striped table-bordered table-hover text_kanan" id="table_fpur" style="width: 100%;">
+                        <table class="table table-striped table-bordered table-hover text_kanan" id="table_fpum" style="width: 100%;">
                             <thead>
                                 <tr>
-                                    <th>NO PR</th>   
+                                    <th>NO.</th>
+                                    <!-- <th>TYPE FPUR</th> -->
+                                    <th>NO FPUR</th>   
                                     <th>Tanggal Request</th>
                                     <th>Request Type</th>
                                     <th>Total HPS</th>
                                     <th>HPS/Item</th>
                                     <th>Kelengkapan</th>
-                                    <th>Jenis Pengadaan</th>
-                                    <th>Tipe Pembayaran</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                            <tfoot></tfoot>
-                        </table>
-                    </div>
-
-                    <div class="tab-pane fade" id="tab_2_2">
-                        <div class="col-md-12">
-                            <div class="form-group col-md-3">
-                                <label>Mulai</label>
-                                <input type="text" required="" name="mulai" id="mulai" onchange="ddMulai(this.value)" class="form-control input-sm date-picker" data-date-format="dd/mm/yyyy">
-                            </div>
-                            <div class="form-group col-md-3">
-                                <label>Sampai</label>
-                                <input type="text" required="" name="sampai" id="sampai" onchange="ddSampai(this.value)" class="form-control input-sm date-picker" data-date-format="dd/mm/yyyy">
-                            </div>
-                        </div>
-                        <br>&nbsp;
-                        <table class="table table-striped table-bordered table-hover text_kanan" id="" style="width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th>NO.</th>
-                                    <!-- <th>NO PR</th> -->
-                                    <th>Type FPUR</th>
-                                    <th>NO FPUR</th>
-                                    <th>Tanggal Request</th>
-                                    <th>Request Type</th>
-                                    <th>Total HPS</th>
-                                    <th>Kelengkapan</th>
-                                    <th>Jenis Pengadaan</th>
-                                    <th>Tipe Pembayaran</th>
-                                    <th>ACT.</th>
+                                    <!-- <th>Jenis Pengadaan</th> -->
+                                    <!-- <th>Tipe Pembayaran</th> -->
+                                    <th>ACT</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php
-                                    $i=1;
-                                    foreach ($fpum as $data) {
-                                ?>
-                                <tr>
-                                    <td><?php echo $i?></td>
-                                    <!-- <td><?php echo $data->RequestID?></td> -->
-                                    <td><?php echo $data->TYPE_FPUR?></td>
-                                    <td><?php echo $data->NO_FPUR?></td>
-                                    <td><?php echo $data->Tgl_Req?></td>
-                                    <td><?php echo $data->ReqTypeName?></td>
-                                    <td><?php echo $data->HargaHPS?></td>
-                                    <td><?php echo $data->Kelengkapan?></td>
-                                    <td><?php echo $data->Jns_Pengadaan?></td>
-                                    <td><?php echo $data->Tipe_Pembayaran?></td>
-                                    <td><button value="<?php echo $data->ID_FPUR ?>" id="id_fpum" onclick="add_fpum(this.value)" class="btn btn-primary" data-toggle="modal" data-target="#mdl_fpum">Add FPUM</button></td>
-                                </tr>
-                                <?php
-                                    $i++;
-                                    }
-                                ?>
+                               
                             </tbody>
                             <tfoot></tfoot>
                         </table>
                     </div>
+                    </div>
 
                     <div class="tab-pane fade" id="tab_2_3">
-                        <div class="col-md-12">
-                                <div class="form-group col-md-3">
-                                    <label>Mulai</label>
-                                    <input type="text" required="" name="mulai" id="mulai" onchange="ddMulai(this.value)" class="form-control input-sm date-picker" data-date-format="dd/mm/yyyy">
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <label>Sampai</label>
-                                    <input type="text" required="" name="sampai" id="sampai" onchange="ddSampai(this.value)" class="form-control input-sm date-picker" data-date-format="dd/mm/yyyy">
-                                </div>
-                            </div>
+                       <div class="scroller" style="height:400px; ">
                             <br>&nbsp;
-                            <table class="table table-striped table-bordered table-hover text_kanan" id="" style="width: 100%;">
+                            <table class="table table-striped table-bordered table-hover text_kanan" id="table_fpum_fpur" style="width: 100%;">
                                 <thead>
                                     <tr>
                                         <th>NO.</th>
-                                        <!-- <th>NO PR</th> -->
-                                        <th>Type FPUR</th>
-                                        <th>NO FPUR</th>
+                                        <!-- <th>TYPE FPUR</th> -->
+                                        <th>NO FPUR</th> 
                                         <th>Tanggal Request</th>
                                         <th>Request Type</th>
                                         <th>Total HPS</th>
                                         <th>Kelengkapan</th>
-                                        <th>Jenis Pengadaan</th>
+                                        <th>Status</th>
                                         <th>Tipe Pembayaran</th>
                                         <!-- <th>ACT.</th> -->
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php
-                                        $i=1;
-                                        foreach ($my_fpur_fpum as $data) {
-                                    ?>
-                                    <tr>
-                                        <td><?php echo $i?></td>
-                                        <!-- <td><?php echo $data->RequestID?></td> -->
-                                        <td><?php echo $data->TYPE_FPUR?></td>
-                                        <td><?php echo $data->NO_FPUR?></td>
-                                        <td><?php echo $data->Tgl_Req?></td>
-                                        <td><?php echo $data->ReqTypeName?></td>
-                                        <td><?php echo $data->HargaHPS?></td>
-                                        <td><?php echo $data->Kelengkapan?></td>
-                                        <td><?php echo $data->Jns_Pengadaan?></td>
-                                        <td><?php echo $data->Tipe_Pembayaran?></td>
-                                        <!-- <td><button value="<?php echo $data->ID_FPUR ?>" id="id_fpum" onclick="add_fpum(this.value)" class="btn btn-primary" data-toggle="modal" data-target="#mdl_fpum">Add FPUM</button></td> -->
-                                    </tr>
-                                    <?php
-                                        $i++;
-                                        }
-                                    ?>
+                                    
                                 </tbody>
                                 <tfoot></tfoot>
                             </table>
                         </div>
-                    </div>
-
-                </div> 
+                        </div>
+                </div>
+                </div>
+        </div> 
                     
-                </div> 
+    </div> 
                  
-            </div>
-
-        </div>
-    </div>
-    <!-- END VALIDATION STATES-->
-</div>
 </div>
 
 
@@ -221,7 +171,7 @@
                             <div class="form-group">
                                 <label class="control-label col-sm-3">Type FPUR</label>
                                 <div class="col-sm-7">
-                                    <input type="radio" name="type_fpur" value="1"> Reimbursement &nbsp;
+                                    <input type="radio" name="type_fpur" value="1" checked> Reimbursement &nbsp;
                                     <input type="radio" name="type_fpur" value="2"> UM-FPUR 
                                 </div>
                             </div>
@@ -234,7 +184,7 @@
                             <div class="form-group">
                                 <label class="control-label col-sm-3">Jumlah</label>
                                 <div class="col-sm-7">
-                                    <input type="text" name="jml" class="form-control">
+                                    <input type="number" name="jml" class="form-control">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -246,7 +196,7 @@
                             <div class="form-group">
                                 <label class="control-label col-sm-3">No. Rekening</label>
                                 <div class="col-sm-7">
-                                    <input type="text" name="no_rekening" class="form-control">
+                                    <input type="number" name="no_rekening" class="form-control">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -274,8 +224,8 @@
             <div class="modal-footer">
                 <div class="btnSC">
                     <button type="submit" class="btn btn-success">Save</button>
-                    <button type="button" class="btn btn-default close_st" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mdl_DPR">Detail PR</button>                 
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mdl_DPR">Detail PR</button>
+                    <button type="button" class="btn btn-danger close_st" data-dismiss="modal">Close</button>                 
                 </div>
 
             </div>

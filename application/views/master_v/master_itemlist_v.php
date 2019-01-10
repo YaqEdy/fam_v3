@@ -41,26 +41,31 @@
                                     <button id="id_Reload" style="display: none;"></button>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <!--<a class="btn btn-sm btn-primary" href="#" id="btnAdd" data-toggle="modal" data-target="#mdl_Update">Add Master Item List</a>-->
-                                    <!-- <button class="btn btn-sm btn-default">Add Item Category</button> -->
+                            <!-- <div class="row"> -->
+                           <!--      <div class="col-md-8">
+                                    <a class="btn btn-sm btn-primary" href="#" id="btnAdd" data-toggle="modal" data-target="#mdl_Update">Add Master Item List</a>
+                                     <button class="btn btn-sm btn-default">Add Item Category</button>
                                 </div>
                                 <div class="col-md-2">
-                                    <select id="cat_itemclass" name="cat_itemclass" onchange="search(this.value)" class="form-control">
+                                   <select id="cat_itemclass" name="cat_itemclass" onchange="search(this.value)" class="form-control">
                                         <option value="%">--All--</option>
                                         <option value="1">Category </option>
                                         <option value="2">Item Type</option>
                                         <option value="3">Item Name</option>
-                                    </select>
-                                </div> 
-                                <div class="col-md-2">
+                                    </select>-->
+                                <!-- </div>  -->
+
+                            
+                                        <div class="col-md-2">
                                     <select id="statustype" name="statustype" onchange="status(this.value)" class="form-control">
                                         <option value="%">--All--</option>
                                         <option value="1">Active</option>
                                         <option value="0">Non-Active</option>
                                     </select>
-                                </div> <br/><br/><br/>
+                                </div>
+                                
+
+                             <br/><br/><br/>
 
 
                                 <div class="col-md-12">
@@ -328,7 +333,10 @@
                                 // document.getElementById("txtItemTypeName").readOnly = false;
                                 // document.getElementById("txtIClassName").readOnly = false;
 
-
+                                $('#txtitemname').attr('disabled',false);
+                                $('#txtItemTypeID').attr('disabled',false);
+                                $('#txtIClassID').attr('disabled',false);
+                                $('#txtImage').attr('disabled',false);
                                 $(".btnSC").show();
                                 $(".btnSC .save").show();
                                 $(".btnSC .update").hide();
@@ -476,14 +484,17 @@
                                                 url: "<?php echo base_url("/master/master_itemlist/ajax_UpdateCategory"); ?>", // json datasource
                                                 data: {sTbl: i_clsUpdate},
                                                 success: function (e) {
+                                                    
+                                                     $('#mdl_Update').modal('hide');
+                                                    $('#table_gridCategory').DataTable().ajax.reload();
+
                                                     $('#id_keluar').trigger('click');
 
                                                     if (e.msgType == true) {
                                                         uploadDoc();
                                                         setTimeout(function () {
                                                             alert(e.msgTitle);
-                                                            $('#mdl_Update').modal('hide');
-                                                            $('#table_gridCategory').DataTable().ajax.reload();
+                                                          
                                                         }, 2000)
                                                     } else {
                                                         alert(e.msgTitle);
@@ -554,7 +565,10 @@
 
 
 
-
+                                $('#txtitemname').attr('disabled',true);
+                                $('#txtItemTypeID').attr('disabled',true);
+                                $('#txtIClassID').attr('disabled',true);
+                                $('#txtImage').attr('disabled',true);
                                 $(".btnSC").hide();
                                 $(".status").hide();
 
@@ -605,7 +619,10 @@
                                 // document.getElementById("txtItemTypeName").readOnly = false;
                                 // document.getElementById("txtItemTypeName").readOnly = false;
 
-
+                                $('#txtitemname').attr('disabled',false);
+                                $('#txtItemTypeID').attr('disabled',false);
+                                $('#txtIClassID').attr('disabled',false);
+                                $('#txtImage').attr('disabled',false);
                                 $(".btnSC").show();
                                 $(".btnSC .save").hide();
                                 $(".btnSC .update").show();
@@ -620,7 +637,7 @@
                                         {"targets": [4], "searchable": false, "orderable": false},
                                     ],
                                     "lengthMenu": [
-                                        [5, 10, 15, 20, -1],
+                                        [5, 10, 15, 20, 100000],
                                         [5, 10, 15, 20, "All"] // change per page values here
                                     ],
 //                // set the initial value

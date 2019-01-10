@@ -132,8 +132,8 @@ button:hover {
                                     <td><?php echo $bar->ITEM_ID?></td>
                                     <td><?php echo $bar->NAMA_BARANG?></td>
                                     <td><?php echo $bar->QTY?></td>
-                                    <td><?php echo $bar->HARGA?></td>
-                                    <td><?php echo $bar->TTL_HARGA?></td>
+                                    <td><?php echo number_format($bar->HARGA,0)?></td>
+                                    <td><?php echo number_format($bar->TTL_HARGA,0)?></td>
                                 </tr>
                             <?php }?>
                             </tbody>
@@ -143,16 +143,16 @@ button:hover {
                     <div class="form-group col-md-12">
                         <label class="col-sm-3 control-label" style="text-align: left;">DPP</label>
                         <div class="col-sm-3">
-                            <input class="form-control m-input" name="dpp" id="dpp" value="<?php echo $dpp->TOTAL;?>" type="number" required>
+                            <input class="form-control m-input nomor_edit" name="dpp" id="dpp" value="<?php echo number_format($dpp->TOTAL,0);?>" type="text" required>
                         </div>
                     </div>
                     <div class="form-group col-md-12">
                         <label class="col-sm-3 control-label" style="text-align: left;">PPN</label>
                         <div class="col-sm-3">
-                            <input class="form-control m-input" value="<?php echo $ppn->PPN;?>" name="ppn" id="ppn" type="number" required>
+                            <input class="form-control m-input nomor_edit" value="<?php echo number_format($ppn->PPN,0);?>" name="ppn" id="ppn" type="text" required>
                         </div>
                         <div class="col-sm-3">
-                            <input class="form-control m-input" value="<?php echo $persen_ppn->PERSEN_PPN;?>" name="presentase" id="presentase" type="text">
+                            <input class="form-control m-input" value="<?php echo $persen_ppn->PERSEN_PPN;?>" name="presentase" id="presentase" type="hidden">
                         </div>
                         <!--<div class="col-sm-3">
                             <button type="button" class="btn red" id="edit_presentase">Edit</button>
@@ -162,16 +162,16 @@ button:hover {
                         <label class="col-sm-3 control-label" style="text-align: left;">PPH</label>
                         <div class="col-sm-3">
                             <!--<input class="form-control m-input" name="pph" id="pph" value="0" type="number" required>-->
-                            <input class="form-control m-input" name="pph" id="pph" value="<?php echo $pph->PPH;?>" type="number" required>
+                            <input class="form-control m-input nomor_edit" name="pph" id="pph" value="<?php echo number_format($pph->PPH,0);?>" type="text" required>
                         </div>
                     </div>
                     <div class="form-group col-md-12">
                         <label class="col-sm-3 control-label" style="text-align: left;">Denda</label>
                         <div class="col-sm-3">
-                            <input class="form-control m-input" name="denda" id="denda" type="number" required value="0">
+                            <input class="form-control m-input nomor_edit" name="denda" id="denda" type="text" required value="0">
                         </div>
                         <div class="col-sm-3">
-                            <input class="form-control m-input" name="dendas" id="dendas" type="number" value="<?php echo $total?>" readonly>
+                            <input class="form-control m-input nomor_edit" name="dendas" id="dendas" type="text" value="<?php echo number_format($total,0);?>" readonly>
                         </div>
                         <div class="col-sm-3">
                             <label class="mt-checkbox">
@@ -183,7 +183,7 @@ button:hover {
                     <div class="form-group col-md-12">
                         <label class="col-sm-3 control-label" style="text-align: left;">Nilai Dibayarkan</label> 
                         <div class="col-sm-3">
-                            <input class="form-control m-input" type="number" id="dibayarkan" name="dibayarkan" readonly value="<?php echo $dpp->TOTAL+$ppn->PPN-$pph->PPH ;?>">
+                            <input class="form-control m-input nomor_edit" type="text" id="dibayarkan" name="dibayarkan" readonly value="<?php echo number_format($dpp->TOTAL+$ppn->PPN-$pph->PPH,0) ;?>">
                         </div>
                     </div>
                 </div>
@@ -217,6 +217,17 @@ button:hover {
                         <input type="file" class="form-control m-input" name="dok">
                     </div>
                 </div>
+                
+<!--                <div class="row">
+                <div class="col-md-4">
+                    <label><b>Integrasi Oracle</b></label>
+                    <select id="id_to_oracle" name="to_oracle" class="form-control input-sm select">
+                    <option value="0">Tidak</option>
+                    <option value="1">Ya</option>
+                    </select>
+                </div>
+                      <div class="col-md-8"></div>
+                      </div>-->
                 <!-- <div class="form-group m-form__group m--margin-top-10">
                     <h5 class="m-portlet__head-text"><strong>Penilaian Vendor</strong></h5>
                 </div>
@@ -250,21 +261,11 @@ button:hover {
                 
                 <!-- <div style="overflow:auto;"> -->
                     <!-- <div style="float:right;"> -->
+                    <br>
                             <a href="<?php echo base_url('procurement/ias/home')?>" class="btn red">Cancel</a>
-
-                        <?php if (empty($done_termin)) {
-                        if (!empty($last_termin)) {
-                                if($quant->quant == $po_dtl->TTL_QTY){?>
-                            <button type="submit" class="btn blue">Send</button>
-                        <?php }else{?>
-                            <label class="control-label" style="text-align: left;">Tidak dapat menambah penilaian termin akhir. Item belum diterima 100%.</label>
-                            <?php }
-                        }else{ ?>
-                            <button type="submit" class="btn blue">Send</button>
-                        <?php }
-                        }else{?>
-                            <label class="control-label" style="text-align: left;">Penilaian sudah selesai. Tidak dapat menambah penilaian termin.</label>
-                        <?php } ?>
+							<button type="submit" class="btn blue">Send</button>
+                        
+					
                     <!-- </div> -->
                 <!-- </div> -->
                 </form>
@@ -290,55 +291,55 @@ button:hover {
 $("#cek").change(function() {
     if(this.checked) {
         $('#denda').val($('#dendas').val());
-        var dpp = parseInt($("input[name='dpp']").val());
-        var ppn = parseInt($("input[name='ppn']").val());
-        var pph = parseInt($("input[name='pph']").val());
-        var denda = parseInt($("input[name='denda']").val());
+        var dpp = parseInt($("input[name='dpp']").val().replace(/,/g, ''));
+        var ppn = parseInt($("input[name='ppn']").val().replace(/,/g, ''));
+        var pph = parseInt($("input[name='pph']").val().replace(/,/g, ''));
+        var denda = parseInt($("input[name='denda']").val().replace(/,/g, ''));
 
-        $("input[name='dibayarkan']").val(dpp + ppn - pph - denda);
+        $("input[name='dibayarkan']").val(number_format(dpp + ppn - pph - denda,0));
     }else{
         $('#denda').val(0);
-        var dpp = parseInt($("input[name='dpp']").val());
-        var ppn = parseInt($("input[name='ppn']").val());
-        var pph = parseInt($("input[name='pph']").val());
-        var denda = parseInt($("input[name='denda']").val());
-        $("input[name='dibayarkan']").val(dpp + ppn - pph - denda);
+        var dpp = parseInt($("input[name='dpp']").val().replace(/,/g, ''));
+        var ppn = parseInt($("input[name='ppn']").val().replace(/,/g, ''));
+        var pph = parseInt($("input[name='pph']").val().replace(/,/g, ''));
+        var denda = parseInt($("input[name='denda']").val().replace(/,/g, ''));
+        $("input[name='dibayarkan']").val(number_format(dpp + ppn - pph - denda,0));
     }
 });
 $("input[name='dpp']").on("keyup", function(){
-    var dpp = parseInt($(this).val());
-    var ppn = parseInt($("input[name='ppn']").val());
-    var pph = parseInt($("input[name='pph']").val());
-    var denda = parseInt($("input[name='denda']").val());
+    var dpp = parseInt($(this).val().replace(/,/g, ''));
+    var ppn = parseInt($("input[name='ppn']").val().replace(/,/g, ''));
+    var pph = parseInt($("input[name='pph']").val().replace(/,/g, ''));
+    var denda = parseInt($("input[name='denda']").val().replace(/,/g, ''));
 
-    $("input[name='dibayarkan']").val(dpp + ppn - pph - denda);
+    $("input[name='dibayarkan']").val(number_format(dpp + ppn - pph - denda,0));
 });
 
 $("input[name='ppn']").on("keyup", function(){
-    var dpp = parseInt($("input[name='dpp']").val());
-    var ppn = parseInt($(this).val());
-    var pph = parseInt($("input[name='pph']").val());
-    var denda = parseInt($("input[name='denda']").val());
+    var dpp = parseInt($("input[name='dpp']").val().replace(/,/g, ''));
+    var ppn = parseInt($(this).val().replace(/,/g, ''));
+    var pph = parseInt($("input[name='pph']").val().replace(/,/g, ''));
+    var denda = parseInt($("input[name='denda']").val().replace(/,/g, ''));
 
-    $("input[name='dibayarkan']").val(dpp + ppn - pph - denda);
+    $("input[name='dibayarkan']").val(number_format(dpp + ppn - pph - denda,0));
 });
 
 $("input[name='pph']").on("keyup", function(){
-    var dpp = parseInt($("input[name='dpp']").val());
-    var ppn = parseInt($("input[name='ppn']").val());
-    var pph = parseInt($(this).val());
-    var denda = parseInt($("input[name='denda']").val());
+    var dpp = parseInt($("input[name='dpp']").val().replace(/,/g, ''));
+    var ppn = parseInt($("input[name='ppn']").val().replace(/,/g, ''));
+    var pph = parseInt($(this).val().replace(/,/g, ''));
+    var denda = parseInt($("input[name='denda']").val().replace(/,/g, ''));
 
-    $("input[name='dibayarkan']").val(dpp + ppn - pph - denda);
+    $("input[name='dibayarkan']").val(number_format(dpp + ppn - pph - denda,0));
 });
 
 $("input[name='denda']").on("keyup", function(){
-    var dpp = parseInt($("input[name='dpp']").val());
-    var ppn = parseInt($("input[name='ppn']").val());
-    var pph = parseInt($("input[name='pph']").val());
-    var denda = parseInt($(this).val());
+    var dpp = parseInt($("input[name='dpp']").val().replace(/,/g, ''));
+    var ppn = parseInt($("input[name='ppn']").val().replace(/,/g, ''));
+    var pph = parseInt($("input[name='pph']").val().replace(/,/g, ''));
+    var denda = parseInt($(this).val().replace(/,/g, ''));
 
-    $("input[name='dibayarkan']").val(dpp + ppn - pph - denda);
+    $("input[name='dibayarkan']").val(number_format(dpp + ppn - pph - denda,0));
 });
 
 $('#edit_presentase').click(function(){

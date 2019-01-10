@@ -97,7 +97,7 @@
                             <input type="hidden" value="0" name="TmpAksiBtn" id="idTmpAksiBtn">
                             <div class="form-body">
                                 <div class="form-group">
-                                    <label class="control-label col-md-3">Deskripsi Hibah 
+                                    <label class="control-label col-md-3">Nama Barang
                                         <span class="required" aria-required="true"> * </span>
                                     </label>
                                     <div class="col-md-9">

@@ -35,6 +35,14 @@ class Sec_user_m extends CI_Model {
         return $query->result();
     }
 
+
+      public function tampil_branch() {
+        $sql = "select * from sec_usergroup";
+        $query = $this->db->query($sql);
+        $result = $query->result();
+        return $result;
+    }
+
     
 }
 

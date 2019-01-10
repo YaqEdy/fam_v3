@@ -5,55 +5,87 @@
     var selected = [];
     var iItemIDDelete = "";
     var iItemID = "";
+
+    var viewMode = "";
+    var minViewMode = "";
+    var formatDate = "dd-mm-yyyy";
+
     jQuery(document).ready(function () {
         loadGridOutRequest();
-		$('.date-picker').datepicker({
-			orientation: "left",
-			format: "dd/mm/yyyy",
-			autoclose: true
-		});
+//        ComponentsDateTimePickers.init();
+        myDate();
     });
-    // btnStart();
-	
+    function myDate() {
+        $('.date-picker').datepicker({
+            orientation: "left",
+            format: formatDate,
+            viewMode: viewMode,
+            minViewMode: minViewMode,
+            autoclose: true
+        });
+    }
+   
+    function periodeSewa(val) {
+        $('.date-picker').datepicker('remove');
+        if (val == 'Hari') {
+            viewMode = "";
+            minViewMode = "";
+            formatDate = "dd-mm-yyyy";
+        } else if (val == 'Bulan') {
+            viewMode = "months";
+            minViewMode = "months";
+            formatDate = "mm-yyyy";
+        } else if (val == 'Tahun') {
+            viewMode = "years";
+            minViewMode = "years";
+            formatDate = "yyyy";
+        } else {
+            viewMode = "";
+            minViewMode = "";
+            formatDate = "dd-mm-yyyy";
+        }
+        myDate();
+    }
 
-	function check_JenisPR(a){
-		if(a=="Tambahan" || a=="Ulang"){
-			$("#PR_rev").show();
-		}
-		// else if(a=="Sewa"){
-			// $("#PR_sewa").show();
-		// }
-		else{
-			$("#PR_rev").hide();
-			// $("#PR_sewa").hide();
-		}
-	}
-	function delete_pr(a){
-		if (confirm("Anda yakin menghapus PR ini?") == true) {
-			$.post('<?= base_url("/procurement/purchase_request/delete_Request");?>', {
-				RequestID : a
-			},
-			function(data){
-					alert("Data berhasil dihapus");
-					location.reload();
-			})
-		} else {
-			//alert("no");
-		}
-		
-	}
-	
-	function getTypeItem(a){
-		$.post('<?= base_url("/procurement/purchase_request/get_dropdown_ItemType");?>', {
-			ItemClass : a
-		},
-		function(data){
-			$('#drp_ItemType').html(data);
-		})
-	}
-	
-	function loadGridItemList(ItemType) {
-		$('#table_gridItemList').dataTable().fnDestroy();
+
+    function check_JenisPR(a) {
+        if (a == "Tambahan" || a == "Ulang") {
+            $("#PR_rev").show();
+        }
+        // else if(a=="Sewa"){
+        // $("#PR_sewa").show();
+        // }
+        else {
+            $("#PR_rev").hide();
+            // $("#PR_sewa").hide();
+        }
+    }
+    function delete_pr(a) {
+        if (confirm("Anda yakin menghapus PR ini?") == true) {
+            $.post('<?= base_url("/procurement/purchase_request/delete_Request"); ?>', {
+                RequestID: a
+            },
+                    function (data) {
+                        alert("Data berhasil dihapus");
+                        location.reload();
+                    })
+        } else {
+            //alert("no");
+        }
+
+    }
+
+    function getTypeItem(a) {
+        $.post('<?= base_url("/procurement/purchase_request/get_dropdown_ItemType"); ?>', {
+            ItemClass: a
+        },
+                function (data) {
+                    $('#drp_ItemType').html(data);
+                })
+    }
+
+    function loadGridItemList(ItemType) {
+        $('#table_gridItemList').dataTable().fnDestroy();
         $('#mdl_Add').modal({show: true});
         dataTable = $('#table_gridItemList').DataTable({
             "lengthMenu": [
@@ -66,7 +98,7 @@
             "processing": true,
             "serverSide": true,
             "ajax": {
-                url: "<?php echo base_url("/procurement/purchase_request/ajax_GridPopupItemList?ItemType="); ?>"+ItemType,
+                url: "<?php echo base_url("/procurement/purchase_request/ajax_GridPopupItemList?ItemType="); ?>" + ItemType,
                 type: "get", // method  , by default get
                 error: function () {  // error handling
                     $(".table_gridItemList-error").html("");
@@ -87,18 +119,19 @@
         });
     }
 
-	function formatMoney(n, c, d, t) {
-		var c = isNaN(c = Math.abs(c)) ? 2 : c,
-			d = d == undefined ? "." : d,
-			t = t == undefined ? "," : t,
-			s = n < 0 ? "-" : "",
-			i = String(parseInt(n = Math.abs(Number(n) || 0).toFixed(c))),
-			j = (j = i.length) > 3 ? j % 3 : 0;
-		
-		return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
-	};
-	
-	
+    function formatMoney(n, c, d, t) {
+        var c = isNaN(c = Math.abs(c)) ? 2 : c,
+                d = d == undefined ? "." : d,
+                t = t == undefined ? "," : t,
+                s = n < 0 ? "-" : "",
+                i = String(parseInt(n = Math.abs(Number(n) || 0).toFixed(c))),
+                j = (j = i.length) > 3 ? j % 3 : 0;
+
+        return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+    }
+    ;
+
+
 //===== form request =====
     function onDDCategory() {
         var RequestID = document.getElementById('ReqTypeID').value;
@@ -112,14 +145,13 @@
                 $('#load_reqcategory').html(jawaban);
             },
         });
-		if(RequestID == 3){
-			$("#PR_sewa").show();
-			$("#PR_sewa_tgl").show();
-		}
-		else{
-			$("#PR_sewa").hide();
-			$("#PR_sewa_tgl").hide();
-		}
+        if (RequestID == 3) {
+            $("#PR_sewa").show();
+            $("#PR_sewa_tgl").show();
+        } else {
+            $("#PR_sewa").hide();
+            $("#PR_sewa_tgl").hide();
+        }
     }
 
     function itemList() {
@@ -129,7 +161,7 @@
     function loadGridItemList_old() {
         console.log($("#ReqCategoryID").val());
         var iReqTypeID = document.getElementById('ReqTypeID').value;
-		
+
         $('#mdl_Add').modal({show: true});
         dataTable = $('#table_gridItemList').DataTable({
             "lengthMenu": [
@@ -164,20 +196,22 @@
     }
 
     function processItem() {
-		
+
         var rows_selected = dataTable.column(5).checkboxes.selected();
-		console.log(iItemID);
+        console.log(iItemID);
         if (iItemID == "") {
             iItemID = iItemID + rows_selected.join(",");
         } else {
             iItemID = iItemID + rows_selected.join(",");
         }
-		console.log(iItemID);
-		var last_str = iItemID.charAt( iItemID.length-1 );
-		console.log(last_str);
-		if(last_str !== ','){iItemID = iItemID + ',';}
-		console.log(iItemID);
-		$('#table_gridItemProcess').dataTable().fnDestroy();
+        console.log(iItemID);
+        var last_str = iItemID.charAt(iItemID.length - 1);
+        //console.log(last_str);
+        if (last_str !== ',') {
+            iItemID = iItemID + ',';
+        }
+        console.log(iItemID);
+        $('#table_gridItemProcess').dataTable().fnDestroy();
         dataTableItmPr = $('#table_gridItemProcess').DataTable({
             "lengthMenu": [
                 [5, 10, 15, 20, -1],
@@ -218,13 +252,13 @@
     }
 
     function totalPrice(a) {
-        $("#" + a.name).val(a.value * a.id);
+        $("#" + a.name).val(number_format(a.value * a.id,0));
         var ttlLength = $("#table_gridItemProcess_info").text().substring(18, 19);
         var total = 0;
         for (i = 0; i < parseInt(ttlLength); i++) {
-            total = total + parseInt($("#price_" + (i + 1)).val());
+            total = total + parseInt($("#price_" + (i + 1)).val().replace(/,/g, ''));
         }
-        $("#myBudgetUsed").text("Rp. " + total);
+        $("#myBudgetUsed").text("Rp. " + number_format(total,0));
         $("#BudgetUsed").val(total);
     }
 
@@ -251,7 +285,7 @@
             async: false,
             dataType: "JSON",
             success: function (e) {
-				$("#fm_datasave")[0].reset();
+                $("#fm_datasave")[0].reset();
                 if (e.istatus) {
                     alert(e.iremarks);
                 } else {
@@ -263,7 +297,7 @@
                 alert("error");
             }
         });
-		
+
     });
 
     function onjenisperiode(val) {
@@ -309,14 +343,14 @@
     function search(e) {
         iSearch = e;
     }
-	function loadGridOutRequest(){
-		// alert();
-		$.post('<?= base_url("/procurement/purchase_request/ajax_GridOutRequest");?>', {
-		},
-		function(data){
-			$("#table_outReq").html(data);
-		})
-	}
+    function loadGridOutRequest() {
+        // alert();
+        $.post('<?= base_url("/procurement/purchase_request/ajax_GridOutRequest"); ?>', {
+        },
+                function (data) {
+                    $("#table_outReq").html(data);
+                })
+    }
     function loadGridOutRequest_old() {
         dataTable = $('#table_gridOutRequest').DataTable({
             dom: 'C<"clear">l<"toolbar">frtip',
@@ -338,7 +372,7 @@
                 [5, 10, 15, 20, -1],
                 [5, 10, 15, 20, "All"] // change per page values here
             ],
-               // set the initial value
+            // set the initial value
             "autoWidth": true,
             "pageLength": 5,
             "processing": true,
@@ -585,7 +619,7 @@
         $('#mdl_Update').find('.modal-title').text('Update');
         var iclosestRow = $(this).closest('tr');
         var idata = dataTable.row(iclosestRow).data();
-		// console.log(idata);
+        // console.log(idata);
         ddBranch(idata[10], idata[11]);
         $("#BudgetCOA").val(idata[1]);
         $("#BudgetValue").val(idata[5]);

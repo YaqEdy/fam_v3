@@ -22,7 +22,7 @@
             </div>
             <div class="portlet-body">
                 <div class="tab-content">
-					<h5 class="sbold uppercase">List Verifikasi Vendor</h5>
+					<!-- <h5 class="sbold uppercase">List Verifikasi Vendor</h5> -->
                     <div class="panel panel-inverse">
                         <hr class="dotted">
 						<div id="list_verifikasi_vendor">

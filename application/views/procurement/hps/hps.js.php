@@ -56,7 +56,7 @@
                 "columnDefs": [
                  {"targets": [-1], "orderable": false, "searchable": false},
 
-                {"targets": [6], "visible": false, "searchable": true},
+                // {"targets": [7], "visible": false, "searchable": true},
 
                 // {"targets": [0], "checkboxes": {"selectRow": true}},
                 ],
@@ -141,27 +141,27 @@
         });
     });
 
-    $('#table_gridHPS').on('click', '#btnDelete', function () {
-        var iclosestRow = $(this).closest('tr');
-        var idata = dataTable.row(iclosestRow).data();
+    // $('#table_gridHPS').on('click', '#btnDelete', function () {
+    //     var iclosestRow = $(this).closest('tr');
+    //     var idata = dataTable.row(iclosestRow).data();
 
-        $.ajax({
-            type: "POST",
-            cache: false,
-            dataType: "JSON",
-            url: "<?php echo base_url("/procurement/hps/ajax_Delete"); ?>", // json datasource
-            data: {sID: idata[6]},
-            success: function (e) {
-                // console.log(e);
-                if (e.istatus == true) {
-                    alert(e.iremarks);
-                    $('#table_gridHPS').DataTable().ajax.reload();
-                } else {
-                    alert(e.iremarks);
-                }
-            }
-        });
-    });
+    //     $.ajax({
+    //         type: "POST",
+    //         cache: false,
+    //         dataType: "JSON",
+    //         url: "<?php echo base_url("/procurement/hps/ajax_Delete"); ?>", // json datasource
+    //         data: {Hps_id: idata[6]},
+    //         success: function (e) {
+    //             // console.log(e);
+    //             if (e.istatus == true) {
+    //                 alert(e.iremarks);
+    //                 $('#table_gridHPS').DataTable().ajax.reload();
+    //             } else {
+    //                 alert(e.iremarks);
+    //             }
+    //         }
+    //     });
+    // });
 
 //    function onUpload() {
 //        dd_Zone("");
@@ -187,6 +187,53 @@
         });
     });
 
+
+         function editData(input) {
+            // alert('erv');
+        $('#myadd').trigger("click");
+        // $('#table_gridUSER').on('click', '#btnUpdate2');
+        $.post("tampil_dataHPS",
+            {
+                'HpsID': input //id yang dilempar
+            },
+            function (data) {
+                console.log(data);
+                if (data.data_res.length > 0) {
+                    // $group = '1';
+                    for (i = 0; i < data.data_res.length; i++) {
+                        $('#HpsID').val(data.data_res[i].HpsID);
+                        $('#ItemName').val(data.data_res[i].ItemName);
+                        $('#id_btnUbah').attr("disabled", false);
+                        $('#id_btnSimpan').attr("disabled", true);
+                        $('#id_data').val(input);
+                        // id_groupUser_edit
+                    }
+                }       
+            }, "JSON");
+    }
+
+    function hapus_hps_js(input) {
+        // alert(input);
+//        ajaxModal();
+        var r = confirm('Do you want to remove this file ?');
+        if (r == true) {
+             $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "hapushps",
+                data: {data : input},
+                success: function (data) {
+                    $('#table_gridHPS').DataTable().ajax.reload();
+                    UIToastr.init(data.tipePesan, data.pesan);
+                }
+
+            });
+        }else{
+            return false;
+        }
+       
+        
+    }
 
 
 </script>

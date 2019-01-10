@@ -1,15 +1,15 @@
 <!-- BEGIN PAGE BREADCRUMB --> 
 
 <style type="text/css">
-    
 
 
-    table#table_gridCategory th:nth-child(2){
-        display: none;
-    } 
-    table#table_gridCategory td:nth-child(2){
-        display: none;
-    }
+
+table#table_gridCategory th:nth-child(2){
+    display: none;
+} 
+table#table_gridCategory td:nth-child(2){
+    display: none;
+}
 
 input {
   padding: 10px;
@@ -89,7 +89,7 @@ button:hover {
                 </div>
             </div>
             <div class="portlet-body">
-                  <form role="form"  method="post" id="id_from_sec_group_user"  action="<?php echo base_url('procurement/cek_barang/savedata'); ?>">
+              <form role="form"  method="post" id="id_from_sec_group_user"  action="<?php echo base_url('procurement/cek_barang/savedata'); ?>">
                 <div class="form-horizontal col-md-12">
                     <input type="hidden" name="id_po" value="<?php echo $ias->ID_PO?>">
                     <div class="form-group col-md-6">
@@ -146,75 +146,120 @@ button:hover {
                                 <th>Jumlah Barang</th>
                                 <th>Belum Terima</th>
                                 <th>Nama Barang</th>
+                                <?php
+                                $nilai = 0;
+                                foreach ($termin as $listjmltermin){
+                                    $nilai = $nilai + 1;
+                                }
+                                if ($nilai > 0){
+                                    ?>
+                                    <th>Persentase</th>
+                                    <?php
+                                } else {?>
                                 <th>QTY</th>
-                                <th>Tanggal Terima</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                                <?php
+                            }?>
+                            <th>Tanggal Terima</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         <?php
-                        foreach ($lists as $list){?>
+                        if ($nilai > 0){
+                            foreach ($list_datatermin as $list){?>
                             <tr>
                                 <td><?php echo $list->QTY?></td>
                                 <td><?php echo ($list->QTY) - ($list->kurang);?></td>
-                                <td><input type="hidden" name="podetail[]" value="<?php echo $list->ID_PO_DETAIL?>"><input type="hidden" name="itemid[]" value="<?php echo $list->ITEM_ID?>"><input type="text" name="nama_barang[]" value="<?php echo $list->NAMA_BARANG?>" readonly></td>
-                                <td><input type="number" name="qty[]" max="<?php echo ($list->QTY) - ($list->kurang);?>" value=""></td>
-                                <td><input type="text" name="tgl_terima[]" class="datepicker"></td>
-                            </tr>
-                        <?php
-                    }?>
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div class="m-portlet__body col-md-12">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th scope="col">Nama Barang</th>
-                                <th scope="col">QTY</th>
-                                <th scope="col">Tanggal Terima</th>
-                                <th scope="col">Penerima</th>
-                                <th scope="col">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        <?php foreach($barang as $item){?>
-                            <tr>
-                                <td><?php echo $item->NAMA_BARANG?></td>
-                                <td><?php echo $item->QTY?></td>
-                                <td><?php echo $item->TGL_TERIMA?></td>
-                                <td><?php echo $item->CREATE_BY?></td>
-                                <?php foreach($lists as $list){
-                                if ($list->ID_PO_DETAIL == $item->ID_PO_DETAIL) {
-                                    if($list->ITEM_ID == $item->ITEM_ID){
-                                        if((($list->QTY) - ($list->kurang)) == 0){?>
-                                <td><a class="btn blue" href="javascript:void(0)" title="Edit" onclick="edit_sn(<?php echo $item->ID?>, <?php echo $item->ID_PO_DETAIL?>)">Edit SN</a></td>
-                                <?php }else{?>
-                                <td></td>
-                                    <?php }
-                                        }
-                                    }
-                                }?>
-                            </tr>
-                        <?php }?>
-                        </tbody>
-                    </table>
-                </div>
-                <!-- <div style="overflow:auto;"> -->
-                    <!-- <div style="float:right;"> -->
-                            <button type="submit" name="repr" value="PR" class="btn blue">RePR</button>
-                            <button type="submit" name="repo" value="PO" class="btn blue">RePO</button>
-                            <button type="submit" name="simpan" value="Simpan" class="btn blue">Simpan</button>
-                    <!-- </div> -->
-                <!-- </div> -->
-                </form>
+                                <td>
+                                    <input type="hidden" name="podetail[]" value="<?php echo $list->ID_PO_DETAIL?>">
+                                    <input type="hidden" name="itemid[]" value="<?php echo $list->ITEM_ID?>">
+                                    <input type="hidden" name="nilaitermin[]" value="<?php echo $nilai?>">
 
-                </div>
+                                    <input type="text" name="nama_barang[]" value="<?php echo $list->NAMA_BARANG?>" readonly></td>
+                                    <td><input type="number" autocomplete="off" name="qty[]" max="<?php echo 100 - ($list->kurangpersen);?>" value=""></td>
+                                    <td><input type="text" autocomplete="off" name="tgl_terima[]" class="datepicker"></td>
+                                </tr>
+                                <?php
+                            }?>
+                            <?php
+                        } else {
+                            foreach ($lists as $list){?>
+                            <tr>
+                                <td><?php echo $list->QTY?></td>
+                                <td><?php echo ($list->QTY) - ($list->kurang);?></td>
+                                <td>
+                                    <input type="hidden" name="podetail[]" value="<?php echo $list->ID_PO_DETAIL?>">
+                                    <input type="hidden" name="itemid[]" value="<?php echo $list->ITEM_ID?>">
+                                    <input type="hidden" name="nilaitermin[]" value="<?php echo $nilai?>">
 
+                                    <input type="text" name="nama_barang[]" value="<?php echo $list->NAMA_BARANG?>" readonly></td>
+                                    <td><input type="number" autocomplete="off" name="qty[]" max="<?php echo ($list->QTY) - ($list->kurang);?>" value=""></td>
+                                    <td><input type="text" autocomplete="off"  name="tgl_terima[]" class="datepicker"></td>
+                                </tr>
+                                <?php
+                            }
+                        }?>
+                    </tbody>
+                </table>
             </div>
+
+            <div class="m-portlet__body col-md-12">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nama Barang</th>
+                            <?php if ($nilai > 0){ ?>
+                                <th scope="col">Persentase</th>
+                            <?php } else { ?>
+                                <th scope="col">QTY</th>
+                            <?php } ?>
+                        <th scope="col">Tanggal Terima</th>
+                        <th scope="col">Penerima</th>
+                        <th scope="col">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach($barang as $item){?>
+                    <tr>
+                        <td><?php echo $item->NAMA_BARANG?></td>
+                        <td><?php 
+                        if ($nilai > 0) { 
+                            echo $item->PERSENTASE_TERIMA_BRG;
+                        } else {
+                            echo $item->QTY;
+                        } ?></td>
+                        <td><?php echo date('d-m-Y', strtotime($item->TGL_TERIMA))?></td>
+                        <td><?php echo $item->CREATE_BY?></td>
+                        <?php foreach($lists as $list){
+                            if ($list->ID_PO_DETAIL == $item->ID_PO_DETAIL) {
+                                if($list->ITEM_ID == $item->ITEM_ID){
+                                    if((($list->QTY) - ($list->kurang)) == 0){?>
+                                    <td><a class="btn blue" href="javascript:void(0)" title="Edit" onclick="edit_sn(<?php echo $item->ID?>, <?php echo $item->ID_PO_DETAIL?>)">Edit SN</a></td>
+                                    <?php }else{?>
+                                    <td></td>
+                                    <?php }
+                                }
+                            }
+                        }?>
+                    </tr>
+                    <?php }?>
+                </tbody>
+            </table>
         </div>
-        <!-- END VALIDATION STATES-->
+        <!-- <div style="overflow:auto;"> -->
+            <!-- <div style="float:right;"> -->
+                <button type="submit" name="repr" value="PR" class="btn blue">RePR</button>
+                <button type="submit" name="repo" value="PO" class="btn blue">RePO</button>
+                <button type="submit" name="simpan" value="Simpan" class="btn blue">Simpan</button>
+                <!-- </div> -->
+                <!-- </div> -->
+            </form>
+
+        </div>
+
     </div>
+</div>
+<!-- END VALIDATION STATES-->
+</div>
 </div>
 
 
@@ -240,7 +285,7 @@ button:hover {
                             <th>Serial Number</th>
                         </thead>
                         <tbody>
-                            
+
                         </tbody>
                     </table>
                 </form>
@@ -258,44 +303,44 @@ button:hover {
 <?php $this->load->view('app.min.inc.php'); ?>
 
 <script>
-$("input[name='dpp']").on("keyup", function(){
-    var dpp = parseInt($(this).val());
-    var ppn = parseInt($("input[name='ppn']").val());
-    var pph = parseInt($("input[name='pph']").val());
-    var denda = parseInt($("input[name='denda']").val());
+    $("input[name='dpp']").on("keyup", function(){
+        var dpp = parseInt($(this).val());
+        var ppn = parseInt($("input[name='ppn']").val());
+        var pph = parseInt($("input[name='pph']").val());
+        var denda = parseInt($("input[name='denda']").val());
 
-    $("input[name='dibayarkan']").val(dpp + ppn - pph - denda);
-});
+        $("input[name='dibayarkan']").val(dpp + ppn - pph - denda);
+    });
 
-$("input[name='ppn']").on("keyup", function(){
-    var dpp = parseInt($("input[name='dpp']").val());
-    var ppn = parseInt($(this).val());
-    var pph = parseInt($("input[name='pph']").val());
-    var denda = parseInt($("input[name='denda']").val());
+    $("input[name='ppn']").on("keyup", function(){
+        var dpp = parseInt($("input[name='dpp']").val());
+        var ppn = parseInt($(this).val());
+        var pph = parseInt($("input[name='pph']").val());
+        var denda = parseInt($("input[name='denda']").val());
 
-    $("input[name='dibayarkan']").val(dpp + ppn - pph - denda);
-});
+        $("input[name='dibayarkan']").val(dpp + ppn - pph - denda);
+    });
 
-$("input[name='pph']").on("keyup", function(){
-    var dpp = parseInt($("input[name='dpp']").val());
-    var ppn = parseInt($("input[name='ppn']").val());
-    var pph = parseInt($(this).val());
-    var denda = parseInt($("input[name='denda']").val());
+    $("input[name='pph']").on("keyup", function(){
+        var dpp = parseInt($("input[name='dpp']").val());
+        var ppn = parseInt($("input[name='ppn']").val());
+        var pph = parseInt($(this).val());
+        var denda = parseInt($("input[name='denda']").val());
 
-    $("input[name='dibayarkan']").val(dpp + ppn - pph - denda);
-});
+        $("input[name='dibayarkan']").val(dpp + ppn - pph - denda);
+    });
 
-$("input[name='denda']").on("keyup", function(){
-    var dpp = parseInt($("input[name='dpp']").val());
-    var ppn = parseInt($("input[name='ppn']").val());
-    var pph = parseInt($("input[name='pph']").val());
-    var denda = parseInt($(this).val());
+    $("input[name='denda']").on("keyup", function(){
+        var dpp = parseInt($("input[name='dpp']").val());
+        var ppn = parseInt($("input[name='ppn']").val());
+        var pph = parseInt($("input[name='pph']").val());
+        var denda = parseInt($(this).val());
 
-    $("input[name='dibayarkan']").val(dpp + ppn - pph - denda);
-});
+        $("input[name='dibayarkan']").val(dpp + ppn - pph - denda);
+    });
 
-var return_data = "<?php echo $var;?>";
-$('#varia1').html(return_data);
+    var return_data = "<?php echo $var;?>";
+    $('#varia1').html(return_data);
 // $('.varia').(function() {   
 //      $.ajax({
 //       url: "<?php echo base_url('procurement/ias/get_var');?>",
@@ -311,10 +356,10 @@ var num = 1;
 
 $(document).on('click', '.datepicker', function(){
    $(this).datepicker({
-        orientation: "left",
-        format: "dd/mm/yyyy",
-        autoclose: true
-    }).focus();
+    orientation: "left",
+    format: "dd/mm/yyyy",
+    autoclose: true
+}).focus();
    $(this).removeClass('datepicker');
 });
 
@@ -359,62 +404,62 @@ $("#add_val").click(function(){
 
 
 $("#varia1").change(function(){
-        var id = $(this).attr('id');
-        var lastid = id.substring(id.length-1, id.length);
-        var total = $('#nilai'+lastid+'').val();
-        $('#variable'+lastid+'').val($(this).find('option:selected').text());
-        var percent = $(this).val()/100;
-        $('#pxb'+lastid+'').val(percent*total);
-        var sum = 0;
-        $('.pxb').each(function(){
-            sum += parseInt(exp[0]);
-            $('#akhir').val(sum);
-        });
+    var id = $(this).attr('id');
+    var lastid = id.substring(id.length-1, id.length);
+    var total = $('#nilai'+lastid+'').val();
+    $('#variable'+lastid+'').val($(this).find('option:selected').text());
+    var percent = $(this).val()/100;
+    $('#pxb'+lastid+'').val(percent*total);
+    var sum = 0;
+    $('.pxb').each(function(){
+        sum += parseInt(exp[0]);
+        $('#akhir').val(sum);
     });
+});
 
-    $("#nilai1").on("keyup", function(){
-        var total = $(this).val();
-        var id = $(this).attr('id');
-        var lastid = id.substring(id.length-1, id.length);
-        var percent = $('#varia'+lastid+'').val()/100;
-        $('#pxb'+lastid+'').val(percent*total);
-        var sum = 0;
-        $('.pxb').each(function(){
-            sum += parseInt(this.value);
-            $('#akhir').val(sum);
-        });
-        console.log(sum);
+$("#nilai1").on("keyup", function(){
+    var total = $(this).val();
+    var id = $(this).attr('id');
+    var lastid = id.substring(id.length-1, id.length);
+    var percent = $('#varia'+lastid+'').val()/100;
+    $('#pxb'+lastid+'').val(percent*total);
+    var sum = 0;
+    $('.pxb').each(function(){
+        sum += parseInt(this.value);
+        $('#akhir').val(sum);
     });
+    console.log(sum);
+});
 
-    function edit_sn(idpo, idtb)
-    {
-        $('#table_sn tbody').empty();
-        $.ajax({
-            url : "<?php echo base_url('procurement/cek_barang/get_sn/')?>/" + idpo + "/" +idtb,
-            type: "GET",
-            dataType: "JSON",
-            success: function(data)
-            {
-                for(var i = 0; i < data.length; i++){
-                    if (data[i].SN != null) {
-                        $('#table_sn tbody').append('<tr><td>'+data[i].ID_PO+'</td><td>'+data[i].ID_TB+'</td><td>'+data[i].ITEM_ID+'</td><td>'+data[i].QTY+'</td><td><input type="hidden" name="idsn[]" value="'+data[i].ID+'"><input type="text" name="sn[]" value="'+data[i].SN+'"></td></tr>');
-                    }else{
-                        $('#table_sn tbody').append('<tr><td>'+data[i].ID_PO+'</td><td>'+data[i].ID_TB+'</td><td>'+data[i].ITEM_ID+'</td><td>'+data[i].QTY+'</td><td><input type="hidden" name="idsn[]" value="'+data[i].ID+'"><input type="text" name="sn[]" value=""></td></tr>');
-                    }
+function edit_sn(idpo, idtb)
+{
+    $('#table_sn tbody').empty();
+    $.ajax({
+        url : "<?php echo base_url('procurement/cek_barang/get_sn/')?>/" + idpo + "/" +idtb,
+        type: "GET",
+        dataType: "JSON",
+        success: function(data)
+        {
+            for(var i = 0; i < data.length; i++){
+                if (data[i].SN != null) {
+                    $('#table_sn tbody').append('<tr><td>'+data[i].ID_PO+'</td><td>'+data[i].ID_TB+'</td><td>'+data[i].ITEM_ID+'</td><td>'+data[i].QTY+'</td><td><input type="hidden" name="idsn[]" value="'+data[i].ID+'"><input type="text" name="sn[]" value="'+data[i].SN+'"></td></tr>');
+                }else{
+                    $('#table_sn tbody').append('<tr><td>'+data[i].ID_PO+'</td><td>'+data[i].ID_TB+'</td><td>'+data[i].ITEM_ID+'</td><td>'+data[i].QTY+'</td><td><input type="hidden" name="idsn[]" value="'+data[i].ID+'"><input type="text" name="sn[]" value=""></td></tr>');
                 }
+            }
 
                 $('#myModal').modal('show'); // show bootstrap modal when complete loaded
-     
+
             },
             error: function (jqXHR, textStatus, errorThrown)
             {
                 alert('Error get data from ajax');
             }
         });
-    }
+}
 
-    function save()
-    {
+function save()
+{
         $('#btnSave').text('saving...'); //change button text
         $('#btnSave').attr('disabled',true); //set button disable 
         $.ajax({
@@ -424,7 +469,7 @@ $("#varia1").change(function(){
             dataType: "JSON",
             success: function(data)
             {
-     
+
                 if(data.status) //if success close modal and reload ajax table
                 {
                     $('#myModal').modal('hide');
@@ -432,15 +477,15 @@ $("#varia1").change(function(){
 
                 $('#btnSave').text('save'); //change button text
                 $('#btnSave').attr('disabled',false); //set button enable 
-     
-     
+
+
             },
             error: function (jqXHR, textStatus, errorThrown)
             {
                 alert('Error adding / update data');
                 $('#btnSave').text('save'); //change button text
                 $('#btnSave').attr('disabled',false); //set button enable 
-     
+
             }
         });
     }

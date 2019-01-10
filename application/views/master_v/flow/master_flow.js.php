@@ -96,6 +96,7 @@
                         processData: false,
                         dataType: "JSON",
                         success: function (e) {
+                            $('#table_gridflow').DataTable().ajax.reload();
                             if(e.act){
                                 UIToastr.init(e.tipePesan, e.pesan);
                                 iPID=e.iPid;
@@ -123,6 +124,7 @@
                         processData: false,
                         dataType: "JSON",
                         success: function (e) {
+                            $('#table_gridflow').DataTable().ajax.reload();
                             if(e.act){
                                 UIToastr.init(e.tipePesan, e.pesan);
                                 iPID=e.iPid;
@@ -216,6 +218,7 @@
                         processData: false,
                         dataType: "JSON",
                         success: function (e) {
+                            $('#table_gridstatus').DataTable().ajax.reload();
                             if(e.act){
                                 UIToastr.init(e.tipePesan, e.pesan);
                                 iPID=e.iPid;
@@ -243,6 +246,7 @@
                         processData: false,
                         dataType: "JSON",
                         success: function (e) {
+                            $('#table_gridstatus').DataTable().ajax.reload();
                             if(e.act){
                                 UIToastr.init(e.tipePesan, e.pesan);
                                 iPID=e.iPid;
@@ -364,11 +368,11 @@
         </div>');
                 // dd_Zone("A");
             }, "lengthMenu": [
-                [10, 20, 50, -1],
-                [10, 20, 50, "All"] // change per page values here
+                [5, 10, 15, 20, -1],
+                [5, 10, 15, 20, "All"] // change per page values here
             ],
 //                // set the initial value
-            "pageLength": 10,
+            "pageLength": 5,
             "processing": true,
             "serverSide": true,
             "ajax": {
@@ -691,22 +695,23 @@
         $('#id_formRoom_flow').trigger("click");
         // Qty
         var res = val.split("#");
-        var id_flow_id = res[0];
-        var id_nama_flow = res[1];
-        var id_status_dari = res[2];
-        var id_aksi = res[3];
-        var id_status_ke = res[4];
-        var id_tipe = res[5];
-        var id_min_hps = res[6];
-        var id_max_hps = res[7];
+        var id_data = res[0];
+        var id_flow_id = res[1];
+        var id_nama_flow = res[2];
+        var id_status_dari = res[3];
+        var id_aksi = res[4];
+        var id_status_ke = res[5];
+        var id_tipe = res[6];
+        var id_min_hps = res[7];
+        var id_max_hps = res[8];
        
-
+        $('#id_data').val(id_data);
         $('#id_flow_id').val(id_flow_id);
         $('#id_nama_flow').val(id_nama_flow);
-        $('#id_status_dari').val(id_status_dari);
+        $('#id_status_dari').select2('val', id_status_dari);
         $('#id_aksi').val(id_aksi);
-        $('#id_status_ke').val(id_status_ke);
-        $('#id_tipe').val(id_tipe);
+        $('#id_status_ke').select2('val', id_status_ke);
+        $('#id_tipe').select2('val', id_tipe);
         $('#id_min_hps').val(id_min_hps);
         $('#id_max_hps').val(id_max_hps);
         // $('#ItemName').val(ItemName);
@@ -764,7 +769,7 @@
        // document.getElementById("id_grup_status").readOnly = true;
        
         $('#id_id').val(id_id);
-        $('#id_grup_status').val(id_grup_status);
+        $('#id_grup_status').select2('val', id_grup_status, true);
         $('#input_status').val(input_status);
 
 

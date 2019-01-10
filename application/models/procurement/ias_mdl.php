@@ -43,6 +43,17 @@ Class Ias_mdl extends CI_Model {
         return $querydata->result();
     }
 
+    function updatedatadetailpo($id_po_detail,$status,$id_po) {
+        $data = array(
+            'INTEGRASI_ORACLE' => $status
+        );
+        $this->db2 = $this->load->database('config1', true);
+        $this->db2->where('ID_PO_DETAIL', $id_po_detail);
+        $this->db2->where('ID_PO', $id_po);
+        $this->db2->update('TBL_T_PO_DETAIL', $data);
+        $this->db2->close();
+    }
+
     function sel_branch() {
         $db2 = $this->load->database('config1', true);
         $querydata = $db2->query("SELECT * FROM Mst_Branch where Is_trash=0");
@@ -74,7 +85,7 @@ Class Ias_mdl extends CI_Model {
 
     function get_ias($id) {
         $this->db->where('ID_PO', $id);
-        return $this->db->get('VW_IAS')->row();
+        return $this->db->get('VW_IAS_GRID')->row();
     }
 
     function get_all_ias($id) {
@@ -250,7 +261,7 @@ Class Ias_mdl extends CI_Model {
 //        $NILAITermin = $this->db->query("SELECT NILAI as TOTAL FROM TBL_T_TERMIN WHERE ID_PO_DETAIL=" . $id . " AND TERMIN=" . $CountIas . " ORDER BY TERMIN DESC")->row();
 
         $TotalDppPO = $this->db->query("select sum(SUB_TOTAL) as TOTAL from TBL_T_PO_DTL_TOTAL WHERE ID_PO_DETAIL =" . $id)->row()->TOTAL;
-        $CountIas = $this->db->query("SELECT COUNT(ID_PO_DETAIL)+1 COUNT_ FROM TBL_T_IAS WHERE ID_PO_DETAIL=" . $id)->row()->COUNT_;
+        $CountIas = $this->db->query("SELECT COUNT(ID_PO_DETAIL)+1 COUNT_ FROM TBL_T_IAS WHERE IS_TRASH=0 AND ID_PO_DETAIL=" . $id)->row()->COUNT_;
         $NILAITermin = $this->db->query("SELECT ".$TotalDppPO."*PERSENTASE/100 as TOTAL FROM TBL_T_TERMIN WHERE ID_PO_DETAIL=" . $id . " AND TERMIN=" . $CountIas . " ORDER BY TERMIN DESC")->row();
 
         return $NILAITermin;
@@ -263,7 +274,7 @@ Class Ias_mdl extends CI_Model {
 //        $NILAITermin = $this->db->query("SELECT A.NILAI*B.PERSEN_PPN/100 as PPN FROM TBL_T_TERMIN AS A INNER JOIN TBL_T_PO_DTL_TOTAL AS B ON A.ID_PO_DETAIL=B.ID_PO_DETAIL WHERE A.ID_PO_DETAIL=" . $id . " AND A.TERMIN=" . $CountIas . " ORDER BY A.TERMIN DESC")->row();
 
         $TotalDppPO = $this->db->query("select sum(PPN) as TOTAL from TBL_T_PO_DTL_TOTAL WHERE ID_PO_DETAIL =" . $id)->row()->TOTAL;
-        $CountIas = $this->db->query("SELECT COUNT(ID_PO_DETAIL)+1 COUNT_ FROM TBL_T_IAS WHERE ID_PO_DETAIL=" . $id)->row()->COUNT_;
+        $CountIas = $this->db->query("SELECT COUNT(ID_PO_DETAIL)+1 COUNT_ FROM TBL_T_IAS WHERE IS_TRASH=0 AND ID_PO_DETAIL=" . $id)->row()->COUNT_;
         $NILAITermin = $this->db->query("SELECT ".$TotalDppPO."*PERSENTASE/100 as PPN FROM TBL_T_TERMIN WHERE ID_PO_DETAIL=" . $id . " AND TERMIN=" . $CountIas . " ORDER BY TERMIN DESC")->row();
 
         return $NILAITermin;
@@ -272,7 +283,7 @@ Class Ias_mdl extends CI_Model {
         function get_pph($id) {
 //        inv PPH =  termin * %ppn(po)
         $TotalDppPO = $this->db->query("select sum(TOTAL) as TOTAL from TBL_T_PO_DTL_TOTAL WHERE ID_PO_DETAIL =" . $id)->row()->TOTAL;
-        $CountIas = $this->db->query("SELECT COUNT(ID_PO_DETAIL)+1 COUNT_ FROM TBL_T_IAS WHERE ID_PO_DETAIL=" . $id)->row()->COUNT_;
+        $CountIas = $this->db->query("SELECT COUNT(ID_PO_DETAIL)+1 COUNT_ FROM TBL_T_IAS WHERE IS_TRASH=0 AND ID_PO_DETAIL=" . $id)->row()->COUNT_;
         $PPH = $this->db->query("SELECT B.PPH*B.PERSEN_PPN/100 as PPH FROM TBL_T_TERMIN AS A INNER JOIN TBL_T_PO_DTL_TOTAL AS B ON A.ID_PO_DETAIL=B.ID_PO_DETAIL WHERE A.ID_PO_DETAIL=" . $id . " AND A.TERMIN=" . $CountIas . " ORDER BY A.TERMIN DESC")->row();
         return $PPH;
     }
@@ -304,6 +315,48 @@ Class Ias_mdl extends CI_Model {
         $get = $this->db->query($query);
         return $get->row();
     }
+    
+    public function get_division(){
+        $this->db->select('DivisionID');
+        $this->db->group_by('DivisionID'); 
+        return $this->db->get('TBL_REQUEST')->result();
+    }
+
+
+    public function get_cetak_ias($id) {
+        $query = "select b.ID_DOC,a.NO_DOC,a.TGL,b.NAMA_DOC,d.DPP,d.PPN,d.NomorRekening,d.NamaRekening,
+                    d.NamaBank,d.QTY,d.ItemName,d.DivisionID
+                    from TBL_T_IAS_DOC a
+                        LEFT JOIN  TBL_R_DOC b ON b.ID_DOC = a.NAMA_DOC
+                        LEFT JOIN  TBL_T_IAS c ON c.ID_IAS = a.ID_IAS
+                        LEFT JOIN  [dbo].[VW_G_IAS_DOC] d ON d.ID_IAS = a.ID_IAS
+                    WHERE a.ID_IAS='$id'";
+        // echo '<pre>'; die($query);
+        $get = $this->db->query($query);
+        return $get->result();
+    }
+
+     function get_cetak_po_1($id){
+         $query = "select * from VW_IAS_TO_ORC_DETAIL where ID='$id'";
+        // echo '<pre>'; die($query);
+        $get = $this->db->query($query);
+        return $get->result();
+    }
+
+         function get_cetak_pa($id){
+         $query = "select * from VW_G_PA where RequestID='$id'";
+        // echo '<pre>'; die($query);
+        $get = $this->db->query($query);
+        return $get->result();
+    }
+
+    //   function get_ctk_slip($id){
+    //      $query = "select * from VW_G_ROUTING_SLIP where ID_PO_DETAIL='$id' ORDER BY [order]";
+    //     // echo '<pre>'; die($query);
+    //     $get = $this->db->query($query);
+    //     return $get->result();
+    // }
+
 
 }
 

@@ -116,9 +116,9 @@
 							<form class="validator-form form-horizontal" id="fm_apppr" enctype="multipart/form-data" method="POST">
                                 <div class="validator-form form-horizontal" style="margin-top:2em">
                                     <div class="form-group">
-                                        <label class="control-label col-sm-3">Document Request </label>
+                                        <label class="control-label col-sm-3"></label>
                                         <div class="col-md-7">
-                                            <a href="<?=$path_doc?>" class="btn btn-success"><i class="fa fa-download"></i></a>
+                                            <a href="<?=$path_doc?>" class="btn btn-success"><i class="fa fa-download"></i> Download Dokumen Vendor</a>
 											
 										</div>
                                     </div>

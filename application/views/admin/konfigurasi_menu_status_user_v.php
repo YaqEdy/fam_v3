@@ -76,7 +76,7 @@
                             echo $data['nama'];
                             echo '</a>';
                             echo '<ul>';
-                            echo print_recursive_menu_all_li($data['child']);
+                            echo konfigurasi_menu($data['child']);
                             echo '</ul>';
                             echo '</li>';
                             $i++;
@@ -132,14 +132,13 @@
                             $("#jstree1").jstree('open_all');
 
                             for (i = 0; i < total_menu; i++) {
-                                if (data.data_menu[i].parent == 0){
-                                    $("#a" + data.data_menu[i].menu_id).trigger('click');
-
-                                }else{
-//
-                                    $("#a" + data.data_menu[i].menu_id + "_" + data.data_menu[i].parent).trigger('click');
-//                                alert("#" + data.data_menu[i].menu_id+ "_" + data.data_menu[i].parent)
-                                }
+//                                 if (data.data_menu[i].parent == 0){
+//                                     $("#a" + data.data_menu[i].menu_id).trigger('click');
+//                                 }else{
+//                                     $("#a" + data.data_menu[i].menu_id).trigger('click');
+// //                                alert("#" + data.data_menu[i].menu_id+ "_" + data.data_menu[i].parent)
+//                                 }
+                                $("#a" + data.data_menu[i].menu_id).trigger('click');
                             }
                         }, "json");
             }//if kd<>''

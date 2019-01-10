@@ -182,7 +182,7 @@ class approval_kadiv extends CI_Controller {
             $row[] = $idatatables->PIC;
             $row[] = $idatatables->JML_ITEM;
             $row[] = $idatatables->WIL_BALAI_LELANG;
-            $row[] = $idatatables->HARGA_PERKIRAAN;
+            // $row[] = $idatatables->HARGA_PERKIRAAN;
             $row[] = $idatatables->STATUS;
             
 
@@ -812,7 +812,7 @@ public function rejectdata(){
 
     $data = array(
  
-        'STATUS_KADIV' => 2,
+        'STATUS' => 2,
         'UPDATE_BY' => $id_user,
         'UPDATE_DATE' => date('Y-m-d H:i:s'),
 

@@ -18,6 +18,7 @@ class change_status extends CI_Controller {
             $this->load->model('global_m');
             $this->load->model('assetmanagement_m/change_status_m');
             $this->load->model('datatables_custom');
+            $this->load->model('datatables');
         }
     }
 
@@ -56,16 +57,26 @@ class change_status extends CI_Controller {
     }
 
 
- public function get_server_side() { 
-        $icolumn = array('ID', 'TGL_PENGAJUAN', 'PIC', 'JML_ITEM', 'WIL_BALAI_LELANG', 'HARGA_PERKIRAAN','CREATE_BY','CREATE_DATE');
+        public function get_server_side() { 
+        $icolumn = array('ID', 'TGL_PENGAJUAN', 'TGL_P_KOMITE', 'TGL_DISETUJUI', 'TGL_HARGA_LIMIT', 'TGL_BALAI_LELANG', 'TTL_HARGA_JUAL','name', 'JML_ITEM', 'WIL_BALAI_LELANG', 'HARGA', 'STATUS_DESC');
         // $iwhere = array('STATUS' => 0);
         $iorder = array('ID' => 'asc');
-        $list = $this->datatables_custom->get_datatables('TBL_T_ASSETS_PENJUALAN', $icolumn, $iorder);
+        $list = $this->datatables->get_datatables('VW_ASSET_PENJUALAN', $icolumn, $iorder);
             // print_r($list);
             // die();
         $data = array();
         $no = $_POST['start'];
         foreach ($list as $idatatables) {
+
+          if($idatatables->TGL_P_KOMITE == "" || $idatatables->TGL_DISETUJUI == "" || $idatatables->TGL_HARGA_LIMIT =="" || $idatatables->TGL_BALAI_LELANG == "" || $idatatables->TTL_HARGA_JUAL == "" ) {
+              
+              $button ='<a class="btn btn-sm btn-primary" href="#" id="btnUpdate" data-toggle="modal" data-target="#mdl_changestatus"
+              onclick="getstatus('.$idatatables->ID.')">Change Status</a>';
+
+          }else{
+
+              $button="";
+          }
 
             $no++;
             $row = array();
@@ -73,22 +84,21 @@ class change_status extends CI_Controller {
 
             $row[] = $idatatables->ID;
             $row[] = date('d-m-Y', strtotime($idatatables->TGL_PENGAJUAN));
-            $row[] = $idatatables->PIC;
+            $row[] = $idatatables->name;
             $row[] = $idatatables->JML_ITEM;
             $row[] = $idatatables->WIL_BALAI_LELANG;
-            $row[] = $idatatables->HARGA_PERKIRAAN;
-            $row[] = '';
-           
-
-            $row[] = '<a class="btn btn-sm btn-primary" href="#" id="btnUpdate" data-toggle="modal" data-target="#mdl_changestatus" onclick="getstatus('.$idatatables->ID.')">Change Status</a>';
+            $row[] = $idatatables->HARGA; 
+            $row[] = $idatatables->STATUS_DESC;
+            $row[] = $button;
             
             $data[] = $row;
         }
+        // print_r($data); die();
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->datatables_custom->count_all(),
-            "recordsFiltered" => $this->datatables_custom->count_filtered(),
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
             "data" => $data,
         );
 
@@ -102,7 +112,7 @@ public function get_datatransfer() {
     $icolumn = array('ID', 'TGL_PENGAJUAN', 'PIC', 'JML_ITEM', 'WIL_BALAI_LELANG', 'HARGA_PERKIRAAN','CREATE_BY','CREATE_DATE');
         // $iwhere = array('STATUS_TRANS' => 1);
     $iorder = array('ID' => 'asc');
-    $list = $this->datatables_custom->get_datatables('TBL_T_ASSETS_PENJUALAN', $icolumn, $iorder);
+    $list = $this->datatables->get_datatables('TBL_T_ASSETS_PENJUALAN', $icolumn, $iorder);
             // print_r($list);
             // die();
     $data = array();
@@ -128,8 +138,8 @@ public function get_datatransfer() {
 
     $output = array(
         "draw" => $_POST['draw'],
-        "recordsTotal" => $this->datatables_custom->count_all(),
-        "recordsFiltered" => $this->datatables_custom->count_filtered(),
+        "recordsTotal" => $this->datatables->count_all(),
+        "recordsFiltered" => $this->datatables->count_filtered(),
         "data" => $data,
     );
 
@@ -156,7 +166,7 @@ public function get_server_side_changestatus() {
    $where = $this->input->post('IDetail');
    $iwhere = array('ID_ASSET_PENJUALAN' => $where);
    $iorder = array('ID' => 'asc');
-   $list = $this->datatables_custom->get_datatables('VW_ASSET_CS', $icolumn, $iorder, $iwhere);
+   $list = $this->datatables->get_datatables('VW_ASSET_CS', $icolumn, $iorder, $iwhere);
             // print_r($iwhere);
             // die();
    $data = array();
@@ -194,8 +204,8 @@ public function get_server_side_changestatus() {
 
 $output = array(
     "draw" => $_POST['draw'],
-    "recordsTotal" => $this->datatables_custom->count_all(),
-    "recordsFiltered" => $this->datatables_custom->count_filtered(),
+    "recordsTotal" => $this->datatables->count_all(),
+    "recordsFiltered" => $this->datatables->count_filtered(),
     "data" => $data,
 );
 
@@ -263,7 +273,7 @@ public function get_server_side_kerusakan() {
         //     // $this->input->post('sSearch') => $_POST['search']['value']
         // );
    $iorder = array('ID_ASSET' => 'asc');
-   $list = $this->datatables_custom->get_datatables('VW_ASSET', $icolumn, $iorder, array(),array(),$ID_ASSET,'ID_ASSET');
+   $list = $this->datatables->get_datatables('VW_ASSET', $icolumn, $iorder, array(),array(),$ID_ASSET,'ID_ASSET');
             // print_r($list);
             // die();
    $data = array();
@@ -286,8 +296,8 @@ public function get_server_side_kerusakan() {
 
 $output = array(
     "draw" => $_POST['draw'],
-    "recordsTotal" => $this->datatables_custom->count_all(),
-    "recordsFiltered" => $this->datatables_custom->count_filtered(),
+    "recordsTotal" => $this->datatables->count_all(),
+    "recordsFiltered" => $this->datatables->count_filtered(),
     "data" => $data,
 );
 
@@ -312,7 +322,7 @@ public function get_server_side_pengajuan() {
         //     // $this->input->post('sSearch') => $_POST['search']['value']
         // );
    $iorder = array('ID_ASSET' => 'asc');
-   $list = $this->datatables_custom->get_datatables('VW_ASSET', $icolumn, $iorder, array(),array(),$ID_ASSET,'ID_ASSET');
+   $list = $this->datatables->get_datatables('VW_ASSET', $icolumn, $iorder, array(),array(),$ID_ASSET,'ID_ASSET');
             // print_r($list);
             // die();
    $data = array();
@@ -338,8 +348,8 @@ public function get_server_side_pengajuan() {
 
 $output = array(
     "draw" => $_POST['draw'],
-    "recordsTotal" => $this->datatables_custom->count_all(),
-    "recordsFiltered" => $this->datatables_custom->count_filtered(),
+    "recordsTotal" => $this->datatables->count_all(),
+    "recordsFiltered" => $this->datatables->count_filtered(),
     "data" => $data,
 );
 

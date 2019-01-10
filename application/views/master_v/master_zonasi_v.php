@@ -58,12 +58,9 @@
                                     <a class="btn btn-sm btn-primary" href="#" id="btnAdd" data-toggle="modal" data-target="#mdl_Update">Add Master Zonasi</a>
                                     <!-- <button class="btn btn-sm btn-default">Add Item Category</button> -->
                                 </div>
-                                <div class="col-md-2">
-                                    <select id="cat_itemclass" name="cat_itemclass" onchange="search(this.value)" class="form-control">
-                                        <option value="%">--All--</option>
-                                        <option value="1">Zone Name</option>
-                                    </select>
-                                </div>
+                                 <div class="col-md-2">
+                                        
+                                    </div> 
                                 <div class="col-md-2">
                                     <select id="statustype" name="statustype" onchange="status(this.value)" class="form-control">
                                         <option value="%">--All--</option>
@@ -384,7 +381,7 @@
                 {"targets": [4], "searchable": false, "orderable": false},
             ],
             "lengthMenu": [
-                [5, 10, 15, 20, -1],
+                [5, 10, 15, 20, 1000000],
                 [5, 10, 15, 20, "All"] // change per page values here
             ],
 //                // set the initial value

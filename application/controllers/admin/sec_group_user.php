@@ -9,6 +9,7 @@ class Sec_group_user extends CI_Controller {
         parent::__construct();
 
         $this->load->model('home_m');
+        $this->load->model('global_m');
         $this->load->model('admin/sec_group_user_m');
         session_start();
     }
@@ -18,7 +19,7 @@ class Sec_group_user extends CI_Controller {
             $this->login();
         } else {
             $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
-
+            // $this->load->model('global_m');
             //$data ['nama'] = $this->home_m->get_nama_kantor ();
             $this->template->set('title', 'home');
             $this->template->load('template/template1', 'global/index', $data);
@@ -61,13 +62,21 @@ class Sec_group_user extends CI_Controller {
     }
 
     function simpan() {
+//         die('asd');
         $desc_group_user = trim($this->input->post('descUsergroup'));
-        $id_group_user  = $this->sec_group_user_m->generateRandomString();
+        $id_group_user  = trim($this->global_m->getIdMax('usergroup_id','vw_sec_usergroup'));
+        // print_r($desc_group_user ); die();
+
         $data = array(
-            'usergroup_id' => $id_group_user,
+            'usergroup_id' => (int) $id_group_user,
             'usergroup_desc' => $desc_group_user
         );
-        $model = $this->sec_group_user_m->insert_group_user_m($data);
+
+        // print_r($data);die();
+        // $model = $this->global_m->simpan($table, $data);
+        $table = 'sec_usergroup';
+        // $model = $this->global_m->getIdMax($iid);
+        $model = $this->global_m->simpan($table, $data);
         if ($model) {
             $array = array(
                 'act' => 1,
@@ -86,6 +95,7 @@ class Sec_group_user extends CI_Controller {
     
 
     function ubah() {
+//        die('ya');
         $id_group_user = trim($this->input->post('idUsergroup'));
         $desc_group_user = trim($this->input->post('descUsergroup'));
         $data = array(

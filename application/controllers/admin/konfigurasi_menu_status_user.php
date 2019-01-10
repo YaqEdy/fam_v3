@@ -30,8 +30,8 @@ class Konfigurasi_menu_status_user extends CI_Controller {
         $menuId = $this->home_m->get_menu_id('admin/konfigurasi_menu_status_user/home');
         $data['menu_id'] = $menuId[0]->menu_id;
         $data['menu_parent'] = $menuId[0]->parent;
-        $this->auth->restrict($data['menu_id']);
-        $this->auth->cek_menu($data['menu_id']);
+        // $this->auth->restrict($data['menu_id']);
+        // $this->auth->cek_menu($data['menu_id']);
 
         if (isset($_POST["btnSimpan"])) {
             $this->simpan();
@@ -83,6 +83,8 @@ class Konfigurasi_menu_status_user extends CI_Controller {
         ///print_r($data_menu);
         //die($menu_allow);
         $simpan = $this->konfigurasi_menu_status_user_m->update_menu_status_user_m($data_menu, $status_user);
+        // $this->session->set_flashdata('success', 'Simpan user berhasil');
+        // redirect('admin/konfigurasi_menu_status_user/home');
         if ($simpan) {
             $notifikasi = Array(
                 'msgType' => 'success',

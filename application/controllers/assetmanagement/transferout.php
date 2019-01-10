@@ -115,7 +115,7 @@ class transferout extends CI_Controller {
             'PENGIRIM','RESI','STATUS_TRANS');
         // $iwhere = array('STATUS_TRANS' => 1);
         $iorder = array('ID' => 'asc');
-        $list = $this->datatables_custom->get_datatables('TBL_T_ASSETS', $icolumn, $iorder);
+        $list = $this->datatables->get_datatables('TBL_T_ASSETS', $icolumn, $iorder);
             // print_r($list);
             // die();
         $data = array();
@@ -129,7 +129,7 @@ class transferout extends CI_Controller {
             $row[] = $idatatables->ID;
             $row[] = $idatatables->BRANCH;
             $row[] = $idatatables->DIV;
-            $row[] = '';
+         
             $row[] = $idatatables->BRANCH;
             $row[] = date('d-m-Y', strtotime($idatatables->TGL_PENGIRIMAN));
             $row[] = $idatatables->PENGIRIM;
@@ -141,8 +141,8 @@ class transferout extends CI_Controller {
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->datatables_custom->count_all(),
-            "recordsFiltered" => $this->datatables_custom->count_filtered(),
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
             "data" => $data,
         );
 
@@ -159,7 +159,7 @@ class transferout extends CI_Controller {
             'PENGIRIM','RESI','STATUS_TRANS');
         $iwhere = array('STATUS_TRANS' => 1);    
         $iorder = array('ID' => 'asc');
-        $list = $this->datatables_custom->get_datatables('TBL_T_ASSETS', $icolumn, $iorder, $iwhere);
+        $list = $this->datatables->get_datatables('TBL_T_ASSETS', $icolumn, $iorder, $iwhere);
             // print_r($list);
             // die();
 
@@ -174,7 +174,7 @@ class transferout extends CI_Controller {
             $row[] = $idatatables->ID;
             $row[] = $idatatables->BRANCH;
             $row[] = $idatatables->DIV;
-            $row[] = '';
+         
             $row[] = $idatatables->BRANCH;
             $row[] = date('d-m-Y', strtotime($idatatables->TGL_PENGIRIMAN));
             $row[] = $idatatables->PENGIRIM;
@@ -187,8 +187,8 @@ class transferout extends CI_Controller {
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->datatables_custom->count_all(),
-            "recordsFiltered" => $this->datatables_custom->count_filtered(),
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
             "data" => $data,
         );
 
@@ -416,39 +416,98 @@ class transferout extends CI_Controller {
 
 
 //functionsavetransfer
+// function savedatatransfer (){
+//     $this->load->helper('array');
+//     $i_list = $this->input->post('sTbl');
+
+//     $ID_ASSET = trim(element('ID_ASSET',$i_list));
+//     $id_branch = trim(element('id_ranch',$i_list));
+//     $id_pengirim = trim(element('id_pengirim',$i_list));
+//     $tgl_pengirim = date('Y-m-d', strtotime(trim(element('tgl_pengirim',$i_list)))); 
+//     $tujuan = trim(element('tujuan',$i_list));
+//     $division = trim(element('division',$i_list));
+//     $resi = trim(element('resi',$i_list));
+//     $kota = trim(element('kota',$i_list));
+//     $lokasi = trim(element('lokasi',$i_list));
+//     $sublokasi = trim(element('sublokasi',$i_list));
+
+//     $By = $this->session->userdata('user_id');
+
+//     $PARAMS=array(
+//         'ID_ASSET'=>$ID_ASSET,
+//         'TGL_PENGIRIMAN'=>$tgl_pengirim,
+//         'RESI'=>$resi,
+//         'BRANCH'=>$id_branch,
+//         'DIV'=>$division,
+//         'CREATE_BY'=>$By,
+//         'KOTA' => $kota,
+//         'LOKASI' => $lokasi,
+//         'SUB_LOKASI' => $sublokasi,
+//         'DIV_TUJUAN' => $tujuan
+//     );
+//         // print_r($PARAMS); die();
+
+//         // $this->db->query("zsp_Create_PR_Group ?,?",$PARAMS);
+//     $model = $this->global_m->sp("zsp_Create_Transfer_Assets ?,?,?,?,?,?,?,?,?,?",$PARAMS);
+//     if ($model) {
+//         $array = array(
+//             'act' => 1,
+//             'tipePesan' => 'success',
+//             'pesan' => 'File has been saved.'
+
+//         );
+//     } else {
+//         $array = array(
+//             'act' => 0,
+//             'tipePesan' => 'error',
+//             'pesan' => 'Data gagal disimpan.'
+
+//         );
+//     }
+//     $this->output->set_output(json_encode($array));
+// }
+
 function savedatatransfer (){
     $this->load->helper('array');
     $i_list = $this->input->post('sTbl');
 
     $ID_ASSET = trim(element('ID_ASSET',$i_list));
-    $id_branch = trim(element('id_ranch',$i_list));
+    $By = $this->session->userdata('user_id');
     $id_pengirim = trim(element('id_pengirim',$i_list));
     $tgl_pengirim = date('Y-m-d', strtotime(trim(element('tgl_pengirim',$i_list)))); 
+    $id_branch = trim(element('id_ranch',$i_list));
     $tujuan = trim(element('tujuan',$i_list));
-    $division = trim(element('division',$i_list));
     $resi = trim(element('resi',$i_list));
+    $division = trim(element('division',$i_list));
     $kota = trim(element('kota',$i_list));
     $lokasi = trim(element('lokasi',$i_list));
     $sublokasi = trim(element('sublokasi',$i_list));
-
-    $By = $this->session->userdata('user_id');
+    $oldkota = trim(element('oldkota',$i_list));
+    $oldlokasi = trim(element('oldlokasi',$i_list));
+    $oldsublokasi = trim(element('oldsublokasi',$i_list));
 
     $PARAMS=array(
         'ID_ASSET'=>$ID_ASSET,
-        'TGL_PENGIRIMAN'=>$tgl_pengirim,
-        'RESI'=>$resi,
-        'BRANCH'=>$id_branch,
-        'DIV'=>$division,
         'CREATE_BY'=>$By,
+        'TGL_PENGIRIMAN'=>$tgl_pengirim,
+        'BRANCH'=>$id_branch,
+        'DIV_TUJUAN' => $tujuan,
+        'RESI'=>$resi,
+        'DIV'=>$division,
         'KOTA' => $kota,
         'LOKASI' => $lokasi,
         'SUB_LOKASI' => $sublokasi,
-        'DIV_TUJUAN' => $tujuan
+        'OLD_KOTA' => $oldkota,
+        'OLD_LOKASI' => $oldlokasi,
+        'OLD_SUB_LOKASI' => $oldsublokasi
+
+      
+        
     );
         // print_r($PARAMS); die();
 
         // $this->db->query("zsp_Create_PR_Group ?,?",$PARAMS);
-    $model = $this->global_m->sp("zsp_Create_Transfer_Assets ?,?,?,?,?,?,?,?,?,?",$PARAMS);
+    $model = $this->global_m->sp("zsp_Create_Transfer_Assets ?,?,?,?,?,?,?,?,?,?,?,?,?",$PARAMS);
     if ($model) {
         $array = array(
             'act' => 1,

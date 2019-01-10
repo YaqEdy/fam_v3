@@ -198,7 +198,7 @@
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4">Jml Asset Transfer</label>
                                                 <div class="col-sm-3">
-                                                    <input type="text" class="form-control" id="id_transfer" name="transfer">
+                                                    <input type="text" class="form-control" id="id_transferopex" name="transfer" readonly>
                                                 </div>
                                             </div>
                                         </div>
@@ -319,7 +319,7 @@
                                         <th>ID</th>
                                         <th>Branch</th>
                                         <th>Divisi</th>
-                                        <th>Jml Asset Transfer</th>
+                                        <!-- <th>Jml Asset Transfer</th> -->
                                         <th>Tujuan Transfer</th>
                                         <th>Tanggal Pengiriman</th>
                                         <th>Nama Pengirim</th>
@@ -354,7 +354,7 @@
                                         <th>ID</th>
                                         <th>Branch</th>
                                         <th>Divisi</th>
-                                        <th>Jml Asset Transfer</th>
+                                        <!-- <th>Jml Asset Transfer</th> -->
                                         <th>Tujuan Transfer</th>
                                         <th>Tanggal Pengiriman</th>
                                         <th>Nama Pengirim</th>
@@ -847,20 +847,46 @@
         });
     }
 
-    var iID_ASSET = '';
+    // var iID_ASSET = '';
 
-    function processtransfer() {
-
-
-        var rows_selected = dataTable1.column(2).checkboxes.selected();
-
-        iID_ASSET = iID_ASSET + rows_selected.join(",");
-
-        // alert(iID_ASSET);
-        $('#table_gridItemProcess').DataTable().ajax.reload();
+    // function processtransfer() {
 
 
-    }
+    //     var rows_selected = dataTable1.column(2).checkboxes.selected();
+
+    //     iID_ASSET = iID_ASSET + rows_selected.join(",");
+
+    //     // alert(iID_ASSET);
+    //     $('#table_gridItemProcess').DataTable().ajax.reload();
+
+
+    // }
+
+        var iID_ASSET ='';
+
+     function processtransfer(){
+  
+      var rows_selected = dataTable1.column(2).checkboxes.selected();
+
+      iID_ASSET =iID_ASSET + rows_selected.join(",");
+
+      
+      var res = iID_ASSET.split(",");
+      var ee = res.length;
+// console.log(ee);
+
+      $("#id_transferopex").val(ee);
+
+  
+
+  
+      // alert(ee);
+
+      $('#table_gridItemProcess').DataTable().ajax.reload();
+
+
+  }
+
 
 
     function terima(data) {

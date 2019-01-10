@@ -91,6 +91,24 @@ Class Cek_barang_mdl extends CI_Model {
         // var_dump($this->db->last_query());exit();
     }
 
+    function get_termin2($id){
+        $this->db->where('PERSENTASE_TERIMA_BRG > 0');
+        $this->db->where('ID_PO', $id);
+        $this->db->order_by('TGL_JT_TERIMA_BRG', 'desc');
+        return $this->db->get('TBL_T_TERMIN')->result();
+    }
+
+    function get_termin_row($id) {
+        $query1 = $this->db->query("SELECT ID_PO_DETAIL FROM TBL_T_PO_DETAIL WHERE ID_PO = $id GROUP BY ID_PO_DETAIL");
+        $id_pos = [];
+        foreach ($query1->result_array() as $id_po) {
+            $id_pos[] = $id_po['ID_PO_DETAIL'];
+        }
+        $this->db->select("*, (SELECT coalesce(sum(PERSENTASE_TERIMA_BRG),0) from TBL_T_TERIMA_BARANG where ID_PO_DETAIL = TBL_T_PO_DETAIL.ID_PO_DETAIL AND ITEM_ID = TBL_T_PO_DETAIL.ITEM_ID) as kurangpersen, (SELECT sum(QTY) from TBL_T_TERIMA_BARANG where ID_PO_DETAIL = TBL_T_PO_DETAIL.ID_PO_DETAIL AND ITEM_ID = TBL_T_PO_DETAIL.ITEM_ID) as kurang");
+        $this->db->where_in('ID_PO_DETAIL', $id_pos);
+        return $this->db->get('TBL_T_PO_DETAIL');
+    }
+
     function get_detail($id){
         $this->db->where('ID_PO_DETAIL', $id);
         return $this->db->get('TBL_T_PO_DETAIL')->row();
@@ -104,15 +122,12 @@ Class Cek_barang_mdl extends CI_Model {
 
     function get_barang($id){
         $query1 = $this->db->query("SELECT ID_PO_DETAIL FROM TBL_T_PO_DETAIL WHERE ID_PO = $id GROUP BY ID_PO_DETAIL");
-        // var_dump($query1->result_array());exit();
         $id_pos = [];
         foreach ($query1->result_array() as $id_po) {
             $id_pos[] = $id_po['ID_PO_DETAIL'];
         }
-        // var_dump($id_pos);exit();
         $this->db->where_in('ID_PO_DETAIL', $id_pos);
         return $this->db->get('TBL_T_TERIMA_BARANG')->result();
-        // var_dump($this->db->last_query());exit();
     }
 
     function get_all_barang($id){

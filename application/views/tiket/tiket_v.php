@@ -89,8 +89,8 @@
                                         <input type="text" required="required" name="NO_SPD" id="NO_SPD" class="form-control" >
                                         <br>
                                         <label><b>Tanggal PR, Tiket BOX</b></label>
-                                   <!--      <input type="text" required="required" name="tanggal_pr" id="tanggal_pr" class="form-control input-sm date-picker" data-date-format="dd/mm/yyyy"> -->
-                                         <input type="date" required="required" name="tanggal_pr" id="tanggal_pr" size="16" class="form-control">
+                                        <input type="text" required="required" name="tanggal_pr" id="tanggal_pr" class="form-control input-sm date-picker" readonly>
+                                       <!--   <input type="date" required="required" name="tanggal_pr" id="tanggal_pr" size="16" class="form-control"> -->
                                     </div>
                                 </div>
 
@@ -130,7 +130,9 @@
                                         </div>
                                         <div class="form-group col-md-2">
                                             <center><label><b>Note</b></label>
-                                                <input type="text" required="" name="note" id="note" class="form-control" ></center>
+                                                <textarea type="text" required="" name="note" id="note" class="form-control" rows="4" cols="50"></textarea>
+                                               <!--  <input type="text" required="" name="note" id="note" class="form-control" > -->
+                                            </center>
                                         </div>
                                         <div class="form-group col-md-2">
                                             <center><label><b>Asal</b></label>
@@ -202,7 +204,7 @@
                                                 </div>
                                                 <div class="form-group col-md-3">
                                                     <center><label><b>No Identitas</b></label>
-                                                        <input type="number" class="form-control" id="no_identitas1" name="no_identitas1"></center>
+                                                        <input type="text" class="form-control nomor1" id="no_identitas1" name="no_identitas1"></center>
                                                 </div>
                                                 <div class="col-md-3">
                                                     <div class="form-group">
@@ -407,7 +409,7 @@
                                     <!-- END ROW-->
                                 </div>
                                 <!-- </div> -->
-                                <!-- =============================================== END TAB =========================================================== -->
+<!-- =============================================== END TAB =========================================================== -->
                                 <div class="tab-pane fade" id="tab_2_3">
                                     <!--<div class="scroller" style="height:400px; ">-->
                                     <div class="row">
@@ -463,7 +465,8 @@
                                                             <th>Tanggal Request</th>
                                                             <th>Travel</th>
                                                             <th>E-Tiket</th>
-                                                            <th>Aksi</th>
+                                                            <td>Upload SPD</td>
+                                                            <td>Upload Etiket</td>
                                                         </tr>
                                                     </thead>
                                                     <tfoot>
@@ -527,6 +530,7 @@
                                                             <!-- <th>Kategori Perjalanan</th> -->
                                                             <th>Tanggal Berangkat</th>
                                                             <th>Tanggal Pulang</th>
+                                                            <th>Status</th>
                                                             <th>Aksi</th>
                                                         </tr>
                                                     </thead>
@@ -537,7 +541,7 @@
                                     </div>
                                     <!-- END ROW-->
                                 </div>
-                                <!-- ========================================================================================================= -->
+<!-- ============================================================================================================= -->
                                 <div class="tab-pane fade" id="tab_2_5">
                                     <!--<div class="scroller" style="height:400px; ">-->
                                     <div class="row">
@@ -566,10 +570,10 @@
                                                     <thead>
                                                         <tr>  
                                                             <th>NO PR</th>     
-                                                            <th>Termin</th>
+                                                            <th>Jumlah Termin</th>
+                                                            <th>TRAVEL</th>
                                                             <th>Persentase</th>
                                                             <th>Nilai</th>
-                                                            <th>Tgl Jatuh Tempo</th>
                                                             <th>Aksi</th>
                                                         </tr>
                                                     </thead>
@@ -639,7 +643,7 @@
             </div>
         </div>
         <!-- END PAGE CONTENT-->
-        <!-- ==================================== Modal Pilih Travel ================================== -->
+        <!-- ========================================= Modal Pilih Travel ========================================= -->
         <div class="modal fade draggable-modal" id="myModalpilihtravel" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -806,8 +810,8 @@
             </form>  
                 
         </div>
-        <!-- ======================================= end ==========================================a=== -->
-        <!-- ==========================================modal SET TERMIN======================================= -->
+        <!-- ============================================ end ===================================================== -->
+        <!-- =============================================modal SET TERMIN========================================= -->
         <div class="modal fade draggable-modal" id="myModalInvoice" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -815,7 +819,7 @@
                         <button type="button" class="close"  data-dismiss="modal" id="btnCloseModalDataBarang3">&times;</button>
                         <h4 class="modal-title">PR Invoice</h4>
                     </div>
-                    <form role="form" method="post" class="cls_from_sec_room" id="id_formSetTermin"  enctype="multipart/form-data" >
+<form role="form" method="post" class="cls_from_sec_room" id="id_formSetTermin"  enctype="multipart/form-data" >
                         <div class="modal-body">
                             <div class="row">
                                 <div class="form-body">
@@ -831,7 +835,8 @@
                                                     <th>Tgl PR</th>
                                                     <th>An.</th>
                                                     <th>Jns Identitas</th>
-                                                    <th>No Identitas</th>     
+                                                    <th>No Identitas</th> 
+                                                    <th>ID Karyawan</th>    
 
                                                 </tr>
                                             </thead>
@@ -857,7 +862,7 @@
                                                             <th><INPUT type="checkbox" onchange="checkAll(this)" name="chk[]" /></th>
                                                             <th>Termin</th>
                                                             <th>Tanggal Jatuh tempo</th>
-                                                            <th>Tanggal Aktual</th>
+                                                            <!-- <th>Tanggal Aktual</th> -->
                                                             <th>Presentase</th>
                                                             <th>Nilai</th>                                          
                                                             <th> Keterangan </th>
@@ -878,10 +883,10 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn dark btn-outline" data-dismiss="modal">Close</button>
-                            <button  type="submit"  class="btn btn-sm btn-success"><i class="fa fa-download"></i>&nbsp;Teruskan</button>
+                            <button  type="submit" class="btn btn-sm btn-success"><i class="fa fa-download"></i>&nbsp;Teruskan</button>
+                            <!-- onclick="teruskan()"  -->
                         </div>
                     </form>
-                    <!-- </form> -->
                 </div>
                 <!-- /.modal-content -->
             </div>
@@ -889,30 +894,17 @@
         </div>
         <!-- ============================================================================================= -->
 
-        <!-- ======================================= MODAL INVOICE ================================================ -->
+        <!-- ======================================= MODAL INVOICE ======================================= -->
         <div class="modal fade" id="ModalInputInvoice" tabindex="-1" role="dialog" aria-hidden="true">
-            <form role="form" method="post" class="cls_from_sec_room" id="id_form_Invoice_pay"  > 
+            <form role="form" method="post" class="cls_from_sec_room" id="id_forminv" enctype="multipart/form-data"  > 
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" id="btnCloseModalDataTOTALINVOICE">&times;</button>
                             <h4 class="modal-title">INVOICE</h4>
                         </div>
-                        <!-- <form role="form" method="post" class="cls_from_sec_room" id="id_formRoom"  enctype="multipart/form-data" > -->
                         <div class="modal-body">
-                            <div class="row">
-                                <div class="form-body">
-                                    <div class="col-md-6">
-                                <input class="form-control" type="text" id="ID_TERMIN" name="ID_TERMIN" style="display: none;"    />
-                                <input type="text" id="ID_TIKET2" name="ID_TIKET2" style="display: none;"   />
-                                <input type="text" id="STATUS" name="STATUS" style="display: none;" />
-                                        <label>Jumlah Pembayaran </label> <span class="">*</span>
-                                        <input required="required" class="form-control"
-                                               type="text" id="NILAI" name="NILAI" readonly  />
-
-                                    </div>
-                                </div>
-                            </div>         
+                    <div id="idforminvoice"></div>
                         </div>
                         <div class="modal-footer">
                             <button type="submit" name="btnSimpan" class="btn green" id="id_btnSimpan"  > <i class="fa fa-save">&nbsp;</i>Save</button>

@@ -39,18 +39,36 @@
                             <!--tambahkan enctype="multipart/form-data" u/ upload-->
                             <form class="validator-form form-horizontal" id="fm_datasave" enctype="multipart/form-data" method="POST">
                                 <div class="validator-form form-horizontal">
+                                    <?php if($this->session->userdata('groupid') =='0' || $this->session->userdata('groupid') == '17'){
+                                            $hide = "";
+                                          }else{
+                                              $hide = "hidden";
+                                          }
+                                    ?>
+                                    <div class="form-group <?=$hide?>">
+                                        <label class="control-label col-sm-3">Jenis</label>
+                                        <div class="col-md-7">
+                                            <select id="opex_capexID" name="opex_capex" class="form-control" onchange="check_JenisPR(this.value)">
+                                                <option value="">-Pilih-</option>
+                                                <?php foreach ($capex_opex as $value) { ?>
+                                                <option value="<?= $value->ID ?>"><?= $value->ID_DESC ?></option>
+                                                <?php } ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
                                     <div class="form-group">
                                         <label class="control-label col-sm-3">Jenis Pengadaan </label>
                                         <div class="col-md-7">
                                             <select id="JenisPR" name="JenisPR" class="form-control" onchange="check_JenisPR(this.value)">
-												<option value="Baru">Baru</option>
-												<option value="Tambahan">Tambahan</option>
-												<option value="Ulang">Ulang</option>
-											</select>
-										</div>
+                                                <option value="Baru">Baru</option>
+                                                <option value="Tambahan">Tambahan</option>
+                                                <option value="Ulang">Ulang</option>
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="form-group" id="PR_rev" style="display:none">
-										<label class="control-label col-sm-3">PR Reverensi </label>
+                                        <label class="control-label col-sm-3">PR Reverensi </label>
                                         <div class="col-sm-7">
                                             <input type="hidden" class="form-control" id="BranchID" name="BranchID"  value="<?php echo $this->session->userdata('BranchID'); ?>"/>
                                             <select name="PR_rev" class="form-control">
@@ -61,9 +79,9 @@
                                                     </option>
                                                 <?php } ?>
                                             </select>
-										</div>
-									</div>
-									<div class="form-group">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
                                         <label class="control-label col-sm-3">Request Type </label>
                                         <div class="col-sm-7">
                                             <input type="hidden" class="form-control" id="BranchID" name="BranchID"  value="<?php echo $this->session->userdata('BranchID'); ?>"/>
@@ -78,25 +96,25 @@
                                         </div>
                                     </div>
                                     <div class="form-group" id="PR_sewa" style="display:none">
-										<label class="control-label col-sm-3">Periode Sewa </label>
+                                        <label class="control-label col-sm-3">Periode Sewa </label>
                                         <div class="col-sm-7 form-inline">
                                             <input type="number" class="form-control" id="SewaPeriodeNilai" name="SewaPeriodeNilai"/>
-                                            <select name="SewaPeriodeSatuan" class="form-control input-small">
+                                            <select name="SewaPeriodeSatuan" class="form-control input-small" onchange="periodeSewa(this.value)">
                                                 <option selected="" disabled="" value="">-Select-</option>
                                                 <option value="Hari">Hari</option>
                                                 <option value="Bulan">Bulan</option>
                                                 <option value="Tahun">Tahun</option>
                                             </select>
-										</div>
-									</div>
+                                        </div>
+                                    </div>
                                     <div class="form-group" id="PR_sewa_tgl" style="display:none">
-										<label class="control-label col-sm-3">Per Tanggal </label>
+                                        <label class="control-label col-sm-3">Per Tanggal </label>
                                         <div class="col-sm-7 form-inline">
-                                            <input type="text" class="form-control input-sm date-picker" data-date-format="dd/mm/yyyy" id="PeriodeTanggalDari" name="PeriodeTanggalDari" />
+                                            <input type="text" class="form-control input-sm date-picker" data-date-format="yyyy" id="PeriodeTanggalDari" name="PeriodeTanggalDari" />
                                             &nbsp;&nbsp;-&nbsp;&nbsp;
-											<input type="text" class="form-control input-sm date-picker" data-date-format="dd/mm/yyyy" id="PeriodeTanggalSampai" name="PeriodeTanggalSampai"/>
-										</div>
-									</div>
+                                            <input type="text" class="form-control input-sm date-picker" data-date-format="yyyy" id="PeriodeTanggalSampai" name="PeriodeTanggalSampai"/>
+                                        </div>
+                                    </div>
                                     <div class="form-group">
                                         <label class="control-label col-sm-3">Request Category</label>
                                         <div class="col-sm-7">
@@ -117,65 +135,69 @@
                                             <button onclick="itemList()" id="addbutton" class="btn btn-primary btn-xs" type="button">Add New Item</button>
                                         </div>
                                     </div>
-                                    
-									<!----------------------->
+
+                                    <!----------------------->
                                     <hr class="dotted">
-									<div class="col-md-6">
+                                    <div class="col-md-6">
                                         <div class="form-group">
-											<label class="control-label col-sm-4">Project Name</label>
-											<div class="col-md-7">
-												<input class="form-control" name="ProjectName">
-											</div>
-										</div>
+                                            <label class="control-label col-sm-4">Request Name</label>
+                                            <div class="col-md-7">
+                                                <input class="form-control" name="ProjectName">
+                                            </div>
+                                        </div>
                                         <div class="form-group">
-											<label class="control-label col-sm-4">Nomor Memo </label>
-											<div class="col-md-7">
-												<input class="form-control" name="NomorMemo">
-											</div>
-										</div>
+                                            <label class="control-label col-sm-4">Nomor Memo </label>
+                                            <div class="col-md-7">
+                                                <input class="form-control" name="NomorMemo">
+                                            </div>
+                                        </div>
                                     </div>
-									<div class="col-md-6">
+                                    <div class="col-md-6">
                                         <div class="form-group">
-											<label class="control-label col-sm-4">Branch </label>
-											<div class="col-md-7">
-												<select name="BranchID" class="form-control">
-													<option value="">- Branch -</option>
-													<?php
-														foreach($ms_branch as $mb){
-															if($this->session->userdata('BranchID') == $mb['FLEX_VALUE'])
-																{$act_br='selected';}
-															else{$act_br='';}
-															echo '
-																<option value="'.$mb['FLEX_VALUE'].'" '.$act_br.'>'.$mb['BRANCH_DESC'].'</option>
+                                            <label class="control-label col-sm-4">Branch </label>
+                                            <div class="col-md-7">
+                                                <select name="BranchID" class="form-control">
+                                                    <option value="">- Branch -</option>
+                                                    <?php
+                                                    foreach ($ms_branch as $mb) {
+                                                        if ($this->session->userdata('BranchID') == $mb['FLEX_VALUE']) {
+                                                            $act_br = 'selected';
+                                                        } else {
+                                                            $act_br = '';
+                                                        }
+                                                        echo '
+																<option value="' . $mb['FLEX_VALUE'] . '" ' . $act_br . '>' . $mb['BRANCH_DESC'] . '</option>
 															';
-														}
-													?>
-												</select>
-											</div>
-										</div>
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                        </div>
                                         <div class="form-group">
-											<label class="control-label col-sm-4">Division </label>
-											<div class="col-md-7">
-												<select name="DivisionID" class="form-control">
-													<option value="">- Division -</option>
-													<?php
-														foreach($ms_divisi as $md){
-															if($this->session->userdata('DivisionID') == $md['FLEX_VALUE'])
-																{$act_div='selected';}
-															else{$act_div='';}
-															echo '
-																<option value="'.$md['FLEX_VALUE'].'" '.$act_div.'>'.$md['DIV_DESC'].'</option>
+                                            <label class="control-label col-sm-4">Division </label>
+                                            <div class="col-md-7">
+                                                <select name="DivisionID" class="form-control">
+                                                    <option value="">- Division -</option>
+                                                    <?php
+                                                    foreach ($ms_divisi as $md) {
+                                                        if ($this->session->userdata('DivisionID') == $md['FLEX_VALUE']) {
+                                                            $act_div = 'selected';
+                                                        } else {
+                                                            $act_div = '';
+                                                        }
+                                                        echo '
+																<option value="' . $md['FLEX_VALUE'] . '" ' . $act_div . '>' . $md['DIV_DESC'] . '</option>
 															';
-														}
-													?>
-												</select>
-											</div>
-										</div>
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
-									<!----------------------->
+                                    <!----------------------->
 
                                     <hr class="dotted">
-									<a href="#" onclick="itemList()" class="btn btn-success">Add Item</a>
+                                    <a href="#" onclick="itemList()" class="btn btn-success">Add Item</a>
                                     <div class="form-group" style="margin-top:1em">
                                         <div class="col-sm-12" align="center">
                                             <table class="table table-striped table-bordered table-hover text_kanan" id="table_gridItemProcess">
@@ -243,34 +265,34 @@
                                 <div class="modal-header">
                                     <div class="col-md-6">
                                         <div class="form-group">
-											<label class="control-label col-sm-4">Class Item </label>
-											<div class="col-md-7">
-												<select id="ItemClass" name="ItemClass" class="form-control" onchange="getTypeItem(this.value)">
-													<option value="">- Class Item -</option>
-													<?php
-														foreach($Mst_ItemClass as $ic){
-															echo '<option value="'.$ic['IClassID'].'">'.$ic['IClassName'].'</option>';
-														}
-													?>
-												</select>
-											</div>
-										</div>
+                                            <label class="control-label col-sm-4">Class Item </label>
+                                            <div class="col-md-7">
+                                                <select id="ItemClass" name="ItemClass" class="form-control" onchange="getTypeItem(this.value)">
+                                                    <option value="">- Class Item -</option>
+                                                    <?php
+                                                    foreach ($Mst_ItemClass as $ic) {
+                                                        echo '<option value="' . $ic['IClassID'] . '">' . $ic['IClassName'] . '</option>';
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
-									<div class="col-md-6">
+                                    <div class="col-md-6">
                                         <div class="form-group">
-											<label class="control-label col-sm-4">Type Item </label>
-											<div class="col-md-7">
-												<div id="drp_ItemType">
-													<select id="ItemType" name="ItemType" class="form-control">
-														<option value="">- Type Item -</option>
-													</select>
-												</div>
-											</div>
-										</div>
+                                            <label class="control-label col-sm-4">Type Item </label>
+                                            <div class="col-md-7">
+                                                <div id="drp_ItemType">
+                                                    <select id="ItemType" name="ItemType" class="form-control">
+                                                        <option value="">- Type Item -</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="modal-body">
-                                   <table class="table table-striped table-bordered table-hover table-checkable order-column dataTable no-footern" id="table_gridItemList">
+                                    <table class="table table-striped table-bordered table-hover table-checkable order-column dataTable no-footern" id="table_gridItemList">
                                         <thead>
                                             <tr>
                                                 <th>NO</th>     
@@ -319,7 +341,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-									
+
 
                                 </tbody>
                                 <tfoot>

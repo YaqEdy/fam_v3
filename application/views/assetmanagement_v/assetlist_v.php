@@ -393,7 +393,7 @@
             url: "<?php echo base_url("/assetmanagement/assetlist/get_server_assetlist"); ?>", // json datasource
             data: {sid: id, jenisSelect: jenis},
             success: function (e) {
-                ajaxProgressBar();
+                // ajaxProgressBar();
                 if (jenis == 'Depresiasi') {
                     $('#btn_processId').hide();
                 } else {
@@ -541,7 +541,6 @@
     }
 
 
-
     function getfamlocation() {
         dataTable = $('#table_gridCategory').DataTable({
             // "order": [[ 0, "asc" ],[6, "desc" ]],
@@ -551,7 +550,7 @@
                 {"targets": [4], "searchable": false, "orderable": false},
             ],
             "lengthMenu": [
-                [5, 10, 15, 20, -1],
+                [5, 10, 15, 20, 100000],
                 [5, 10, 15, 20, "All"] // change per page values here
             ],
             //                // set the initial value

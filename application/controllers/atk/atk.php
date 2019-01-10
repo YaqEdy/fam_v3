@@ -76,7 +76,7 @@ class atk extends CI_Controller {
             // $row[] = $no;
 
             $row[] = $idatatables->RequestID;
-            $row[] = $idatatables->CreateDate;
+            $row[] = date('d-m-Y', strtotime($idatatables->CreateDate));
             // $row[] = $idatatables->ReqTypeID;
             // $row[] = $idatatables->ReqCategoryID;
             $row[] = $idatatables->ProjectName;
@@ -122,7 +122,7 @@ class atk extends CI_Controller {
             $row[] = $no;
 
             $row[] = $idatatables->RequestID;
-            $row[] = $idatatables->tgl_req;
+            $row[] = date('d-m-Y', strtotime($idatatables->tgl_req));
             $row[] = $idatatables->ReqTypeName;
             $row[] = $idatatables->ReqCategoryName;
             $row[] = $idatatables->ProjectName;
@@ -162,7 +162,7 @@ class atk extends CI_Controller {
             $no++;
             $row = array();
             $row[] = $idatatables->RequestID;
-            $row[] = $idatatables->tgl_req;
+            $row[] = date('d-m-Y', strtotime($idatatables->tgl_req));
             $row[] = $idatatables->ReqTypeName;
             $row[] = $idatatables->ReqCategoryName;
             $row[] = $idatatables->ProjectName;    
@@ -296,9 +296,9 @@ class atk extends CI_Controller {
             // $row[] = $no;
 
             $row[] = $idatatables->RequestID;
-            $row[] = $idatatables->tgl_req;
+            $row[] = date('d-m-Y', strtotime($idatatables->tgl_req));
             $row[] = $idatatables->ID_PR_GROUP;
-            $row[] = $idatatables->TGL_PR_GROUP;
+            $row[] = date('d-m-Y', strtotime($idatatables->TGL_PR_GROUP));
             $row[] = $idatatables->ReqTypeName;
             $row[] = $idatatables->ReqCategoryName;
             $row[] = $idatatables->ProjectName;

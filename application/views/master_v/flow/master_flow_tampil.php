@@ -58,14 +58,19 @@
                                             <input class="form-control hidden" type="text" id="id_data" name="id_data"/>
                                             <div class="form-body">
                                                 <div class="col-md-6">
+                                                    <!-- <div class="form-group">
+                                                        <input class="form-control hidden " type="text" id="id_data" name="id_data"/>
+                                                    </div>
+ -->
+
                                                     <div class="form-group">
                                                         <label>Flow ID</label> <span class="required">*</span>
-                                                        <input required="required" class="form-control" id="id_flow_id" name="id_flow_id" type="number" min="1" max="100" step="1" />
+                                                        <input required="required" class="form-control" id="id_flow_id" name="id_flow_id" type="number" min="1"  step="1" />
                                                     </div>
 
                                                     <div class="form-group">
                                                         <label>Nama Flow ID</label> <span class="required">*</span>
-                                                        <input required="required" class="form-control" id="id_nama_flow" name="id_nama_flow" type="text" min="1" max="100" step="1" />
+                                                        <input required="required" class="form-control" id="id_nama_flow" name="id_nama_flow" type="text" min="1"  step="1" />
                                                     </div>
 
                                                     <!-- <div class="form-group">
@@ -77,20 +82,21 @@
                                                         <label>Status Dari</label>
                                                         <?php
                                                         $data = array();
-                                                        $data[''] = '';
+                                                        $data[''] = 'Select';
                                                         foreach ($dd_status as $k) :
                                                             $data[$k->id] = $k->status;
                                                         endforeach;
-                                                        echo form_dropdown('id', $data, '', 'id="id_status_dari" name="id_status_dari" class="form-control" required');
+                                                        echo form_dropdown('id_status_dari', $data, '', 'id="id_status_dari" name="id_status_dari" class="form-control input-sm select2me" required');
                                                         ?>
                                                     </div>
 
                                                     <div class="form-group">
                                                         <label >Aksi</label><span class="required">*</span>
                                                             <select class="form-control" type="text" id="id_aksi" name="id_aksi" >
-                                                              <option value="" >--Select--</option>
-                                                              <option value="Approve">Approve</option>
-                                                              <option value="Reject">Reject</option>
+                                                              <option value="" >Select</option>
+                                                              <option value="approve">Approve</option>
+                                                              <option value="reject">Reject</option>
+                                                              <option value="revisi">Revisi</option>
                                                             </select>
                                                        
                                                           <input  id="idTmpAksiBtn"  name="idTmpAksiBtn" data-required="1" class="form-control input-sm hidden" type="text"> 
@@ -100,11 +106,11 @@
                                                         <label>Status Ke</label>
                                                         <?php
                                                         $data = array();
-                                                        $data[''] = '';
+                                                        $data[''] = 'Select';
                                                         foreach ($dd_status as $k) :
                                                             $data[$k->id] = $k->status;
                                                         endforeach;
-                                                        echo form_dropdown('id', $data, '', 'id="id_status_ke" name="id_status_ke" class="form-control" required');
+                                                        echo form_dropdown('id_status_ke', $data, '', 'id="id_status_ke" name="id_status_ke" class="form-control input-sm select2me" required');
                                                         ?>
                                                     </div>
 
@@ -117,22 +123,22 @@
                                                         <label>Tipe</label>
                                                         <?php
                                                         $data = array();
-                                                        $data[''] = '';
+                                                        $data[''] = 'Select';
                                                          foreach ($dd_tipe as $k) :
-                                                            $data[$k->ID_TYPE] = $k->TYPE_DESC;
+                                                            $data[$k->TYPE_DESC] = $k->TYPE_DESC;
                                                             endforeach;
-                                                            echo form_dropdown('ID_TYPE', $data, '', 'id="id_tipe" name="id_tipe" class="form-control" required');
+                                                            echo form_dropdown('ID_TYPE', $data, '--Select--', 'id="id_tipe" name="id_tipe" class="form-control input-sm select2me" required');
                                                         ?>
                                                      </div>
 
                                                      <div class="form-group">
                                                         <label>Min HPS</label> <span class="required">*</span>
-                                                        <input required="required" class="form-control" id="id_min_hps" name="id_min_hps" type="number" min="1" max="100" step="1" />
+                                                        <input required="required" class="form-control nomor" id="id_min_hps" name="id_min_hps" type="text" min="1"  step="1" />
                                                     </div>
 
                                                     <div class="form-group">
                                                         <label>Max HPS</label> <span class="required">*</span>
-                                                        <input required="required" class="form-control" id="id_max_hps" name="id_max_hps" type="number" min="1" max="100" step="1" />
+                                                        <input required="required" class="form-control nomor" id="id_max_hps" name="id_max_hps" type="text" min="1"  step="1" />
                                                     </div>
                                                 
                                                 
@@ -159,7 +165,7 @@
                                                         <!--<i class="fa fa-edit"></i>--> Ubah
                                                     </button>
 
-                                                     <button id="id_btnBatal" type="reset" class="btn default" onclick="btlflow()"><i class="fa fa-refresh"></i> Batal</button>
+                                                     <button id="id_btnBatal"  class="btn default" onclick="btlflow()"><i class="fa fa-refresh"></i> Batal</button>
                                                 </div>
                                             </div>
 
@@ -230,11 +236,11 @@
                                                 <label>GROUP</label>
                                                 <?php
                                                 $data = array();
-                                                $data[''] = '';
+                                                $data[''] = '--Select--';
                                                 foreach ($dd_grup as $row) :
                                                     $data[$row->id] = $row->grup;
                                                 endforeach;
-                                                echo form_dropdown('grup_status', $data, '', 'id="id_grup_status" class="form-control " required="required"');
+                                                echo form_dropdown('grup_status', $data, '', 'id="id_grup_status" class="form-control input-sm select2me " required="required"');
                                                 ?>
                                           </div>
                                                 <div class="form-group">
@@ -252,7 +258,7 @@
                                                     <button name="btnubahStatus" class="btn yellow" id="id_btnubahstatus" >
                                                         <i class="fa fa-edit"></i> Ubah </button> 
 
-                                                     <button id="id_btnBatal" name="id_btnBatal" type="reset" class="btn default" onclick="btlstatus()"> <i class="fa fa-refresh"></i> Batal</button>
+                                                     <button id="id_btnBatal" name="id_btnBatal"  class="btn default" onclick="btlstatus()"> <i class="fa fa-refresh"></i> Batal</button>
 
                                             </div>
                                         </div>

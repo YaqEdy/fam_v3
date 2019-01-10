@@ -116,9 +116,11 @@ Class Cek_barang_mdl extends CI_Model {
     }
 
     function get_all_barang($id){
-        $this->db->where('ID_PO_DETAIL', $id);
+        $this->db->where('ID', $id);
         return $this->db->get('TBL_T_PO_DETAIL')->result();
     }
+
+   
 
     function get_one_barang($id)
     {

@@ -34,28 +34,14 @@
                 </ul> 
                 <div class="tab-content">
                     <div class="tab-pane fade active in" id="tab_2_1">
-                        <div class="panel panel-inverse">
-                            <hr class="dotted">
-                            <!--tambahkan enctype="multipart/form-data" u/ upload-->
-                            
-							<div id="list_approval">
-							</div>
-                        </div>
+						<div id="list_approval"></div>
                     </div>
-                </div>
-                <!--end--> 
-                <div class="tab-pane fade" id="tab_2_2">
-                    <div class="row">
-                        <input type="hidden" class="form-control" name="src" id="src"/>
-
-                        <div class="col-md-12" id="table_outReq">
-
-							<div id="list_approval">
-							</div>
-                        </div>
-                        <!-- end col-12 -->
-                    </div>
-                </div>
+               
+					<!--end--> 
+					<div class="tab-pane fade" id="tab_2_2">
+						<div id="list_approval2"></div>
+					</div>
+				</div>
             </div>
 
         </div>   
@@ -81,17 +67,22 @@
 		},
 		function(data){
 			$("#list_approval").html(data);
-		})
+		}).complete(function(){
+			$('#datatables').DataTable();
+		 })
 	}
 	
     function get_close_list_approve(status){
-		$.post('<?=base_url()?>procurement/purchase_request/get_list_close_check_request', {
-			status:status
-		},
-		function(data){
-			$("#list_approval").html(data);
-		})
-	}
+		 $.post('<?=base_url()?>procurement/purchase_request/get_list_close_check_request', {
+			 status:status
+		 }).success(function(data){
+			 $("#list_approval2").html(data);
+		 }).complete(function(){
+			$("#datatables2").DataTable({
+				"order": [[ 0, "desc" ]]
+			});
+		 })
+	 }
 
 </script>
 

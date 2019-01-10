@@ -16,17 +16,6 @@
                 </div>
             </div>
             <div class="portlet-body">
-                <!--  <ul class="nav nav-pills">
-                     <li class="linav active" id="linav1">
-                         <a href="#tab_2_1" data-toggle="tab" id="navitab_2_1" class="anavitab">
-                             Data Item Category </a>
-                     </li>
-                     <li class="linav" id="linav2">
-                         <a href="#tab_2_2" data-toggle="tab" id="navitab_2_2" class="anavitab">
-                             Form Data Item Category</a>
-                     </li>
- 
-                 </ul> -->
                 <div class="tab-content">
                     <div class="tab-pane fade active in" id="tab_2_1">
                         <div class="scroller" style="height:400px; ">
@@ -38,54 +27,44 @@
                             <!-- <div class="row"> -->
                                 <!-- <div class="cotable_gridHPSl-md-4"> -->
                                     <div class="form-body">
-                                    <a class="btn btn-sm btn-primary" href="#" id="btnAdd" data-toggle="modal" data-target="#myadd" onclick="dd_Zone('B')">Upload HPS</a>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-sm btn-primary" href="#" id="btnAdd" data-toggle="modal" data-target="#myadd" onclick="dd_Zone('B')">Upload HPS</a>
                                     <a class="btn btn-sm btn-success" href="<?php echo base_url("/procurement/hps/downloadWord"); ?>" download>Download Template HPS</a>
-                                    <a class="btn btn-sm btn-warning" href="#" id="btnAdd" data-toggle="modal" data-target="" modal="#" ><i class="fa fa-eye"></i>&nbsp;Lihat</a>
-                                    <a class="btn btn-sm btn-warning" href="<?php echo base_url(""); ?>" ><i class="fa fa-refresh"></i>&nbsp;Refresh</a>
+                                   <!--  <a class="btn btn-sm btn-warning" href="#" id="btnAdd" data-toggle="modal" data-target="" modal="#" ><i class="fa fa-eye"></i>&nbsp;Lihat</a> -->
+                                    <!-- <a class="btn btn-sm btn-warning" href="<?php echo base_url(""); ?>" ><i class="fa fa-refresh"></i>&nbsp;Refresh</a> -->
                                     <!-- <button class="btn btn-sm btn-default">Add Item Category</button> -->
                                 </div>
                                 <br>
-                                <div class="col-md-4">
-                              <div class="form-group">
-                                    <label>Branch : </label>
-                                    <input required="required" class="form-control" type="text" id="" name=""/>
-                                    </div>
-                                  </div>
-                                <!-- </div> -->
-                                <!-- </div> -->
+
                                 <div class="col-md-12">&nbsp;</div>
 
-
-
-
-                          <!--       <div class="col-sm-4">
-                                    <div class="form-group" id="displaydivisi">
-                                        <label class="control-label col-sm-4">Zone Name</label>
-                                        <div class="col-sm-7">
-                                            <div id="ddZone3"></div>
-                                        </div>
-                                    </div>
+                                <!-- <div class="col-md-12"> -->
+                                    <div class="col-md-5">
+                                    <div class="form-group">
+                                    <label>Branch</label>
+                                    <?php
+                                    $data = array();
+                                    $data[''] = '';
+                                    foreach ($dd_BRANCH as $row) :
+                                        $data[$row->FLEX_VALUE] = $row->BRANCH_DESC;
+                                    endforeach;
+                                    echo form_dropdown('FLEX_VALUE', $data, '', 'id="FLEX_VALUE" class="form-control  input-sm select2me" required="required"');
+                                    ?>
+                                <!-- </div> -->
                                 </div>
-                                <div class="col-md-2">Search Param :</div>
-                                <div class="col-md-2">
-                                    <select id="cat_itemclass" name="cat_itemclass" onchange="search(this.value)" class="form-control">
-                                        <option value="ItemName">Item Name</option>
-                                        <option value="ZoneName">Zone</option>
-                                    </select>
-                                </div> -->
+                                </div>
 
                                 <div class="col-md-12">
-
                                     <table class="table table-striped table-bordered table-hover text_kanan" id="table_gridHPS">
                                         <thead>
                                             <tr>
-                                                <th class='row-2'>NO</th>     
-                                                <th class='row-md-3'>Nama Item</th>
-                                                <th class='row-md-3'>Branch</th>
-                                                <th class='row-md-5'>Harga</th>
-                                                <th class='row-md-6'>Tanggal Mulai Berlaku</th>
-                                                <th class='row-md-6'>Tanggal Selesai Berlaku</th>
-                                                <th class='row-md-3'>Aksi</th>
+                                                <th>NO</th>     
+                                                <th>Nama Item</th>
+                                                <th>Branch</th>
+                                                <th>Harga</th>
+                                                <th>Tanggal Berlaku</th>
+                                                <th>Tanggal Selesai Berlaku</th>
+                                                <th>Update</th>
+                                                <th>Delete</th>
                                                 <!-- <th class='row-md-3'></th> -->
 
                                             </tr>
@@ -160,19 +139,13 @@
                 </div>
                 <div class="modal-body">
 
-                    <input type="hidden" id="HpsID" name="HpsID">
+                    <input type="text" id="HpsID" name="HpsID" style="display: none;">
                     <div class="form-group">
                         <label class="control-label col-sm-3">Item Name</label>
                         <div class="col-sm-7">
                             <input type="text" requered="" name="ItemName" class="form-control" id="ItemName" readonly>
                         </div>
                     </div>        
-                  <!--   <div class="form-group" id="displaydivisi">
-                        <label class="control-label col-sm-3">Zone Name</label>
-                        <div class="col-sm-7">
-                            <div id="ddZone"></div>
-                        </div>
-                    </div>    -->     
                     <div class="form-group">
                         <label class="control-label col-sm-3">Start - End Date</label>
                         <div class="col-sm-7">

@@ -20,12 +20,15 @@ class Budget extends CI_Controller {
             $this->load->model('datatables_custom');
         }
     }
-    public function print_qr() {
-        $idAssets=$this->input->get('sId');
-        $data['qr_code'] = $this->global_m->tampil_data("SELECT * FROM VW_ASSETS_QRCODE WHERE ID_ASSET IN (".$idAssets.")");
-        $this->load->view('procurement/budget/print_qr_c',$data);
-    }
+
     public function index() {
+		$this->load->database();
+		  $PARAMS=array(
+            'BRANCH'=>'KTRPST'
+        );
+        $model = $this->global_m->sp_get("zsp_Get_History_PR ?",$PARAMS);
+		print_r($model);die();
+		
         if ($this->auth->is_logged_in() == false) {
             $this->login();
         } else {
@@ -152,19 +155,19 @@ class Budget extends CI_Controller {
             $by = $this->session->userdata('user_id');
 
             foreach ($arr_data as $key => $value) {
-                if (!empty($value["F"]) && $value["F"] != "-" && $value["F"] != "" && !empty($value["A"])) {
-                    $this->Budget_mdl->simpan($value["A"], $value["C"], $value["D"], $value["E"], $value["F"]);
-                }
+				if(!empty($value["A"]) && $value["F"]==0 && $value["E"]>=0 || !empty($value["A"]) && $value["F"]==1 && $value["E"]>=0){
+					$this->Budget_mdl->simpan($value["A"], $value["C"], $value["D"], $value["E"], $value["F"]);
+				}
             }
 
             // $this->Budget_mdl->simpanData($data);	
         } else {
             $this->session->set_flashdata('msg', $this->upload->display_errors());
         }
-        echo json_encode(TRUE);
+        //echo json_encode(TRUE);
     }
 
-    public function downloadTemplate() {
+    public function downloadTemplate($branch) {
         $this->load->helper('download');
 
         $this->load->library('excel/phpexcel');
@@ -186,7 +189,7 @@ class Budget extends CI_Controller {
         $objPHPExcel->getActiveSheet()->setCellValue('E1', 'BudgetValue');
         $objPHPExcel->getActiveSheet()->setCellValue('F1', 'JenisBudget');
 
-        $objPHPExcel->getActiveSheet()->setCellValue('I1', 'LENGKAPI DATA HANYA DI BAGIAN COA, YEAR, BUDGET VALUE DAN JENIS BUDGET');
+        $objPHPExcel->getActiveSheet()->setCellValue('I1', 'LENGKAPI DATA HANYA DI BAGIAN YEAR, BUDGET VALUE DAN JENIS BUDGET');
         $objPHPExcel->getActiveSheet()->setCellValue('I2', 'DILARANG MENGUBAH DATA SELAIN KOLOM YANG DISEBUTKAN DIATAS');
         $objPHPExcel->getActiveSheet()->setCellValue('I3', 'JENIS BUDGET (1=CAPEX) , (0=OPEX)');
 
@@ -198,7 +201,7 @@ class Budget extends CI_Controller {
         $objPHPExcel->getActiveSheet()->getStyle('E1')->getFont()->setBold(true);
         $objPHPExcel->getActiveSheet()->getStyle('F1')->getFont()->setBold(true);
 //        $objPHPExcel->getActiveSheet()->getStyle('G1')->getFont()->setBold(true);
-        $data = $this->Budget_mdl->allBranch();
+        $data = $this->Budget_mdl->allBranch($branch);
         $counter = 2;
         foreach ($data as $key) {
 

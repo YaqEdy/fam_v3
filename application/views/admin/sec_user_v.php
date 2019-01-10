@@ -13,6 +13,7 @@
                     <span class="caption-subject font-red sbold uppercase"><?php echo $menu_header; ?></span>
                 </div>
                 <div class="tools">
+					<button class="btn btn-primary" onclick="sync_user_fam()">Sync User SSO</button>
                     <a href="javascript:;" class="collapse">
                     </a>
                     <a href="javascript:;" class="fullscreen">
@@ -162,7 +163,7 @@
                          foreach ($dd_Branch as $k) :
                             $data[$k->FLEX_VALUE] = $k->BRANCH_DESC;
                          endforeach;
-                         echo form_dropdown('FLEX_VALUE_BRANCH', $data, '', 'id="id_branch" class="form-control" required');
+                         echo form_dropdown('FLEX_VALUE_BRANCH', $data, '', 'id="id_branch" class="form-control select2me" required');
                          ?>
                      </div>
                 </div>
@@ -178,48 +179,69 @@
                           foreach ($dd_divisi as $k) :
                             $data[$k->FLEX_VALUE] = $k->DIV_DESC;
                           endforeach;
-                         echo form_dropdown('FLEX_VALUE_DIVISI', $data, '', 'id="id_division" class="form-control" required');
+                         echo form_dropdown('FLEX_VALUE_DIVISI', $data, '', 'id="id_division" class="form-control select2me" required');
                          ?>                                      
                     </div>
                 </div> 
 
-             <div class="form-group">
-               <label class="control-label col-md-3">Posisi
-                   <span class="required" aria-required="true"> * </span>
-                     </label>
+                <div class="form-group">
+                    <label class="control-label col-md-3">Posisi
+                       <span class="required" aria-required="true"> * </span>
+                    </label>
                        <div class="col-md-6">
-                         <?php
-                         $data = array();
-                         $data[''] = '';
-                        foreach ($dd_Position as $k) :
+                        <?php
+                            $data = array();
+                            $data[''] = '';
+                            foreach ($dd_Position as $k) :
                             // $data[trim($row['ZoneID'])] = $row['ZoneName'];
                             $data[$k->PositionID] = $k->PositionName;
-                        endforeach;
-                         echo form_dropdown('PositionID', $data, '', 'id="id_position" class="form-control" required');
+                            endforeach;
+                             echo form_dropdown('PositionID', $data, '', 'id="id_position" class="form-control select2me" required');
                          ?>
-                     </div>
+                        </div>
                 </div> 
 
-            <div class="form-group">
-               <label class="control-label col-md-3">Zonasi
-                   <span class="required" aria-required="true"> * </span>
-                     </label>
-                       <div class="col-md-6">
-                         <?php
-                         $data = array();
-                         $data[''] = '';
-                          foreach ($dd_Zona as $k) :
-                            // $data[trim($row['ZoneID'])] = $row['ZoneName'];
-                            $data[$k->ZoneID] = $k->ZoneName;
-                          endforeach;
-                         echo form_dropdown('ZoneID', $data, '', 'id="id_zone" class="form-control" required');
-                         ?>
-                     </div>
+                <div class="form-group">
+                    <label class="control-label col-md-3">Zonasi
+                       <span class="required" aria-required="true"> * </span>
+                    </label>
+                        <div class="col-md-6">
+                            <?php
+                                 $data = array();
+                                 $data[''] = '';
+                                  foreach ($dd_Zona as $k) :
+                                    // $data[trim($row['ZoneID'])] = $row['ZoneName'];
+                                    $data[$k->ZoneID] = $k->ZoneName;
+                                  endforeach;
+                                 echo form_dropdown('ZoneID', $data, '', 'id="id_zone" class="form-control select2me" required');
+                            ?>
+                        </div>
                 </div>
 
-            <div class="form-group">
+
+
+
+               <div class="form-group">
+                   <label class="control-label col-md-3">Grup Status
+                       <span class="required" aria-required="true" > * </span>
+                    </label>
+                        <div class="col-sm-6">
+                            <select class="form-control input-sm" type="text" required id="userGroup" name="userGroup" multiple="multiple">
+                            <option value="" >--Select--</option>
+                            <?php foreach ($item_branch as $row) { ?>
+                                <option value="<?php echo $row->usergroup_id; ?>"><?php echo $row->usergroup_desc; ?></option>
+                            <?php } ?>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+          <!--   <div class="form-group">
                <label class="control-label col-md-3">Grup Status
-                   <span class="required" aria-required="true"> * </span>
+                   <span class="required" aria-required="true" > * </span>
                      </label>
                        <div class="col-md-6">
                          <?php
@@ -228,24 +250,24 @@
                          foreach ($group_user as $row) :
                              $data[$row['usergroup_id']] = $row['usergroup_desc'];
                          endforeach;
-                         echo form_dropdown('userGroup', $data, '', 'id="id_groupUser" class="form-control" required');
+                         echo form_dropdown('userGroup', $data, '', 'id="id_groupUser" class="form-control"  required');
                          ?>
                      </div>
-                </div>
+                </div> -->
 
                               
              <div class="form-group">
                 <label class="control-label col-md-3">Status User
                      <span class="required" aria-required="true"> * </span>
                          </label>
-                      <div class="col-md-6">
+                      <div class="col-sm-6">
                          <?php
                          $data = array();
                          $data[''] = '';
                          foreach ($statususer as $k) :
                              $data[$k->statususer_id] = $k->statususer_desc;
                          endforeach;
-                         echo form_dropdown('statusUser', $data, '', 'id="id_statusUser" class="form-control" required');
+                         echo form_dropdown('statusUser', $data, '', 'id="id_statusUser" class="form-control select2me" required');
                          ?>                                   
                     </div>
                 </div>
@@ -255,7 +277,7 @@
                 <div class="col-md-offset-3 col-md-9">
                     &nbsp;&nbsp;&nbsp;<button type ="submit" name="btnSimpan" class="btn blue" id="id_btnSimpan">
                             <i class="fa fa-check"></i> Simpan </button>
-                    <button id="id_btnBatal" type="reset" class="btn default"><i class="fa fa-refresh"></i> Batal</button>
+                    <button id="id_btnBatal" type="reset" class="btn default" onclick="btl()"><i class="fa fa-refresh"></i> Batal</button>
                         </div>
                     </div>
                 </div>
@@ -424,18 +446,19 @@
                                         echo form_dropdown('ZoneID', $data, '', 'id="id_zone_edit" class="select2me form-control" required');
                                         ?>    
                                 </div>
+
+
                                 <div class="form-group">
                                     <label>Group User</label> <span class="">*</span>
-                                    <!-- <div class="col-md-9"> -->
-                                         <?php
-                                         $data = array();
-                                         $data[''] = '';
-                                         foreach ($group_user as $row) :
-                                         $data[trim($row['usergroup_id'])] = $row['usergroup_desc'];
-                                         endforeach;
-                                         echo form_dropdown('userGroup', $data, '', 'id="id_groupUser_edit"  class="select2me form-control" required');
-                                         ?>    
+                                     <select class="form-control input-sm" type="text" required id="id_groupUser_edit" name="userGroup" multiple="multiple">
+                                        <option value="" >--Select--</option>
+                                        <?php foreach ($item_branch as $row) { ?>
+                                            <option value="<?php echo $row->usergroup_id; ?>"><?php echo $row->usergroup_desc; ?></option>
+                                        <?php } ?>
+                                    </select>
                                 </div>
+
+                              
                 
                                 <div class="form-group">
                                     <label>Status User  </label>  <span class="">*</span>
@@ -457,7 +480,7 @@
                             <div class="form-actions">
                                 <div class="row">
                                     <div class="col-md-offset-3 col-md-9">
-                                        <button type ="submit" value="simpan" onclick="reload2();"name="btnSimpan" class="btn blue" id="id_btnUbah">
+                                        <button type ="submit" value="Ubah" name="btnSimpan" class="btn blue" id="id_btnUbah">
                                             <i class="fa fa-check"></i> Simpan</button>
                                         <!-- <button id="id_btnBatal" type="reset" class="btn default"><i class="fa fa-refresh"></i> Batal</button>
                                     </div> -->
@@ -483,6 +506,8 @@
 
 <?php $this->load->view('app.min.inc.php'); ?>
 <?php $this->load->view('admin/sec_user_js.php'); ?>
+
+
 
 
 <!-- END JAVASCRIPTS

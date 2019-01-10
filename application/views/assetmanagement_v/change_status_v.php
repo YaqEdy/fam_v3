@@ -132,9 +132,10 @@ table#idTabelchangestatus td:nth-child(2){
                             <button id="id_ReloadBarang" style="display: none;"></button>
                         </div>
                     </div>
+                    
                     <div class="row">
 
-                       <div class="col-md-6">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label col-sm-4">Status</label>
                             <div class="col-sm-8">
@@ -146,6 +147,8 @@ table#idTabelchangestatus td:nth-child(2){
                                 <option value="5">Harga Limit Bawah</option>
                                 <option value="6">Balai Lelang</option>
                                 <option value="7">Terjual</option>
+                          
+                   
 
                             </select>
                         </div>
@@ -775,6 +778,7 @@ function getsavehargaperkiraan(data) {
         success: function (e) {
 
              $('#mdl_hargaperkiraan').modal('hide');
+             $('#idTabelchangestatus').DataTable().ajax.reload();
 
          // location.reload();
          if(e.act){

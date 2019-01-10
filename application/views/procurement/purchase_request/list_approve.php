@@ -22,9 +22,12 @@
             </div>
             <div class="portlet-body">
                 <div class="tab-content">
-					<h5 class="sbold uppercase">Approval</h5>
+					<!-- <h5 class="sbold uppercase">Approval</h5> -->
                     <div class="panel panel-inverse">
                         <hr class="dotted">
+						<?php
+							if($g_user == 0){
+						?>
                         <select onchange="get_list_approve(this.value)">
 							<?php
 								foreach($grup as $gr_key => $gr_value){
@@ -32,6 +35,9 @@
 								}
 							?>
 						</select>
+						<?php
+							}
+						?>
 						<div id="list_approval">
 						</div>
                     </div>
@@ -47,6 +53,14 @@
 
 
 <script>
+	
+	$(document).ready(function() {
+		<?php
+			if($g_user <> '0'){
+				echo 'get_list_approve('.$g_user.')';
+			}
+		?>
+	});
 	
     function get_list_approve(grup){
 		$.post('<?=base_url()?>procurement/purchase_request/get_list_approval', {

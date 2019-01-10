@@ -1,4 +1,4 @@
-<script>
+    <script>
     var dataTable, dataTable1, dataTable2, dataTable3;
     var iStatus = '%';
     var iSearch = 'ItemName';

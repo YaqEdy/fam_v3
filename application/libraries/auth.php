@@ -54,7 +54,7 @@ class Auth {
 
     // untuk mengecek apakah user sudah login/belum
     function is_logged_in() {
-        if ($this->CI->session->userdata('id_user') == '') {
+        if ($this->CI->session->userdata('is_login') == '0') {
             return false;
         }
         return true;
@@ -102,7 +102,8 @@ class Auth {
     function do_logout() {
         $this->CI->session->sess_destroy();
         session_destroy();
-        redirect("http://182.23.52.249/SSO_WebService/login.php?source=" . base_url() . "admin/chekinglogin&app_code=MASSET");
+        redirect('main');
+//        redirect("http://182.23.52.249/SSO_WebService/login.php?source=" . base_url() . "admin/chekinglogin&app_code=MASSET");
     }
 
 }

@@ -36,16 +36,34 @@
             <div class="portlet-body">
                 <form method="post" action="<?php echo base_url('procurement/pr/savedata'); ?>">
                     <div class="col-md-12">
-                        <div class="form-group col-md-6">
-                            <label class="col-sm-6 control-label">Tanggal Request</label>
+                       <div class="form-group col-md-6">
+                            <label class="col-sm-6 control-label">Tanggal Request<span class="required" aria-required="true"> * </span></label>
                             <div class="col-sm-6">
-                                <input type="text" required="" name="tgl" class="form-control input-sm date-picker" data-date-format="dd/mm/yyyy">
-                            </div>
+                                <div class="input-group"> 
+                                <input type="text" required="" readonly="" autocomplete="off" name="tgl" class="form-control  date-picker" required data-date-format="dd/mm/yyyy" >
+                                 <span class="input-group-btn">
+                                    <button disabled="" class="btn default date-set" type="button">
+                                         <i class="fa fa-calendar"></i>  </button>
+                                </span>
                         </div>
+                    </div>
+                        </div>
+                          <!--   <div class="form-group col-md-6">
+                            <label class="col-sm-6 control-label">Tanggal Request<span class="required" aria-required="true"> * </span></label>
+                            <div class="col-sm-6">
+                                <div class="input-group">
+                                <input type="text" required="" value="<?php echo date('d-m-Y') ?>"  readonly autocomplete="off" name="tgl" class="form-control input-sm date-picker" required data-date-format="dd/mm/yyyy" >
+                                <span class="input-group-btn" style='vertical-align: top;'>
+                                                        <a href="javascript:;" disabled class="btn btn-icon-only " >
+                                                            <i class="glyphicon glyphicon-calendar"></i></a>
+                                                    </span>
+                                </div>
+                            </div>
+                        </div> -->
                         <div class="form-group col-md-6">
                             <label class="col-sm-6 control-label">Jumlah Barang</label>
                             <div class="col-sm-6">
-                                <input type="number" required="" name="jml" class="form-control input-sm">
+                                <input type="number" autocomplete="off" required="" name="jml" class="form-control input-sm" max="1">
                             </div>
                         </div>
                     </div>
@@ -73,7 +91,7 @@
                         <div class="form-group col-md-6">
                             <label class="col-sm-6 control-label">Nama Barang</label>
                             <div class="col-sm-6">
-                                <input type="text" required="" name="nama" class="form-control input-sm">
+                                <input type="text" autocomplete="off" required="" name="nama" class="form-control input-sm">
                             </div>
                         </div>
                     </div>
@@ -103,10 +121,10 @@
                                         Nama Barang
                                     </th>
                                     <th>
-                                        Spesifikasi
+                                        Jumlah Barang
                                     </th>
                                     <th>
-                                        Jumlah Barang
+                                        Spesifikasi
                                     </th>
                                     <th>
                                         Status Tiket

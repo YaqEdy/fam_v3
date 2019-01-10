@@ -22,7 +22,7 @@ class Sec_group_user_m extends CI_Model {
         $cekFound = $this->db->query("Select count(usergroup_id) jml from sec_usergroup where usergroup_id in('$randomString')");
        
         $jml = $cekFound->result();
-//         die($jml[0]->jml);
+        // die($jml[0]->jml);
         if ($jml[0]->jml == 0) 
         {
             return $randomString;
@@ -50,6 +50,7 @@ class Sec_group_user_m extends CI_Model {
     }
     public function insert_group_user_m($data) {
         $model = $this->db->insert('sec_usergroup', $data);
+        // echo $this->db->last_query(); die();
         if ($model) {
             return true;
         } else {

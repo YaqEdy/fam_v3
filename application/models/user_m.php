@@ -39,27 +39,47 @@ class User_m extends CI_Model {
 
     public function get_data($induk = 0, $user_group) {
         $data = array();
-////        $this->db->select('menu_allowed');
-//        $this->db->from('sec_menu');
-//        $this->db->where('parent', $induk);
-//        $this->db->like('menu_allowed', '+' . $user_group);
-//        $this->db->order_by("menu_seq", "asc");
-//        $result = $this->db->get();
         $SQL ="select * from sec_menu where parent=$induk and menu_allowed like '%+$user_group%' ORDER BY menu_seq ASC";
         $result= $this->db->query($SQL);
-        
-//        print_r($SQL); die();
-        foreach ($result->result() as $row) {
-            $data[] = array(
-                'id' => $row->menu_id,
-                'nama' => $row->menu_nama,
-                'menu_header' =>$row->menu_header,
-                'parent' => $row->parent,
-                'link' => $row->menu_uri,
-                // recursive
-                'child' => $this->get_data($row->menu_id, $user_group)
-            );
+        $resltgetmenu = $result->result();
+        foreach ($resltgetmenu as $keywordgetmenu) {
+            $allowed_new = '';
+            $menu_alowedgetmenu = $keywordgetmenu->menu_allowed;
+            $menu_idgetmenu = $keywordgetmenu->menu_id;
+            $menu_alowed2 = explode('+', $menu_alowedgetmenu);
+            foreach ($menu_alowed2 as $keyword) {
+                if ((strlen(trim($keyword)) != 0) && ($keyword == $user_group)) {
+                    $SQL2 ="select * from sec_menu where parent=$induk and menu_id = '$menu_idgetmenu' ORDER BY menu_seq ASC";
+                    $result2= $this->db->query($SQL2);
+                    foreach ($result2->result() as $row) {
+                        $data[] = array(
+                            'id' => $row->menu_id,
+                            'nama' => $row->menu_nama,
+                            'menu_header' =>$row->menu_header,
+                            'parent' => $row->parent,
+                            'link' => $row->menu_uri,
+                            'child' => $this->get_data($row->menu_id, $user_group)
+                        );
+                    }
+                }
+            }
         }
+        // }
+        // die();
+        // print_r($user_group);
+        // print_r($SQL2); 
+        // print_r($data); 
+        // echo "<pre>";
+        // foreach ($result->result() as $row) {
+        //     $data[] = array(
+        //         'id' => $row->menu_id,
+        //         'nama' => $row->menu_nama,
+        //         'menu_header' =>$row->menu_header,
+        //         'parent' => $row->parent,
+        //         'link' => $row->menu_uri,
+        //         'child' => $this->get_data($row->menu_id, $user_group)
+        //     );
+        // }
         return $data;
     }
 

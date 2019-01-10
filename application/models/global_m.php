@@ -65,7 +65,9 @@ class Global_m extends CI_Model {
     }
 
     public function tampil_data($sql) {
+
         $query = $this->db->query($sql);
+        // echo $this->db->last_query(); die('');
         return $query->result();
     }
 
@@ -224,6 +226,22 @@ class Global_m extends CI_Model {
             return true;
         }
     }
+	
+	public function sp_get($sql, $sParam = array()) {
+        return $query = $this->db->query($sql, $sParam)->result();  
+    }
+    
+//    public function conv_date($datetime,$format){
+//        if($format=='IND'){
+//        $newformat = date('d-m-Y',$datetime);            
+//        }
+//         if($format=='ENG'){
+////        $newformat = date('Y-m-d',$datetime);            
+//        $newformat = date('Y-m-d',$datetime);            
+//        }
+//        return $newformat;
+//    }
+//    
 
 }
 

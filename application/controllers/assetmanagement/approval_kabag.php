@@ -162,7 +162,7 @@ class approval_kabag extends CI_Controller {
 
 
     public function get_dataapproval() { 
-        $icolumn = array('ID', 'TGL_PENGAJUAN', 'PIC', 'JML_ITEM', 'STATUS', 'WIL_BALAI_LELANG', 'HARGA_PERKIRAAN','CREATE_BY','CREATE_DATE');
+        $icolumn = array('ID', 'TGL_PENGAJUAN', 'PIC', 'JML_ITEM', 'STATUS', 'WIL_BALAI_LELANG', 'CREATE_BY','CREATE_DATE');
         $iwhere = array('STATUS' => 0);
         $iorder = array('ID' => 'asc');
         $list = $this->datatables_custom->get_datatables('TBL_T_ASSETS_PENJUALAN', $icolumn, $iorder,$iwhere);
@@ -171,6 +171,19 @@ class approval_kabag extends CI_Controller {
         $data = array();
         $no = $_POST['start'];
         foreach ($list as $idatatables) {
+
+
+               if ($idatatables->STATUS == 0) {
+
+                $STATUS = "Belum di Approve";
+            } 
+                elseif ($idatatables->STATUS == 1) {
+
+                $STATUS = "Sudah di Approve";
+            } else {
+
+                $STATUS= "";
+            }
 
             $no++;
             $row = array();
@@ -181,8 +194,8 @@ class approval_kabag extends CI_Controller {
             $row[] = $idatatables->PIC;
             $row[] = $idatatables->JML_ITEM;
             $row[] = $idatatables->WIL_BALAI_LELANG;
-            $row[] = $idatatables->HARGA_PERKIRAAN;
-            $row[] = $idatatables->STATUS;
+            // $row[] = $idatatables->HARGA_PERKIRAAN;
+            $row[] = $STATUS;
 
             $row[] = '<a class="btn btn-sm btn-primary" href="#" id="btnDetail" data-toggle="modal" data-target="#mdl_detail_pengajuan">Detail Pengajuan</a>';
             
@@ -810,7 +823,7 @@ public function rejectdata(){
 
     $data = array(
  
-        'STATUS_KABAG' => 2,
+        'STATUS' => 2,
         'UPDATE_BY' => $id_user,
         'UPDATE_DATE' => date('Y-m-d H:i:s'),
 

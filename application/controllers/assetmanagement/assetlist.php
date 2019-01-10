@@ -15,7 +15,7 @@ class assetlist extends CI_Controller {
             $this->load->model('admin/konfigurasi_menu_status_user_m');
             $this->load->model('global_m');
             $this->load->model('assetmanagement_m/assetlist_m');
-            $this->load->model('datatables_custom');
+            $this->load->model('datatables');
             $this->load->model('api/api_m');
         }
     }
@@ -52,78 +52,38 @@ class assetlist extends CI_Controller {
         $this->template->load('template/template_dataTable', 'assetmanagement_v/assetlist_v', $data);
     }
 
-    function get_server_side() {
-        $requestData = $_REQUEST;
-//        print_r($requestData);die();
-        $iStatus = $this->input->post('sStatus');
-        $iSearch = $this->input->post('sSearch');
-        $columns = array(
-            // datatable column index  => database column name
-            0 => 'ID_ASSET',
-            1 => 'ITEM_ID',
-            2 => 'ItemName',
-            3 => 'SN',
-            4 => 'QTY',
-            5 => 'TGL_ASSET',
-            6 => 'BranchID',
-            7 => 'BRANCH_DESC',
-            8 => 'DivisionID',
-            9 => 'DIV_DESC',
-            10 => 'ZONE_ID',
-            11 => 'ZoneName',
-            12 => 'AssetType',
-            13 => 'IMAGE_PATH',
-            14 => 'KONDISI',
-            15 => 'ID_ASSET_OLD'
-        );
-
-        $sql = "SELECT * from VW_ASSET";
 
 
-        $totalData = $this->global_m->tampil_semua_array($sql)->num_rows();
+       public function get_server_side() { 
+        $icolumn = array('ID_ASSET', 'ITEM_ID', 'ItemName',   'QTY', 'TGL_ASSET', 'BranchID',  'BRANCH_DESC', 'DivisionID','DIV_DESC','ZONE_ID','ZoneName','AssetType','IMAGE_PATH','KONDISI','ID_ASSET_OLD');
 
-        $totalFiltered = $totalData;
-
-        if (!empty($requestData['search']['value'])) {
-            if ($iSearch == '1') {
-                $sql = "SELECT * from VW_ASSET";
-            } else {
-                $sql = "SELECT * from VW_ASSET";
-            }
-
-            $sql .= " ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET " . $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
-
-            $totalData = $this->global_m->tampil_semua_array($sql)->num_rows();
-            $totalFiltered = $totalData;
-        } else {
-            $sql .= " ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET " . $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
-        }
-
-        $row = $this->global_m->tampil_semua_array($sql)->result_array();
-        // print_r($row); die();
+        $iorder = array('ID_ASSET' => 'asc');
+        $list = $this->datatables->get_datatables('VW_ASSET', $icolumn, $iorder);
+            // print_r($list);
+            // die();
         $data = array();
-        $no = $_POST['start'] + 1;
-        foreach ($row as $row) {
-            # code...
-            // preparing an array
-            $nestedData = array();
+        $no = $_POST['start'];
+        foreach ($list as $idatatables) {
 
-            $nestedData[] = $no++;
-            $nestedData[] = $row["ID_ASSET"];
-            $nestedData[] = $row["ZoneName"];
-            $nestedData[] = $row["BRANCH_DESC"];
-            $nestedData[] = $row["DIV_DESC"];
-            $nestedData[] = date('d-m-Y', strtotime($row["TGL_ASSET"]));
-            $nestedData[] = $row["ID_ASSET"];
-            $nestedData[] = $row["ID_ASSET_OLD"];
-            $nestedData[] = $row["ItemName"];
-            $nestedData[] = $row["QTY"];
-            $nestedData[] = $row["IMAGE_PATH"];
-            $nestedData[] = $row["KONDISI"];
-            $nestedData[] = '<div class="col-md-15">
+            $no++;
+            $row = array();
+            $row[] = $no;
+
+           $row[] = $idatatables->ID_ASSET;
+            $row[] = $idatatables->ZoneName;
+            $row[] = $idatatables->BRANCH_DESC;
+            $row[] = $idatatables->DIV_DESC;
+            $row[] = date('d-m-Y', strtotime($idatatables->TGL_ASSET));
+            $row[] = $idatatables->ID_ASSET;
+            $row[] = $idatatables->ID_ASSET_OLD;
+            $row[] = $idatatables->ItemName;
+            $row[] = $idatatables->QTY;
+            $row[] = $idatatables->IMAGE_PATH;
+            $row[] = $idatatables->KONDISI;
+            $row[] ='<div class="col-md-15">
                             <div class="form-group">
                             <div class="col-sm-8">
-                            <select  onchange="asset_fam(this.value,' . $row["ID_ASSET"] . ');"
+                            <select  onchange="asset_fam(this.value,' . $idatatables->ID_ASSET . ');"
                             name="laporan" class="form-control" 
                             id="id_laporan">
                             <option value="">--Pilih--</option>
@@ -135,22 +95,24 @@ class assetlist extends CI_Controller {
                     </div>
                 </div>
             </div>';
-            // $nestedData[] = '<a class="btn btn-sm btn-primary"<a class="btn btn-sm btn-warning" href="#" id="btnUpdate" data-toggle="modal" data-target="#mdl_depresiasi">Depresiasi';
-            // $nestedData[] = $row["Status"];
-
-
-            $data[] = $nestedData;
+            $data[] = $row;
         }
 
-        $json_data = array(
-            "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
-            "recordsTotal" => intval($totalData), // total number of records
-            "recordsFiltered" => intval($totalFiltered), // total number of records after searching, if there is no searching then totalFiltered = totalData
-            "data" => $data   // total data array
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
+            "data" => $data,
         );
 
-        echo json_encode($json_data);
+
+        //output to json format
+        echo json_encode($output);
     }
+
+
+
+
 
     function get_server_side_depresiasi() {
         $requestData = $_REQUEST;
@@ -220,14 +182,21 @@ class assetlist extends CI_Controller {
             $KODE = $_POST['assetListKategory'];
             $EXP = explode("#",$KODE);
             $asset = $EXP[0];
-            $umur_fiskal = $EXP[1];
+            // $umur_fiskal = $EXP[1];
+
+
+            $KODE = $_POST['jnsbrg'];
+            $EXP2 = explode("-",$KODE);
+            $jnsbrg = $EXP2[0];
+            $umur_fiskal = $EXP2[1];
+
             
             $jsonarr = [
                 'to_table' => 'PNM_FAM_FA_RECLASS_STG',
                 'ASSET_BOOK_NAME' => 'PNM COMMERCIAL BOOK',
                 'ASSET_CATEGORY' => $asset,
                 'UMUR_FISKAL' => $umur_fiskal,
-                'JENIS_BARANG' => $_POST['jnsbrg'],
+                'JENIS_BARANG' => $jnsbrg,
                 'FAM_ASSET_ID' => $idAsset,
                 'ASSET_NUMBER' => '100330',
             ];
@@ -269,14 +238,21 @@ class assetlist extends CI_Controller {
         //echo $model;
         redirect('assetmanagement/assetlist/home');
     }
-    function cariBrg(){
+     function cariBrg(){
         $idnya = $this->input->post('idnya',true);
-        $query = $this->db->query("select distinct(TypeCode),itemTypeName from Mst_ItemType where IClassID ='$idnya'")->result();
-//        echo $this->db->last_query();die();
+      
+        $query = $this->db->query("select distinct(TypeCode),itemTypeName,a.UmurFiskal, b.ClassCode from Mst_ItemType a left join Mst_ItemClass b on a.ItemTypeID =b.IClassID where a.IClassID ='$idnya'")->result();
+       // echo $this->db->last_query();die();
             $opt[] = "<option value=''></option>";
         foreach ($query as $value) {
             $TypeCode = trim($value->TypeCode);
-            $opt[] .= "<option value='$TypeCode'>$value->itemTypeName</option>";
+            $UmurFiskal = trim($value->UmurFiskal);
+            // $ClassCode = trim($value->ClassCode);
+
+            
+            $opt[] .= "<option value='$TypeCode-$UmurFiskal'>($value->TypeCode)$value->itemTypeName-$value->UmurFiskal</option>";
+
+
         }
         echo json_encode($opt);
     }

@@ -36,7 +36,7 @@
     </table>
     <!--<input type="text" name="idnya_rcls" class="hidden" value="<?php echo $data['ASSET_NUMBER']; ?>">-->
 
-    <div class="col-md-6">
+    <!-- <div class="col-md-6">
         <div class="form-group">
             <label class="control-label col-sm-4">ASSET KATEGORI - UMUR FISKAL</label>
             <div class="col-sm-8">
@@ -44,6 +44,20 @@
                     <option value="-">Pilih</option> 
                     <?php foreach ($itemClass as $value) { ?>
                     <option value="<?php echo trim($value->ClassCode).'#'.trim($value->umurfiskal).'#'.$value->IClassID ?>"><?php echo "(".trim($value->ClassCode).")".$value->IClassName.'-'.$value->umurfiskal ?></option>
+                    <?php } ?>
+                </select>
+            </div>
+        </div>
+    </div> -->
+
+       <div class="col-md-6">
+        <div class="form-group">
+            <label class="control-label col-sm-4">ASSET KATEGORI - UMUR FISKAL</label>
+            <div class="col-sm-8">
+                <select name="assetListKategory" id="id_assetListKategory" class="form-control" onchange="pilihItemType(this.value)">
+                    <option value="-">Pilih</option> 
+                    <?php foreach ($itemClass as $value) { ?>
+                    <option value="<?php echo trim($value->ClassCode).'#'.trim($value->umurfiskal).'#'.$value->IClassID ?>"><?php echo "(".trim($value->ClassCode).")".$value->IClassName?></option>
                     <?php } ?>
                 </select>
             </div>

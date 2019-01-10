@@ -5,14 +5,15 @@
     var iZone = 1;
 
     jQuery(document).ready(function () {
+        ComponentsDateTimePickers.init();
         loadGridHPS();
 //        dd_Zone("A");
-        $('.date-picker').datepicker({
-            orientation: "left",
-            autoclose: true
-        });
+$('.date-picker').datepicker({
+    orientation: "left",
+    autoclose: true
+});
 
-    });
+});
     btnStart();
 
     function search(e) {
@@ -24,10 +25,22 @@
         $('#tutupmodalnyadong').trigger('click');
     }
 
+    function getItemID(input) {
+        $('#ItemTypeID').empty();
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            "url": "<?php echo base_url("procurement/hps_tiket/getItemTypeID/"); ?>/" + input,
+            data: input,
+            success: function (data) {
+                $('#ItemTypeID').append(data);
+            }
+        });
+        event.preventDefault();
+    }
 
 
-
-     $('#id_formRoom').submit(function (event) {
+    $('#id_formRoom').submit(function (event) {
         event.preventDefault();
 
         $.ajax({
@@ -40,11 +53,30 @@
             processData: false,
             dataType: "JSON",
             success: function (e) {
-                    $("#nama_barang2").val($("#nama_barang").val());
+                $("#nama_barang2").val($("#nama_barang").val());
 
                 // alert('asd');
                 if(e.act){
-                    UIToastr.init(e.tipePesan, e.pesan);
+                    bootbox.dialog({
+                        title: e.title,
+                        message: e.pesan,
+                        buttons: {
+                            cancel: {
+                                label: "No",
+                                className: 'btn-danger',
+                                callback: function(){
+                                    new22(); 
+                                }
+                            },
+                            confirm: {
+                                label: "Yes",
+                                className: 'btn-success',
+                                callback: function(){
+                                    closebtn();
+                                }
+                            }
+                        }
+                    });
                     iPID=e.iPid;
                     $("#id_btnBatal").trigger('click');
                 }else{
@@ -62,8 +94,8 @@
 
     $('#id_formRoom_no').submit(function (event) {
         var r = confirm('Do you want to save this file ?');
-            if (r == true) {
-                $.ajax({
+        if (r == true) {
+            $.ajax({
             url: "simpan_msthps", // json datasource
             type: 'POST',
             data: new FormData(this),
@@ -85,12 +117,12 @@
                 $('#idGridAnggotaKel').DataTable().ajax.reload();
             }
         }); 
-                event.preventDefault(); 
+            event.preventDefault(); 
             } else {//if(r)
                 return false;
             }
-             
-    });
+
+        });
 
 
 
@@ -100,21 +132,21 @@
             dom: 'C<"clear">l<"toolbar">frtip',
             initComplete: function () {
                 $("div.toolbar").append('<div class="col-md-8">\n\
-            <div class="row">\n\
-                <div class="col-md-1"></div>\n\
-                </div>\n\
-            </div>\n\
-        </div>');
+                    <div class="row">\n\
+                    <div class="col-md-1"></div>\n\
+                    </div>\n\
+                    </div>\n\
+                    </div>');
                 // dd_Zone("A");
             }, "lengthMenu": [
-                [5, 10, 15, 20, -1],
+            [5, 10, 15, 20, -1],
                 [5, 10, 15, 20, "All"] // change per page values here
-            ],
+                ],
 //                // set the initial value
-            "pageLength": 5,
-            "processing": true,
-            "serverSide": true,
-            "ajax": {
+"pageLength": 5,
+"processing": true,
+"serverSide": true,
+"ajax": {
                 url: "<?php echo base_url("/procurement/hps_tiket/ajax_GridHPS"); ?>", // json datasource
                 type: "post", // method  , by default get
                 data: function (z) {
@@ -130,7 +162,7 @@
                 }
             },
             "columnDefs": [
-                {"targets": [-1], "orderable": false, "searchable": false},
+            {"targets": [-1], "orderable": false, "searchable": false},
 //                {"targets": [0], "orderable": false},
 //                {"targets": [1], "orderable": false},
 //                {"targets": [2], "orderable": false},
@@ -140,11 +172,11 @@
                 // {"targets": [6], "orderable": false},
                 // {"targets": [7], "visible": true, "searchable": true},
                 {"targets": [8], "visible": false, "searchable": false},
-            ],
-        });
+                ],
+            });
     }
 
-     
+
     $('#table_gridHPS').on('click', '#btnUpdate', function () {
         $('#mdl_Update').find('.modal-title').text('Update');
 
@@ -165,11 +197,11 @@
     });
 
     function new22(){
-    // alert('new');
-    $('#btnCloseModalDataBarang').trigger('click');
-}
+        $('#btnCloseModalDataBarang').trigger('click');
+        $('#modalku').modal('show');
+    }
 
-     function reload_ () {
+    function reload_ () {
         // alert('new');
         $('#IClassID').select2('val','');
         $('#ZoneID').select2('val','');
@@ -180,34 +212,60 @@
 
 
     function reload2 (){
-    btnStart();
-    resetForm();
-    readyToStart();
+        btnStart();
+        resetForm();
+        readyToStart();
     }
 
 
+//     function dd_Zone(a) {
+
+//         $.ajax({
+//             url: "<?php echo base_url("/procurement/hps_tiket/ddZone"); ?>?sParam=" + a, // json datasource
+//             dataType: "JSON", // what to expect back from the PHP script, if anything
+//             type: 'post',
+//             cache: false,
+// //            data: {sBranchID: $("#dd_id_branch").val()},
+//             success: function (e) {
+//                 if (a == "B") {
+//                     $("#ddZone2").empty();
+//                     $("#ddZone2").append(e);
+//                 } else if (a == "A") {
+//                     $("#ddZone3").empty();
+//                     $("#ddZone3").append(e);
+//                 } else {
+//                     $("#ddZone").empty();
+//                     $("#ddZone").append(e);
+//                 }
+//             },
+//             complete: function (e) {
+//                 if (a != "A" || a != "B") {
+//                     $("#dd_id_zone").val(a);
+//                 }
+//             }
+//         });
+//     }
+
+
+$("#id_btnSimpan").click(function () {
+    $('#idTmpAksiBtn').val('1');
+
+});
+
+$('#id_btnUbah').click(function () {
+    $('#idTmpAksiBtn').val('2');
+});
+$('#id_btnHapus').click(function () {
+    $('#idTmpAksiBtn').val('3');
+});
 
 
 
-       $("#id_btnSimpan").click(function () {
-        $('#idTmpAksiBtn').val('1');
 
-    });
-
-    $('#id_btnUbah').click(function () {
-        $('#idTmpAksiBtn').val('2');
-    });
-    $('#id_btnHapus').click(function () {
-        $('#idTmpAksiBtn').val('3');
-    });
-
-
-
-
-    $( "#buttonal" ).click(function() {
-      $('#myModalsha').modal('hide');
-      $('#close_myModalsha').trigger('click');
-    });
+$( "#buttonal" ).click(function() {
+  $('#myModalsha').modal('hide');
+  $('#close_myModalsha').trigger('click');
+});
 
 
 </script>

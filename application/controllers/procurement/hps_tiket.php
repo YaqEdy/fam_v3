@@ -58,13 +58,13 @@ class hps_tiket extends CI_Controller {
 
      $data['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
      $data['menu_all'] = $this->user_m->get_menu_all(0);
-     $data['dd_id_tiket_hps']= $this->global_m->tampil_data("SELECT count(*) AS JML FROM [FAM_V3].[dbo].[TBL_T_TIKET_HPS] WHERE [STATUS]='PENGAJUAN'");
-     $data['dd_onproses']= $this->global_m->tampil_data("SELECT count(*) AS JML FROM [FAM_V3].[dbo].[TBL_T_TIKET_HPS] WHERE [STATUS]='ONPROSES'");
-     $data['dd_done']= $this->global_m->tampil_data("SELECT count (*) AS JML FROM [FAM_V3].[dbo].[TBL_T_TIKET_HPS]WHERE [STATUS]='DONE'");
+     $data['dd_id_tiket_hps']= $this->global_m->tampil_data("SELECT count(*) AS JML FROM TBL_T_TIKET_HPS WHERE STATUS = 'PENGAJUAN'");
+     $data['dd_onproses']= $this->global_m->tampil_data("SELECT count(*) AS JML FROM TBL_T_TIKET_HPS WHERE STATUS = 'ONPROSES'");
+     $data['dd_done']= $this->global_m->tampil_data("SELECT count (*) AS JML FROM TBL_T_TIKET_HPS WHERE STATUS = 'DONE'");
      $data['dd_jns_budget'] = $this->global_m->tampil_data('SELECT ID_JNS_BUDGET,BUDGET_DESC FROM TBL_R_JNS_BUDGET');
      $data['dd_item_class'] = $this->global_m->tampil_data("SELECT IClassID, IClassName FROM Mst_ItemClass");
      $data['dd_item_type'] = $this->global_m->tampil_data("SELECT ItemTypeID, ItemTypeName FROM Mst_ItemType");
-     $data['dd_Branch'] = $this->global_m->tampil_data("SELECT BranchID, BranchName FROM Mst_Branch WHERE Is_trash=0");
+     $data['dd_Branch'] = $this->global_m->tampil_data("SELECT FLEX_VALUE AS BranchID, BRANCH_DESC AS BranchName FROM TBL_M_BRANCH WHERE Is_trash=0");
      $data['dd_Zona'] = $this->global_m->tampil_data("SELECT ZoneID, ZoneName FROM Mst_Zonasi");
      // print_r($data['dd_Zona']); die();
 //            $data['karyawan'] = $this->global_m->tampil_id_desk('master_karyawan', 'id_kyw', 'nama_kyw', 'id_kyw');
@@ -73,6 +73,17 @@ class hps_tiket extends CI_Controller {
 
         $this->template->set('title', 'HPS TIKET');
         $this->template->load('template/template_dataTable', 'procurement/hps/hps_tiket_v', $data);
+    }
+
+    public function getItemTypeID($prop = '') {
+        $this->CI = & get_instance(); //and a.kcab_id<>'1100'
+        $rows = $this->hps->getItemTypeID($prop);
+        $options = "";
+        $options .= "<option value='NULL' selected>-Pilih-</option>";
+        foreach ($rows as $v) {
+            $options .= "<option  value='" . $v->ItemTypeID . "'>" . $v->ItemTypeName . "</option>";
+        };
+        $this->output->set_output(json_encode($options));
     }
 
        function read($pg = 1) { //CIS
@@ -124,9 +135,13 @@ class hps_tiket extends CI_Controller {
 
         $StartDate = trim($this->input->post('StartDate'));
         $EndDate = trim($this->input->post('EndDate'));
+        // $Price = trim($this->input->post('Price'));
         $Price = trim($this->input->post('Price'));
+        $Price = str_replace(',', '', $Price);
         $ZoneID = trim($this->input->post('ZoneID'));
         $id_tiket = trim($this->input->post('id_tiket2'));
+       // $test =  $this->global_m->tampil_data(" SELECT top 1 ItemID FROM Mst_ItemList WHERE ID_TIKET_HPS = $id_tiket")[0]->ItemID;
+        // print_r($test); die();
         $data = array(
 
             'StartDate' => $StartDate,
@@ -134,12 +149,12 @@ class hps_tiket extends CI_Controller {
             'ZoneID' => $ZoneID,
             'CreateDate' => date('Y-m-d h:i:s'),
             // 'ItemID' => $id_tiket,
-            'ItemID' => $this->global_m->tampil_data("  SELECT ItemID FROM Mst_ItemList WHERE ID_TIKET_HPS = $id_tiket"),
-            'Price' => $Price,
+            'ItemID' => $this->global_m->tampil_data(" SELECT top 1 ItemID FROM Mst_ItemList WHERE ID_TIKET_HPS = $id_tiket")[0]->ItemID,
+            'Price' => (int) $Price,
             'CreateBy' =>  $this->session->userdata('user_id'),
            // 'status' => 0 //aktif
         );
-         print_r($data); die();
+         // print_r($data); die();
         $table = "Mst_HPS";
         
         $model = $this->global_m->ubah('TBL_T_TIKET_HPS', array('STATUS'=>'DONE'),'ID_TIKET_HPS',$id_tiket);
@@ -171,7 +186,6 @@ class hps_tiket extends CI_Controller {
         // $AssetType = trim($this->input->post('AssetType'));
         $id_tiket = trim($this->input->post('id_tiket'));
 
-
         // $StartDate = trim($this->input->post('StartDate'));
         // $EndDate = trim($this->input->post('EndDate'));
         // $Price = trim($this->input->post('Price'));
@@ -187,7 +201,7 @@ class hps_tiket extends CI_Controller {
         $files = $_FILES;
         $nilai = 0;
 
-        $query = $this->db->query("SELECT LEFT(ClassCode, 1) as code FROM [FAM_V3].[dbo].[Mst_ItemClass] where IClassID = '$IClassID'")->result();
+        $query = $this->db->query("SELECT LEFT(ClassCode, 1) as code FROM Mst_ItemClass where IClassID = '$IClassID'")->result();
 
         $code = $query[0]->code;
 
@@ -206,7 +220,8 @@ class hps_tiket extends CI_Controller {
             $_FILES['userfile']['size'] = $files['Image']['size'][$i];
 
             $this->upload->initialize($config);
-            if ($this->upload->do_upload('userfile')) {
+            $this->upload->do_upload('userfile');
+            // if ($this->upload->do_upload('userfile')) {
                 $data = $this->upload->data();
                 $Image = $data['file_name'];
                 $data = array(
@@ -226,7 +241,7 @@ class hps_tiket extends CI_Controller {
 
                 $model = $this->global_m->simpan($table, $data);
                 $model = $this->global_m->ubah('TBL_T_TIKET_HPS', array('STATUS'=>'ONPROSES'),'ID_TIKET_HPS',$id_tiket);
-            }
+            // }
         }
 
 
@@ -246,10 +261,8 @@ class hps_tiket extends CI_Controller {
                     $array = array(
                         'act' => 1,
                         'tipePesan' => 'success',
-                        'pesan' =>  '<h4>Data berhasil di simpan</h4><br>
-                                    <h4>Apakah anda ingin menginput kembali ?</h4><br>
-                                    <button class="btn btn-lg btn-primary" data-toggle="modal" data-target="#myModaleki" onclick="reload_();">Yes</button>&nbsp;&nbsp;
-                                    <button class="btn btn-lg btn-danger" data-toggle="modal" data-target="#modalku" onclick="new22();">No</button>',
+                        'title' => 'Data berhasil di simpan',
+                        'pesan' =>  'Apakah anda ingin menginput kembali ?',
                         'itemname'=>$nama_barang
                     );
 
@@ -275,7 +288,7 @@ class hps_tiket extends CI_Controller {
         //     $this->input->post('sSearch') => $_POST['search']['value']
         // );
         $iorder = array('id_tiket_hps' => 'asc');
-        $list = $this->datatables->get_datatables('TBL_T_TIKET_HPS', $icolumn, $iorder, $iwhere);
+        $list = $this->datatables_custom->get_datatables('TBL_T_TIKET_HPS', $icolumn, $iorder, $iwhere);
             // print_r($list);
             // die();
         $data = array();
@@ -286,7 +299,7 @@ class hps_tiket extends CI_Controller {
             $row = array();
             $row[] = $no;
 
-            $row[] = $idatatables->tanggal;
+            $row[] = date('d-m-Y', strtotime($idatatables->tanggal) ); 
             $row[] = $idatatables->divisi;
             $row[] = $idatatables->nama_barang;
             $row[] = $idatatables->spesifikasi;
@@ -294,7 +307,11 @@ class hps_tiket extends CI_Controller {
             $row[] = $idatatables->status;
             // $row[] = '<a class="btn btn-xs btn-warning" href="#" id="btnUpdate" data-toggle="modal" data-target="#mdl_Update">Update</a>'
             //         . '<a class="btn btn-xs btn-danger" href="#" id="btnDelete">Delete</a>';
-            $row[] = '<button type="button" id="btnUpdate"  class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModalsha">View</button>';       
+			if($idatatables->status=="PENGAJUAN"){
+            $row[] = '<button type="button" id="btnUpdate"  class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModalsha">View</button>';       				
+			}else{
+			$row[] ="";	
+			}
             $row[] = $idatatables->id_tiket_hps;
 
 
@@ -303,8 +320,8 @@ class hps_tiket extends CI_Controller {
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->datatables->count_all(),
-            "recordsFiltered" => $this->datatables->count_filtered(),
+            "recordsTotal" => $this->datatables_custom->count_all(),
+            "recordsFiltered" => $this->datatables_custom->count_filtered(),
             "data" => $data,
         );
         //output to json format
@@ -320,7 +337,7 @@ class hps_tiket extends CI_Controller {
         //     $this->input->post('sSearch') => $_POST['search']['value']
         // );
         $iorder = array('id_tiket_hps' => 'asc');
-        $list = $this->datatables->get_datatables('Mst_HPS', $icolumn, $iorder, $iwhere);
+        $list = $this->datatables_custom->get_datatables('Mst_HPS', $icolumn, $iorder, $iwhere);
 
         $data = array();
         $no = $_POST['start'];
@@ -345,8 +362,8 @@ class hps_tiket extends CI_Controller {
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->datatables->count_all(),
-            "recordsFiltered" => $this->datatables->count_filtered(),
+            "recordsTotal" => $this->datatables_custom->count_all(),
+            "recordsFiltered" => $this->datatables_custom->count_filtered(),
             "data" => $data,
         );
         //output to json format

@@ -12,7 +12,7 @@ class master_po_m extends CI_Model {
 	}
 
 	public function getItemList($id) {
-		$sql = "select a.ItemID, a.Qty, a.HargaHPS, a.Qty*a.HargaHPS as total, b.ItemName, c.ItemTypeName, '' as JNS_PERIODE, '' as START_PERIODE, '' as END_PERIODE,'' as NOTIF 
+		$sql = "select a.ItemID, a.Qty, a.HargaHPS, a.Qty*a.HargaHPS as total, b.ItemName, c.ItemTypeName, d.SewaPeriodeSatuan as JNS_PERIODE, d.PeriodeTanggalDari as START_PERIODE, d.PeriodeTanggalSampai as END_PERIODE,'' as NOTIF 
                         from TBL_REQUEST_ITEMLIST a join 
                         TBL_REQUEST as d on a.RequestID=d.RequestID join
                         Mst_ItemList b on a.ItemID = b.ItemID join 
@@ -78,7 +78,7 @@ class master_po_m extends CI_Model {
 	{
 		$this->db->select("a.RequestID, a.Pemenang, b.*");
 		$this->db->from("TBL_REQUEST_VENDOR a");
-		$this->db->join("Mst_Vendor b", "a.VendorID = b.VendorID");
+		$this->db->join("Mst_Vendor b", "a.VendorID = b.VendorID",'LEFT');
 		$this->db->where('a.RequestID', $id);
 		$this->db->where('a.Pemenang', 1);
 		return $this->db->get()->result();

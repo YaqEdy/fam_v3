@@ -77,12 +77,8 @@ table#table_gridItemProcess td:nth-child(2){
                                     </div>
                                 </div>
 
-                                
-                            </div>
-                            
-                            <div class="row">
-                              
-                             <div class="col-md-4">
+
+                                                    <div class="col-md-4">
                                 <div class="form-group">
                                     <label class="control-label col-sm-4">Branch</label>
                                     <div class="col-sm-8">
@@ -96,23 +92,12 @@ table#table_gridItemProcess td:nth-child(2){
                                 </div>
                             </div>
 
-                            
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label class="control-label col-sm-4">Division</label>
-                                    <div class="col-sm-8">
-                                        <select class="form-control input-sm" type="text" id="id_ID_div" name="ID_div">
-                                            <option value="" >--Select--</option>    
-                                            <?php foreach ($item_div as $row) { ?>
-                                                <option value="<?php echo $row->FLEX_VALUE; ?>"><?php echo $row->DIV_DESC; ?></option>
-                                            <?php } ?>
-                                        </select>
-                                    </div>
-                                </div>
+
+
+                                
                             </div>
                             
-
-                        </div>
+                  
 
                         <div class="row">
 
@@ -140,6 +125,22 @@ table#table_gridItemProcess td:nth-child(2){
                                </div>
                            </div>
                        </div>
+
+                           <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-sm-4">Division</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control input-sm" type="text" id="id_ID_div" name="ID_div">
+                                            <option value="" >--Select--</option>    
+                                            <?php foreach ($item_div as $row) { ?>
+                                                <option value="<?php echo $row->FLEX_VALUE; ?>"><?php echo $row->DIV_DESC; ?></option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+
                    </div>
 
                    <div class="row">
@@ -170,6 +171,16 @@ table#table_gridItemProcess td:nth-child(2){
                             </div>
                         </div>
                     </div>
+
+                              <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Sub Lokasi</label>
+                        <div class="col-sm-8">
+                         <input type="text" class="form-control" id="id_sublokasi" name="id_sublokasi">
+                     </div>
+                 </div>
+             </div>
+
 
                 </div>
 
@@ -204,30 +215,20 @@ table#table_gridItemProcess td:nth-child(2){
                         </div>
                     </div>
 
-                </div>
-
-                <div class="row">
-
-                 <div class="col-md-4">
-                    <div class="form-group">
-                        <label class="control-label col-sm-4">Sub Lokasi</label>
-                        <div class="col-sm-8">
-                         <input type="text" class="form-control" id="id_sublokasi" name="id_sublokasi">
-                     </div>
-                 </div>
-             </div>
-
-             <div class="col-md-4">
+                             <div class="col-md-4">
                 <div class="form-group">
                     <label class="control-label col-sm-4">Old Sub Lokasi</label>
                     <div class="col-sm-8">
-                     <input type="text" class="form-control" id="id_sublokasi" name="id_sublokasi">
+                     <input type="text" class="form-control" id="id_oldsublokasi" name="id_sublokasi">
                  </div>
              </div>
          </div>
 
-         
-     </div>
+
+
+                </div>
+
+
 
      <hr>
 
@@ -236,7 +237,7 @@ table#table_gridItemProcess td:nth-child(2){
             <div class="form-group">
                 <label class="control-label col-sm-4">Jml Asset Transfer</label>
                 <div class="col-sm-3">
-                 <input type="text" class="form-control" id="id_transfer" name="transfer">
+                 <input type="text" class="form-control" id="id_transfercount" name="id_transfercount" readonly>
              </div>
          </div>
      </div>
@@ -357,7 +358,7 @@ table#table_gridItemProcess td:nth-child(2){
                         <th>ID</th>
                         <th>Branch</th>
                         <th>Divisi</th>
-                        <th>Jml Asset Transfer</th>
+                        <!-- <th>Jml Asset Transfer</th> -->
                         <th>Tujuan Transfer</th>
                         <th>Tanggal Pengiriman</th>
                         <th>Nama Pengirim</th>
@@ -392,7 +393,7 @@ table#table_gridItemProcess td:nth-child(2){
                         <th>ID</th>
                         <th>Branch</th>
                         <th>Divisi</th>
-                        <th>Jml Asset Transfer</th>
+                        <!-- <th>Jml Asset Transfer</th> -->
                         <th>Tujuan Transfer</th>
                         <th>Tanggal Pengiriman</th>
                         <th>Nama Pengirim</th>
@@ -888,19 +889,28 @@ table#table_gridItemProcess td:nth-child(2){
 
     var iID_ASSET ='';
 
-    function processtransfer(){
-
-        
+     function processtransfer(){
+  
       var rows_selected = dataTable1.column(2).checkboxes.selected();
 
       iID_ASSET =iID_ASSET + rows_selected.join(",");
 
-      // alert(iID_ASSET);
+      
+      var res = iID_ASSET.split(",");
+      var ee = res.length;
+// console.log(ee);
+
+      $("#id_transfercount").val(ee);
+
+  
+
+  
+      // alert(ee);
+
       $('#table_gridItemProcess').DataTable().ajax.reload();
 
 
   }
-
 
   function terima(data){
 
@@ -943,16 +953,19 @@ table#table_gridItemProcess td:nth-child(2){
  function getSaveTransfer() {
     var i_clsUpdate = {
         ID_ASSET : iID_ASSET,
-        id_ranch: $("#id_ID_Branch").val(),
-        id_pengirim: $("#id_PENGIRIM").val(),
+        id_pengirim: $("#id_PENGIRIM").val(),    
         tgl_pengirim: $("#id_TGL_PENGIRIM").val(),
+        id_ranch: $("#id_ID_Branch").val(),
         tujuan: $("#id_ID_tujuan").val(),
-        division: $("#id_ID_div").val(),
         resi: $("#id_RESI").val(),
+        division: $("#id_ID_div").val(),
         kota: $("#id_ID_kota").val(),
         lokasi: $("#id_ID_lokasi").val(),
-        sublokasi: $("#id_sublokasi").val()
-
+        sublokasi: $("#id_sublokasi").val(),
+        oldkota: $("#id_ID_oldkota").val(),
+        oldlokasi: $("#id_ID_oldlokasi").val(),
+        oldsublokasi: $("#id_oldsublokasi").val(),
+     
     }
 
 

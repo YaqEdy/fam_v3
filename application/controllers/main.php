@@ -20,9 +20,7 @@ class Main extends CI_Controller {
         }
     }
 
-
-
-        function getdetail() { 
+    function getdetail() {
         $this->CI = & get_instance();
         $crows = $this->dashboard_m->getCdisplay();
         if ($crows <= 0) {
@@ -34,18 +32,23 @@ class Main extends CI_Controller {
             $this->output->set_output(json_encode($rows));
         }
     }
+    
+     public function index() {
+          $this->load->view('global/login_select_v');
+     }
 
-
-    public function index() {
-        if ($this->auth->is_logged_in() == false) {
-            $this->login();
+    public function home() {
+		//print_r($this->session->userdata('is_login'));die();
+	if ($this->auth->is_logged_in() == false) {
+//            $this->login();
+            $this->sso->log_sso();
         } else {
             $data ['multilevel'] = $this->user_m->get_data(0, $this->session->userdata('usergroup'));
             //$data ['nama'] = $this->home_m->get_nama_kantor ();
             $data['menu_id'] = 0;
             $tanggal = $this->session->userdata('tgl_d');
             $this->template->set('title', 'Home');
-            
+
             $sql_pr = "select warna,ket,nilai from(
                                 SELECT 'green' as warna,'Request' as ket, Count(*) as nilai        
                                 FROM TBL_REQUEST WHERE status='2-1' AND Is_trash =0        
@@ -70,15 +73,14 @@ class Main extends CI_Controller {
                                 TBL_REQUEST_LOG AS B ON A.RequestID=B.RequestID and A.status=B.status_dari
                                 where b.action='Reject'
                             )x";
-            
+
             $data['data_pr'] = $this->global_m->tampil_data($sql_pr);
-            
+
             $this->template->load('template/template1', 'dashboard_v', $data);
         }
     }
 
     public function login() {
-
         $this->load->library('form_validation');
         $this->form_validation->set_rules('username', 'Username', 'trim|required');
         $this->form_validation->set_rules('password', 'Password', 'trim|required');
@@ -219,7 +221,7 @@ class Main extends CI_Controller {
             $this->session->sess_destroy();
         }
         // larikan ke halaman utama
-        redirect('main');
+        redirect('main/home');
         //$this->load->view ( 'admin/login_form' );
     }
 
@@ -234,17 +236,7 @@ class Main extends CI_Controller {
         //$this->load->view ( 'admin/login_form' );
     }
 
-
-
-
-
-
-
-
 }
-
-
-
 
 /* End of file main.php */
 /* Location: ./application/controllers/main.php */

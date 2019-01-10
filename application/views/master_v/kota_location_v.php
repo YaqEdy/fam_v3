@@ -18,7 +18,7 @@
                 <div class="tools">
 
 
-                <button  onclick="sys_kotalocation()">Button Sync API <i class="fa fa-refresh green"></i></button>
+                <button class="btn blue" onclick="sys_kotalocation()">Button Sync API <i class="fa fa-refresh green"></i></button>
                     <a href="javascript:;" class="collapse">
                     </a>
                     <a href="javascript:;" class="fullscreen">
@@ -363,20 +363,18 @@
 
 
 
-
-
-
 function sys_kotalocation(){
 
  $.ajax({
         type: "POST",
         url: "<?php echo site_url('master/kota_location/getfamlocation'); ?>",
-        // data: form.serialize(), // <--- THIS IS THE CHANGE
         dataType: "JSON",
+        cache: false,
         success: function(data){
              $('#table_gridCategory').DataTable().ajax.reload();
-        },
-        error: function() { alert("Error posting feed."); }
+             $('#coa_table').DataTable().ajax.reload();
+              alert(data.msg);
+        }
    });
 
 }

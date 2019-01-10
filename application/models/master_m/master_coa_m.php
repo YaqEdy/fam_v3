@@ -68,7 +68,7 @@ class master_coa_m extends CI_Model {
         $query2 = $this->db->update($tabel, $data);
         $this->db->query("SET IDENTITY_INSERT [dbo].[$tabel] OFF");
 
-        echo $this->db->last_query(); die('');
+        // echo $this->db->last_query(); die('');
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
             return false;

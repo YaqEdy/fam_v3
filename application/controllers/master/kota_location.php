@@ -107,55 +107,60 @@ class kota_location extends CI_Controller {
 //     }
 
 //     }
-//     function getfamlocation() {
-//         $this->getfamkota();
-//         // die("j");
-//       $jsonarr=[ 
-//         'table'=>'PNM_FA_LOCATIONS_V'
-//     ];
-//     $curlurl="http://192.168.10.241/OCI/index.php/api/v1/fam/get_all";
 
-//     $ch = curl_init($curlurl);
-//     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-//     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($jsonarr));
-//     $responsejson = curl_exec($ch);
-//     curl_close($ch);
+    function getfamlocation() {
+        $this->getfamkota();
+      $jsonarr=[ 
+        'table'=>'PNM_FA_LOCATIONS_V'
+    ];
+    $curlurl="http://192.168.10.241/OCI/index.php/api/v1/fam/get_all";
 
-//     $response=json_decode($responsejson,true);
-// // print_r($response['data']);die();
+    $ch = curl_init($curlurl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($jsonarr));
+    $responsejson = curl_exec($ch);
+    curl_close($ch);
 
-//     $no = 1;
-//     $data['data'] = array();
-//     foreach ( $response['data'] as $row) {
-//         // echo "<pre>";
-//         // print_r($response['data']);
+    $response=json_decode($responsejson,true);
 
-//         $cek=$this->global_m->tampil_data("SELECT COUNT(*) as JML FROM TBL_M_LOCATION WHERE LOCATION_ID='".$row['LOCATION_ID']."'")[0]->JML;
+    $no = 1;
+    $data['data'] = array();
+    foreach ( $response['data'] as $row) {
+        $cek=$this->global_m->tampil_data("SELECT COUNT(*) as JML FROM TBL_M_LOCATION WHERE LOCATION_ID='".$row['LOCATION_ID']."'")[0]->JML;
 
-//         $data = array(
-//             // 'no'=>$no,
-//             'LOCATION_ID'=>$row['LOCATION_ID'],
-//             'SEGMENT1'=>$row['SEGMENT1'],
-//             'SEGMENT2' => $row['SEGMENT2'],
-//             'SEGMENT3' => $row['SEGMENT3'],
-//             'SUMMARY_FLAG' => $row['SUMMARY_FLAG'],
-//             'ENABLED_FLAG' => $row['ENABLED_FLAG'],
-//             'UPDATE_DATE' => $row['LAST_UPDATE_DATE'],
-//         );
+        $data = array(
+            'LOCATION_ID'=>$row['LOCATION_ID'],
+            'SEGMENT1'=>$row['SEGMENT1'],
+            'SEGMENT2' => $row['SEGMENT2'],
+            'SEGMENT3' => $row['SEGMENT3'],
+            'SUMMARY_FLAG' => $row['SUMMARY_FLAG'],
+            'ENABLED_FLAG' => $row['ENABLED_FLAG'],
+            'UPDATE_DATE' => $row['LAST_UPDATE_DATE'],
+        );
 
-// // array_push($data['data'], $array);
+        if($cek==0){
 
-// // $no++;
-//         if($cek==0){
+            $model=$this->global_m->simpan('TBL_M_LOCATION',$data);
+        }else{
+            $model=$this->global_m->ubah('TBL_M_LOCATION',$data,'LOCATION_ID',$row['LOCATION_ID']);    
+        }
+    }
+    if ($model) {
+    $notifikasi = Array(
+        'msgType' => true,
+        'msgTitle' => 'Success',
+        'msg' => 'Data berhasil di synchronize'
+    );
+} else {
+    $notifikasi = Array(
+        'msgType' => false,
+        'msgTitle' => 'Error',
+        'msg' => 'Data gagal di synchronize'
+    );
+}
 
-//             $model=$this->global_m->simpan('TBL_M_LOCATION',$data);
-//         }else{
-//             $model=$this->global_m->ubah('TBL_M_LOCATION',$data,'LOCATION_ID',$row['LOCATION_ID']);    
-//         }
-//     }
-
-//    echo json_encode($model);
-// }
+   echo json_encode($notifikasi);
+}
 
 
 
@@ -230,7 +235,7 @@ class kota_location extends CI_Controller {
             $row[] = $idatatables->DESCRIPTION;
             $row[] = $idatatables->ENABLED_FLAG;
             $row[] = $idatatables->SUMMARY_FLAG;
-            $row[] = $idatatables->PARENT_FLEX_VALUE;
+             $row[] = $idatatables->PARENT_FLEX_VALUE;
 
             // $row[] = $idatatables->PARENT_FLEX;
            
@@ -363,51 +368,50 @@ class kota_location extends CI_Controller {
 
 
 
-// function getfamkota() {
-//         // die("j");
-//   $jsonarr=[ 
-//     'table'=>'PNM_FA_KOTA_V'
-// ];
-// $curlurl="http://192.168.10.241/OCI/index.php/api/v1/fam/get_all";
+function getfamkota() {
+        // die("j");
+  $jsonarr=[ 
+    'table'=>'PNM_FA_KOTA_V'
+];
+$curlurl="http://192.168.10.241/OCI/index.php/api/v1/fam/get_all";
 
-// $ch = curl_init($curlurl);
-// curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-// curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($jsonarr));
-// $responsejson = curl_exec($ch);
-// curl_close($ch);
+$ch = curl_init($curlurl);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($jsonarr));
+$responsejson = curl_exec($ch);
+curl_close($ch);
 
-// $response=json_decode($responsejson,true);
-// // print_r($response['data']);die();
+$response=json_decode($responsejson,true);
 
-// foreach ( $response['data'] as $row) {
+foreach ( $response['data'] as $row) {
 
-//     $cek=$this->global_m->tampil_data("SELECT COUNT(*) as JML FROM TBL_M_KOTA WHERE FLEX_VALUE_ID='".$row['FLEX_VALUE_ID']."'")[0]->JML;
+    $cek=$this->global_m->tampil_data("SELECT COUNT(*) as JML FROM TBL_M_KOTA WHERE FLEX_VALUE_ID='".$row['FLEX_VALUE_ID']."'")[0]->JML;
 
-//     $data = array(
-//         'FLEX_VALUE_SET_ID'=>$row['FLEX_VALUE_SET_ID'],
-//         'FLEX_VALUE_SET_NAME'=>$row['FLEX_VALUE_SET_NAME'],
-//         'SEGMENT_NAME' => $row['SEGMENT_NAME'],
-//         'SEGMENT_PROMPT' => $row['SEGMENT_PROMPT'],
-//         'MAXIMUM_SIZE' => $row['MAXIMUM_SIZE'],
-//         'FLEX_VALUE_ID' => $row['FLEX_VALUE_ID'],
-//         'FLEX_VALUE' => $row['FLEX_VALUE'],
-//         'PARENT_FLEX_VALUE_LOW' => $row['PARENT_FLEX_VALUE_LOW'],
-//         'DESCRIPTION' => $row['DESCRIPTION'],
-//         'ENABLED_FLAG' => $row['ENABLED_FLAG'],
-//         'SUMMARY_FLAG' => $row['SUMMARY_FLAG'],
-//         'PARENT_FLEX_VALUE' => $row['PARENT_FLEX_VALUE']
-//     );
+    $data = array(
+        'FLEX_VALUE_SET_ID'=>$row['FLEX_VALUE_SET_ID'],
+        'FLEX_VALUE_SET_NAME'=>$row['FLEX_VALUE_SET_NAME'],
+        'SEGMENT_NAME' => $row['SEGMENT_NAME'],
+        'SEGMENT_PROMPT' => $row['SEGMENT_PROMPT'],
+        'MAXIMUM_SIZE' => $row['MAXIMUM_SIZE'],
+        'FLEX_VALUE_ID' => $row['FLEX_VALUE_ID'],
+        'FLEX_VALUE' => $row['FLEX_VALUE'],
+        'PARENT_FLEX_VALUE_LOW' => $row['PARENT_FLEX_VALUE_LOW'],
+        'DESCRIPTION' => $row['DESCRIPTION'],
+        'ENABLED_FLAG' => $row['ENABLED_FLAG'],
+        'SUMMARY_FLAG' => $row['SUMMARY_FLAG'],
+        'PARENT_FLEX_VALUE' => $row['PARENT_FLEX_VALUE']
+    );
 
-//     if($cek==0){
+    if($cek==0){
 
-//         $model=$this->global_m->simpan('TBL_M_KOTA',$data);
-//     }else{
-//         $model=$this->global_m->ubah('TBL_M_KOTA',$data,'FLEX_VALUE_ID',$row['FLEX_VALUE_ID']);    
-//     }
-// }
+        $model=$this->global_m->simpan('TBL_M_KOTA',$data);
+    }else{
+        $model=$this->global_m->ubah('TBL_M_KOTA',$data,'FLEX_VALUE_ID',$row['FLEX_VALUE_ID']);    
+    }
+}
 
-// echo json_encode($model);
-// }
+//echo json_encode($model);
+}
 
 
 

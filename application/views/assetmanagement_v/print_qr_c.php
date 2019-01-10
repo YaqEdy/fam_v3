@@ -6,9 +6,9 @@
         $count_qr = count($qr_code);
         for ($i = 0; $i < $count_qr; $i++) {
             ?>
-            <table border="1">
+            <table border="1" >
                 <tr align="center">
-                    <td><img src="<?php echo base_url('metronic/img/logo.png'); ?>"/></td>
+                    <td><img style="width: 150px; height: 50px;" src="<?php echo base_url('metronic/img/logo.png'); ?>"/></td>
                     <!--<td rowspan="3" style="padding: 10px" id="qr_code<?php echo $i ?>"></td>-->
                     <td rowspan="3" style="padding: 10px"><div id="qr_code<?php echo $i ?>"></div></td>
                 </tr>
@@ -36,7 +36,10 @@
             $(document).ready(function () {
                 for (i = 0; i < $("#idcount_qr").val(); i++) {
                     $("#qr_code" + i).empty();
-                    var qrcode = new QRCode("qr_code" + i);
+                    var qrcode = new QRCode("qr_code" + i,{
+                        width: 130,
+                        height: 120
+                    });
                     qrcode.makeCode($("#qr_desc" + i).text());
                 }
                 window.print();

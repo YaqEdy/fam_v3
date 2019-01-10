@@ -32,10 +32,10 @@ function print_recursive_list($data) {
 function print_recursive_menu_all_li($data){
     $str = "";
     foreach($data as $list){
-		$subchild = print_recursive_menu_all_li($list['child']);
-		if ($subchild != '') {
-                $str .= '<li id = "' . $list['id'] . "_" . $list['parent'] . '">';
-                $str .= '<a href="" id = "a' . $list['id'] . "_" . $list['parent'] . '" >';
+      $subchild = print_recursive_menu_all_li($list['child']);
+      if ($subchild != '') {
+                $str .= '<li id = "'.$list['id'].'">'; //$str .= '<li id = "'.$list['id']."_".$list['parent'].'">';
+                $str.= '<a href="" id = "a'.$list['id'].'" >'; 
                 $str .= $list['nama'] . '</a>'; //anchor($list['link'],$list['nama'])
                 $str .= '<ul>';
                 $subchild = print_recursive_menu_all_li($list['child']);
@@ -44,42 +44,42 @@ function print_recursive_menu_all_li($data){
 
                 $str .= '</li>';
             } else {
-                $str .= '<li id = "' . $list['id'] . "_" . $list['parent'] . '">';
-                $str .= '<a href="" id = "a' . $list['id'] . "_" . $list['parent'] . '" >';
+                $str .= '<li id = "'.$list['id'].'">'; //$str .= '<li id = "'.$list['id']."_".$list['parent'].'">';
+                $str.= '<a href="" id = "a'.$list['id'].'" >'; 
                 $str .= $list['nama'] . '</a>'; //anchor($list['link'],$list['nama'])
                 $subchild =print_recursive_menu_all_li($list['child']);
                 $str .= $subchild;
                 $str .= '</li>';
             }
 
+        }
+        return $str;
     }
-    return $str;
-}
-function konfigurasi_menu($data){
-    $str = "";
-    foreach($data as $list){
-		$subchild = print_recursive_menu_all_li($list['child']);
-		if($subchild != ''){
+    function konfigurasi_menu($data){
+        $str = "";
+        foreach($data as $list){
+          $subchild = print_recursive_menu_all_li($list['child']);
+          if($subchild != ''){
             $str .= '<li id = "'.$list['id'].'">'; //$str .= '<li id = "'.$list['id']."_".$list['parent'].'">';
-			$str.= '<a href="" id = "a'.$list['id'].'" >'; 
+            $str.= '<a href="" id = "a'.$list['id'].'" >'; 
 			$str.=$list['nama'].'</a>';//anchor($list['link'],$list['nama'])
 			$str .= '<ul>';
 			$subchild = print_recursive_menu_all_li($list['child']);
 			$str .= $subchild;
 			$str .= '</ul>';
 			
-        	$str .= '</li>';
-		}else{
-			$str .= '<li id = "'.$list['id'].'">';
-			$str.= '<a href="" id = "a'.$list['id'].'" >'; 
+           $str .= '</li>';
+       }else{
+         $str .= '<li id = "'.$list['id'].'">';
+         $str.= '<a href="" id = "a'.$list['id'].'" >'; 
 			$str.=$list['nama'].'</a>';//anchor($list['link'],$list['nama'])
 			$subchild = print_recursive_menu_all_li($list['child']);
 			$str .= $subchild;
-        	$str .= '</li>';
-		}
+           $str .= '</li>';
+       }
 
-    }
-    return $str;
+   }
+   return $str;
 }
 
 function print_recursive_secMenuUser($data) {
@@ -185,10 +185,10 @@ function lap($data) {
         $i++;
     }
     $str .= '<tr> <td colspan="3">Total</td>
-                  <td align="right">' . number_format($jml100, 2) . '</td>
-                  <td align="right">' . number_format($jml110, 2) . '</td>
-                  <td align="right">' . number_format($jml200, 2) . '</td>
-                  <td align="right">' . number_format($jml210, 2) . '</td>
-             </tr>';
+    <td align="right">' . number_format($jml100, 2) . '</td>
+    <td align="right">' . number_format($jml110, 2) . '</td>
+    <td align="right">' . number_format($jml200, 2) . '</td>
+    <td align="right">' . number_format($jml210, 2) . '</td>
+    </tr>';
     return $str;
 }

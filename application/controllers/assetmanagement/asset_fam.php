@@ -17,6 +17,7 @@ class asset_fam extends CI_Controller {
             $this->load->model('global_m');
             $this->load->model('assetmanagement_m/asset_fam_m');
             $this->load->model('datatables_custom');
+            $this->load->model('datatables');
         }
     }
 
@@ -59,98 +60,154 @@ class asset_fam extends CI_Controller {
         $this->template->load('template/template_dataTable', 'assetmanagement_v/asset_fam_v', $data);
     }
 
-    function get_server_side() {
-        $requestData = $_REQUEST;
-//        print_r($requestData);die();
-        $iStatus = $this->input->post('sStatus');
-        $iSearch = $this->input->post('sSearch');
-        $columns = array(
-            // datatable column index  => database column name
-            0 => 'ID_ASSET',
-            1 => 'ITEM_ID',
-            2 => 'ItemName',
-            3 => 'SN',
-            4 => 'QTY',
-            5 => 'TGL_ASSET',
-            6 => 'BranchID',
-            7 => 'BRANCH_DESC',
-            8 => 'DivisionID',
-            9 => 'DIV_DESC',
-            10 => 'ZONE_ID',
-            11 => 'ZoneName',
-            12 => 'AssetType',
-            13 => 'IMAGE_PATH',
-            14 => 'KONDISI',
-            15 => 'ID_ASSET_OLD'
+//     function get_server_side() {
+//         $requestData = $_REQUEST;
+// //        print_r($requestData);die();
+//         $iStatus = $this->input->post('sStatus');
+//         $iSearch = $this->input->post('sSearch');
+//         $columns = array(
+//             // datatable column index  => database column name
+//             0 => 'ID_ASSET',
+//             1 => 'ITEM_ID',
+//             2 => 'ItemName',
+//             3 => 'SN',
+//             4 => 'QTY',
+//             5 => 'TGL_ASSET',
+//             6 => 'BranchID',
+//             7 => 'BRANCH_DESC',
+//             8 => 'DivisionID',
+//             9 => 'DIV_DESC',
+//             10 => 'ZONE_ID',
+//             11 => 'ZoneName',
+//             12 => 'AssetType',
+//             13 => 'IMAGE_PATH',
+//             14 => 'KONDISI',
+//             15 => 'ID_ASSET_OLD'
+//         );
+
+//         $sql = "SELECT * from VW_ASSET";
+
+
+//         $totalData = $this->global_m->tampil_semua_array($sql)->num_rows();
+
+//         $totalFiltered = $totalData;
+
+//         if (!empty($requestData['search']['value'])) {
+//             if ($iSearch == '1') {
+//                 $sql = "SELECT * from VW_ASSET";
+//             } else {
+//                 $sql = "SELECT * from VW_ASSET";
+//             }
+
+//             $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET " . $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
+
+//             $totalData = $this->global_m->tampil_semua_array($sql)->num_rows();
+//             $totalFiltered = $totalData;
+//         } else {
+//             $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET " . $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
+//         }
+
+//         $row = $this->global_m->tampil_semua_array($sql)->result_array();
+//         // print_r($row); die();
+//         $data = array();
+//         $no = $_POST['start'] + 1;
+//         foreach ($row as $row) {
+//             # code...
+//             // preparing an array
+//             $nestedData = array();
+
+//             $nestedData[] = $no++;
+//             $nestedData[] = $row["ID_ASSET"];
+//             $nestedData[] = $row["ID_ASSET"];
+//             $nestedData[] = $row["ZoneName"];
+//             $nestedData[] = $row["BRANCH_DESC"];
+//             $nestedData[] = $row["DIV_DESC"];
+//             $nestedData[] = date('d-m-Y', strtotime($row["TGL_ASSET"]));
+//             $nestedData[] = $row["ID_ASSET"];
+//             $nestedData[] = $row["ID_ASSET_OLD"];
+//             $nestedData[] = $row["ItemName"];
+//             $nestedData[] = $row["QTY"];
+//             $nestedData[] = $row["IMAGE_PATH"];
+//             $nestedData[] = $row["KONDISI"];
+
+//             // $nestedData[] = '<a class="btn btn-sm btn-primary"<a class="btn btn-sm btn-warning" href="#" id="btnUpdate" data-toggle="modal" data-target="#mdl_depresiasi">Depresiasi';
+//             // $nestedData[] = $row["Status"];
+
+
+//             $data[] = $nestedData;
+//         }
+
+//         $json_data = array(
+//             "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
+//             "recordsTotal" => intval($totalData), // total number of records
+//             "recordsFiltered" => intval($totalFiltered), // total number of records after searching, if there is no searching then totalFiltered = totalData
+//             "data" => $data   // total data array
+//         );
+
+//         echo json_encode($json_data);
+//     }
+
+     public function get_server_side() {
+        $icolumn = array('ID_ASSET', 'ITEM_ID', 'ItemName', 'QTY', 'TGL_ASSET', 'BranchID','BRANCH_DESC','DivisionID','DIV_DESC','ZONE_ID','ZoneName','AssetType','IMAGE_PATH','ID_ASSET_OLD','KONDISI','STATUS_TRANS','QR','ASSET_NUMBER','ASSET_DESC','JNS_PERIODE','START_PERIODE','END_PERIODE','NOTIF','SN');
+        $ilike = array(
+            $this->input->post('sSearch') => $_POST['search']['value']
         );
 
-        $sql = "SELECT * from VW_ASSET";
-
-
-        $totalData = $this->global_m->tampil_semua_array($sql)->num_rows();
-
-        $totalFiltered = $totalData;
-
-        if (!empty($requestData['search']['value'])) {
-            if ($iSearch == '1') {
-                $sql = "SELECT * from VW_ASSET";
-            } else {
-                $sql = "SELECT * from VW_ASSET";
-            }
-
-            $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET " . $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
-
-            $totalData = $this->global_m->tampil_semua_array($sql)->num_rows();
-            $totalFiltered = $totalData;
-        } else {
-            $sql.=" ORDER BY " . $columns[$requestData['order'][0]['column']] . "   " . $requestData['order'][0]['dir'] . " OFFSET " . $requestData['start'] . " ROWS FETCH NEXT " . $requestData['length'] . " ROWS ONLY  ";
+        if (!empty($this->input->post('sMulai')) && !empty($this->input->post('sSampai'))) {
+            $iwhere = array(
+                'Tgl_Req <' => date("Y-m-d", strtotime($this->input->post('sMulai'))),
+                'Tgl_Req >' => date("Y-m-d", strtotime($this->input->post('sSampai')))
+            );
+        }else{
+            $iwhere = array();
         }
+        // print_r($iwhere); die();
+        $iorder = array('ID_ASSET' => 'asc');
+        $list = $this->datatables->get_datatables('VW_ASSET', $icolumn, $iorder, $iwhere, $ilike);
 
-        $row = $this->global_m->tampil_semua_array($sql)->result_array();
-        // print_r($row); die();
         $data = array();
-        $no = $_POST['start'] + 1;
-        foreach ($row as $row) {
-            # code...
-            // preparing an array
-            $nestedData = array();
+        $no = $_POST['start'];
+        foreach ($list as $idatatables) {
 
-            $nestedData[] = $no++;
-            $nestedData[] = $row["ID_ASSET"];
-            $nestedData[] = $row["ID_ASSET"];
-            $nestedData[] = $row["ZoneName"];
-            $nestedData[] = $row["BRANCH_DESC"];
-            $nestedData[] = $row["DIV_DESC"];
-            $nestedData[] = date('d-m-Y', strtotime($row["TGL_ASSET"]));
-            $nestedData[] = $row["ID_ASSET"];
-            $nestedData[] = $row["ID_ASSET_OLD"];
-            $nestedData[] = $row["ItemName"];
-            $nestedData[] = $row["QTY"];
-            $nestedData[] = $row["IMAGE_PATH"];
-            $nestedData[] = $row["KONDISI"];
-
-            // $nestedData[] = '<a class="btn btn-sm btn-primary"<a class="btn btn-sm btn-warning" href="#" id="btnUpdate" data-toggle="modal" data-target="#mdl_depresiasi">Depresiasi';
-            // $nestedData[] = $row["Status"];
+            $no++;
+            $row = array();
+            $row[] = $no;
 
 
-            $data[] = $nestedData;
+
+            $row[] = $idatatables->ID_ASSET;
+            $row[] = $idatatables->ID_ASSET;
+            $row[] = $idatatables->ZoneName;
+            $row[] = $idatatables->BRANCH_DESC;
+            $row[] = $idatatables->DIV_DESC;
+            $row[] = date('d-m-Y', strtotime($idatatables->TGL_ASSET));
+            $row[] = $idatatables->ID_ASSET;
+            $row[] = $idatatables->ID_ASSET_OLD;
+            // $row[] = $idatatables->JML_ITEM;
+            $row[] = $idatatables->ItemName;
+            $row[] = $idatatables->QTY;
+            $row[] = $idatatables->IMAGE_PATH;
+            $row[] = $idatatables->KONDISI;
+            // <a href="'.base_url().'procurement/fpur/detail_fpur/'.$idatatables->RequestID.'" class="btn btn-primary">VIEW</a>
+
+            $data[] = $row;
         }
 
-        $json_data = array(
-            "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
-            "recordsTotal" => intval($totalData), // total number of records
-            "recordsFiltered" => intval($totalFiltered), // total number of records after searching, if there is no searching then totalFiltered = totalData
-            "data" => $data   // total data array
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
+            "data" => $data,
         );
-
-        echo json_encode($json_data);
+        //output to json format
+        echo json_encode($output);
     }
 
     public function get_datatransfer() {
         $icolumn = array('ID', 'TGL_PENGAJUAN', 'PIC', 'JML_ITEM', 'WIL_BALAI_LELANG', 'HARGA_PERKIRAAN', 'CREATE_BY', 'CREATE_DATE');
         // $iwhere = array('STATUS_TRANS' => 1);
         $iorder = array('ID' => 'asc');
-        $list = $this->datatables_custom->get_datatables('TBL_T_ASSETS_PENJUALAN', $icolumn, $iorder);
+        $list = $this->datatables->get_datatables('TBL_T_ASSETS_PENJUALAN', $icolumn, $iorder);
         // print_r($list);
         // die();
         $data = array();
@@ -176,8 +233,8 @@ class asset_fam extends CI_Controller {
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->datatables_custom->count_all(),
-            "recordsFiltered" => $this->datatables_custom->count_filtered(),
+            "recordsTotal" => $this->datatables->count_all(),
+            "recordsFiltered" => $this->datatables->count_filtered(),
             "data" => $data,
         );
 

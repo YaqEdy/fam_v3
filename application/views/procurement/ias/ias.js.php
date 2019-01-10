@@ -1,18 +1,47 @@
 <script>
-    var dataTable;
+    var dataTable,dataTableHIS;
     var iSampai = '';
     var iMulai = '';
     var iSearch = 'ID_PO';
+    var iID_PO_DETAIL='';
 
     jQuery(document).ready(function () {
         ComponentsDateTimePickers.init();
         loadGridBudgetCapex();
-        loadGridSetting();
+//        loadGridSetting();
+        loadGridHistory();
     });
     // jQuery(document).ready(function () {
     //     TableManaged.init();
     // });
     btnStart();
+
+    function update($value, $id, $idpo){
+        var form_data = new FormData();
+        form_data.append('status', $value);
+        form_data.append('iID_PO_DETAIL', $id);
+        form_data.append('iID_PO', $idpo);
+
+        $.ajax({
+            url: "<?php echo base_url("/procurement/ias/ajax_Updateias"); ?>", // json datasource
+            type: "POST",
+            cache: false,
+            contentType: false,
+            processData: false,
+            dataType: "JSON",
+            data: form_data,
+            success: function (e) {
+                console.log(e);
+                if (e.istatus == true) {
+                    alert(e.iremarks);
+                    $('#mdl_Update').modal('hide');
+                    $('#table_gridBudget').DataTable().ajax.reload();
+                } else {
+                    alert(e.iremarks);
+                }
+            }
+        });
+    }
 
     function ddMulai(e) {
         iMulai = e;
@@ -29,6 +58,15 @@
         format: "dd/mm/yyyy",
         autoclose: true
     });
+
+
+
+      function generate_rpt(e)
+    {    
+    
+    window.open(e,"_blank");
+
+    }
 
 
     function loadGridBudgetCapex() {
@@ -387,28 +425,54 @@
         });
     }
 
-    function edit_sn(idpo, idtb)
+    function History(id_pod)
     {
-        $('#table_sn tbody').empty();
-        $.ajax({
-            url : "<?php echo base_url('procurement/ias/get_sn/')?>/" + idpo + "/" +idtb,
-            type: "GET",
-            dataType: "JSON",
-            success: function(data)
-            {
-                for(var i = 0; i < data.length; i++){
-                    $('#table_sn tbody').append('<tr><td>'+data[i].ID_PO+'</td><td>'+data[i].ID_TB+'</td><td>'+data[i].ITEM_ID+'</td><td>'+data[i].QTY+'</td><td>'+data[i].SN+'</td></tr>');
-                }
-
-                $('#table_sn').dataTable();
-
-                $('#myModal').modal('show'); // show bootstrap modal when complete loaded
-     
+        iID_PO_DETAIL=id_pod;
+        $('#table_his').DataTable().ajax.reload();
+        $('#myModal').modal('show');
+//        $('#table_sn tbody').empty();
+//        $.ajax({
+//            url : "<?php echo base_url('procurement/ias/get_sn/')?>/" + idpo + "/" +idtb,
+//            type: "GET",
+//            dataType: "JSON",
+//            success: function(data)
+//            {
+//                for(var i = 0; i < data.length; i++){
+//                    $('#table_sn tbody').append('<tr><td>'+data[i].ID_PO+'</td><td>'+data[i].ID_TB+'</td><td>'+data[i].ITEM_ID+'</td><td>'+data[i].QTY+'</td><td>'+data[i].SN+'</td></tr>');
+//                }
+//
+//                $('#table_sn').dataTable();
+//
+//                $('#myModal').modal('show'); // show bootstrap modal when complete loaded
+//     
+//            },
+//            error: function (jqXHR, textStatus, errorThrown)
+//            {
+//                alert('Error get data from ajax');
+//            }
+//        });
+    }
+    
+     function loadGridHistory() {
+        dataTableHIS = $('#table_his').DataTable({
+            "lengthMenu": [
+                [5, 10, 15, 20, -1],
+                [5, 10, 15, 20, "All"] // change per page values here
+            ],
+//                // set the initial value
+            "pageLength": 5,
+            "processing": true,
+            "serverSide": true,
+            "ajax": {
+                url: "<?php echo base_url("/procurement/ias/ajax_GridHistory"); ?>", // json datasource
+                type: "post", // method  , by default get
+                data: function (z) {
+                    z.sID_PO_DETAIL = iID_PO_DETAIL;
+                },
             },
-            error: function (jqXHR, textStatus, errorThrown)
-            {
-                alert('Error get data from ajax');
-            }
+            "columnDefs": [
+                {"targets": [-1], "orderable": false, "searchable": false},
+            ],
         });
     }
 

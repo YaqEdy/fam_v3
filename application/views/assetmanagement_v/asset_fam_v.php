@@ -147,9 +147,9 @@
                                             <th>Nama PIC</th>
                                             <th>Jumlah Item</th>
                                             <th>Wilayah Balai Lelang</th>
-                                            <th>Harga Perkiraan</th>
+                                           <!--  <th>Harga Perkiraan</th>
                                             <th>Status</th>
-                                            <th>Aksi</th>
+                                            <th>Aksi</th> -->
 
                                         </tr>
                                     </thead>
@@ -406,7 +406,7 @@
                             <div class="form-group">
                                 <label class="control-label col-sm-4">Jumlah Item</label>
                                 <div class="col-sm-8">
-                                    <input type="text" class="form-control" id="id_JML_ITEM" name="id_JML_ITEM">
+                                    <input type="text" class="form-control" id="id_JML_ITEM" name="id_JML_ITEM" readonly>
                                 </div>
                             </div>
                         </div>
@@ -1542,19 +1542,22 @@
 
 
 
-    function processpengajuan() {
+      function processpengajuan(){
+  
+      var rows_selected = dataTable1.column(2).checkboxes.selected();
+
+      iID_ASSET =iID_ASSET + rows_selected.join(",");
+
+      
+      var res = iID_ASSET.split(",");
+      var ee = res.length;
+// console.log(ee);
+      $("#id_JML_ITEM").val(ee);
+      // alert(ee);
+      $('#idTabelpengajuan').DataTable().ajax.reload();
 
 
-        var rows_selected = dataTable1.column(2).checkboxes.selected();
-
-        iID_ASSET = iID_ASSET + rows_selected.join(",");
-        console.log(iID_ASSET);
-
-        // alert(iID_ASSET);
-        $('#idTabelpengajuan').DataTable().ajax.reload();
-
-
-    }
+  }
 
 
 

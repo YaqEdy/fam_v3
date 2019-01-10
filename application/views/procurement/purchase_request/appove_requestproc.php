@@ -136,6 +136,11 @@
 							
 							<?php
 								if(count($vendor) > 0){
+									$vendorlist = 0;
+									foreach($vendor as $cek_vendor){
+										$vendorlist = $cek_vendor['VendorID'];
+									}
+									if($vendorlist > 0){
 							?>
 							
 							<table class="table table-striped table-bordered table-hover text_kanan" id="table_gridVendorProcess">
@@ -176,35 +181,41 @@
                             </table>
 							
 							<?php
+									}
 								}
 							?>
                             
 							
 							<form class="validator-form form-horizontal" id="fm_apppr" enctype="multipart/form-data" method="POST">
                                 <div class="validator-form form-horizontal" style="margin-top:2em">
+								
+								<?php if ($path_doc != ''){ ?>
+									<div class="form-group">
+                                        <label class="control-label col-sm-3"></label>
+                                        <div class="col-md-7">
+                                            <div class="">
+                                                <a href="<?=$path_doc?>" class="btn btn-success"><i class="fa fa-download"></i> Download Dokumen Vendor</a>
+                                            </div>
+										</div>
+                                    </div>
+								<?php } ?>
+								
                                     <?php
 										if($approve_pr->status == '5-1'){
 									?>
 									<div class="form-group">
                                         <label class="control-label col-sm-3">Jenis Pengadaan</label>
                                         <div class="col-md-7">
-                                            <select id="jns_pengadaan" name="jns_pengadaan" class="form-control">
-												<option value="ias">IAS</option>
-												<option value="fpurfpum">FPUR - FPUM</option>
+                                            <select id="jns_pengadaan" name="jns_pengadaan" class="form-control" onchange="onDDPIC(this.value)">
+												<option value="IAS">IAS</option>
+												<option value="FPUR/FPUM">FPUR - FPUM</option>
 											</select>
 										</div>
                                     </div>
 									<div class="form-group">
                                         <label class="control-label col-sm-3">PIC PO</label>
                                         <div class="col-md-7">
-                                            <select id="pic_po" name="pic_po" class="form-control">
-												<option value="">- PIC PO -</option>
-												<?php
-													foreach($list_pic as $pic){
-														echo '<option value="'.$pic['PIC'].'">'.$pic['profile_nama'].'</option>';
-													}
-												?>
-											</select>
+											<select id="pic_po" name="pic_po" class="form-control input-sm select2me"></select>
 										</div>
                                     </div>
 									<?php
@@ -214,6 +225,7 @@
 											echo '<input type="hidden" id="jns_pengadaan" name="jns_pengadaan" value="">';
 										}
 									?>
+
                                     <div class="form-group">
                                         <label class="control-label col-sm-3">Notes </label>
                                         <div class="col-md-7">
@@ -283,6 +295,8 @@
 			"paging": false,
 			"info": false
 		});
+		
+		onDDPIC('IAS');
 	} );
 
 	function go_to_list(){
@@ -311,7 +325,7 @@
 			jns_pengadaan:jns_pengadaan
 		},
 		function(data){
-			alert(data);
+			// alert(data);
 			go_to_list();
 		})
     }
@@ -337,6 +351,18 @@
         
     }
 	
+	function onDDPIC(jns_pengadaan) {
+        $.ajax({
+            url: "<?php echo base_url("/procurement/purchase_request/dd_pic"); ?>", // json datasource
+            type: "POST",
+            cache: false,
+            dataType: "html",
+            data: {sjns_pengadaan: jns_pengadaan},
+            success: function (jawaban) {
+                $('#pic_po').html(jawaban);
+            },
+        });
+    }
 	
 </script>
 

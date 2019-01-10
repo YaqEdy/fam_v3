@@ -282,13 +282,11 @@
 
                                 <div class="form-group">
                                     <label>Item Barang </label> <span class="">*</span>
-                                    <input required="required" class="form-control"
-                                           type="readonly" id="nama_barang" name="nama_barang"  />
+                                    <input required="required" class="form-control" id="nama_barang" name="nama_barang" type="text" readonly/>
                                 </div>
                                 <div class="form-group">
                                     <label>Divisi Request</label> <span class="">*</span>
-                                    <input required="required" class="form-control"
-                                           type="text" id="divisi" name="divisi" />
+                                    <input required="required" class="form-control" type="text" id="divisi" name="divisi" readonly/>
                                 </div>
                                <div class="form-group">
                                     <label>Item Category </label>
@@ -298,19 +296,22 @@
                                     foreach ($dd_item_class as $row) :
                                         $data[$row->IClassID] = $row->IClassName;
                                     endforeach;
-                                    echo form_dropdown('IClassID', $data, '', 'id="IClassID" class="form-control  input-sm select2me" required="required"');
+                                    echo form_dropdown('IClassID', $data, '', 'id="IClassID" class="form-control  input-sm select2me" required="required" onchange="getItemID(this.value)"');
                                     ?>
                                 </div>
                                 <div class="form-group">
                                     <label>Item Type Nama </label> <span class="">*</span>
-                                      <?php
+                                    <select name="ItemTypeID" id="ItemTypeID" class="form-control input-sm select2me">
+                                            <option value="">-Pilih-</option>
+                                    </select>
+                                      <!-- <?php
                                     $data = array();
                                     $data[''] = '';
                                     foreach ($dd_item_type as $row) :
                                         $data[$row->ItemTypeID] = $row->ItemTypeName;
                                     endforeach;
                                     echo form_dropdown('ItemTypeID', $data, '', 'id="ItemTypeID" class="form-control  input-sm select2me" required="required"');
-                                    ?>
+                                    ?> -->
                                 </div>
                           <!--       <div class="form-group">
                                          <label>Asset Type </label>
@@ -343,7 +344,7 @@
                                 <div class="panel-body">
                                     <ul>
                                         <li>
-                                            Maximum upload size only <strong>0 MB</strong>.
+                                            Maximum upload size only <strong>5 MB</strong>.
                                         </li>
                                     </ul>
                                 </div>
@@ -373,7 +374,7 @@
                                 <button name="btnSimpan" class="btn blue" id="id_btnSimpan"  >
                                     <i class="fa fa-save">&nbsp;</i>Save</button>
                                 <button type="button" class="btn default" data-dismiss="modal" id="btnCloseModalDataBarang">Close</button>
-                                <button type="reset" class="btn default" >Reset</button>
+                                <!-- <button type="reset" class="btn default" >Reset</button> -->
                             </div>
                         </div>
 
@@ -431,7 +432,7 @@
                                     <?php
                                     // echo($dd_Zona)
                                     $data = array();
-                                    $data[''] = '';
+                                    $data[''] = '--Select--';
                                     // print_r($dd_Zona); die();
                                     foreach ($dd_Zona as $row) :
                                         $data[$row->ZoneID] = $row->ZoneName;
@@ -442,17 +443,19 @@
                             
                                 <div class="form-group">
                                     <label>Tanggal Mulai </label> <span class="required">*</span>
-                                    <input required="required" class="form-control"
-                                          class="form-control form-control-inline input-medium date-picker" size="16" type="date"  id="StartDate" name="StartDate"/>
+                                    <input type="text" autocomplete="off" required="required" name="StartDate" id="StartDate" class="form-control input-sm date-picker" >
+                                 <!--    <input required="required" class="form-control"
+                                          class="form-control form-control-inline input-medium date-picker" size="16" type="date"  id="StartDate" name="StartDate"/> -->
                                 </div>
                                 <div class="form-group">
                                     <label>Tanggal Selesai </label> <span class="required">*</span>
-                                    <input required="required" class="form-control"
-                                           class="form-control form-control-inline input-medium date-picker" size="16" type="date" id="EndDate" name="EndDate"/>
+                                     <input type="text" autocomplete="off" required="required" name="EndDate" id="EndDate" class="form-control input-sm date-picker" >
+                                    <!-- <input required="required" class="form-control"
+                                           class="form-control form-control-inline input-medium date-picker" size="16" type="date" id="EndDate" name="EndDate"/> -->
                                 </div>
                                 <div class="form-group">
                                     <label>Harga </label> <span class="required">*</span>
-                                    <input required="required" class="form-control"
+                                    <input required="required" autocomplete="off" class="form-control nomor"
                                            type="text" id="Price" name="Price"/>
                                 </div>
                             </div>

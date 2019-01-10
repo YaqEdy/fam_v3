@@ -163,12 +163,16 @@ class po extends CI_Controller {
 
     public function getTableList() {
         $this->CI = & get_instance();
-        $rows = $this->master_po_m->getList('7-2');
+         if( $this->session->userdata('usergroup')==17){
+        $rows = $this->master_po_m->getList('17-1');
+         }else{
+        $rows = $this->master_po_m->getList('7-2');            
+         }
         $data['data'] = array();
         foreach ($rows as $row) {
             $array = array(
                 'noPr' => trim($row->RequestID),
-                'tglReq' => trim($row->DATE),
+                'tglReq' => date('d-m-Y', strtotime(trim($row->DATE))),
                 'reqType' => trim($row->ReqTypeName),
                 'catName' => trim($row->ReqCategoryName),
                 'projName' => trim($row->PROJECT_NAME),
@@ -184,9 +188,29 @@ class po extends CI_Controller {
         }
         $this->output->set_output(json_encode($data));
     }
+    public function savedata_test(){
+        $model = true;
+        if ($model == TRUE) {
+            $array = array(
+                'act' => 1,
+                'tipePesan' => 'success',
+                'pesan' => 'Data berhasil disimpan.'
 
+            );
+        } else {
+            $array = array(
+                'act' => 0,
+                'tipePesan' => 'error',
+                'pesan' => 'Data gagal disimpan.'
+
+            );
+        }
+        $this->output->set_output(json_encode($array));
+    }
+    
     public function savedata()
     {
+//        print_r($_POST);die();
         
         $flow = $this->master_po_m->getflow();
         $cek_po = $this->master_po_m->cek_po($this->input->post('id_pr'));
@@ -198,35 +222,45 @@ class po extends CI_Controller {
             $head['ID_PO'] = $id_po;
             $head['ID_PR'] = $this->input->post('id_pr');
             $head['flow_id'] = $this->global_m->getFlowId($this->input->post('id_pr'));
-            $head['status'] = $this->global_m->getNextFlow($this->input->post('id_pr'),$this->global_m->getNextFlow($this->input->post('id_pr'),'7-2'));
+//            $head['status'] = $this->global_m->getNextFlow($this->input->post('id_pr'),$this->global_m->getNextFlow($this->input->post('id_pr'),'7-2'));
+            if( $this->session->userdata('usergroup')==17){
+            $head['status'] = $this->global_m->getNextFlow($this->input->post('id_pr'),'17-1');     
+            }else{
+            $head['status'] = $this->global_m->getNextFlow($this->input->post('id_pr'),'7-2');      
+            }
             $head['CREATE_BY'] = $this->session->userdata('user_id');
             $head['CREATE_DATE'] = date('Y-m-d H:i:s');
-            $this->master_po_m->save_po($head);
+            $model = $this->master_po_m->save_po($head);
         }
 
         // po detail total
         $detail['ID'] = $this->global_m->getIdMax('ID','TBL_T_PO_DTL_TOTAL');
         $detail['ID_PO_DETAIL'] = $id_po_detail;
         $detail['JML_ITEM'] = $this->input->post('jnsbrg');
-        $detail['TTL_QTY'] = $this->input->post('jmlbrg');
-        $detail['SUB_TOTAL'] = $this->input->post('subtotal');
-        $detail['DISC'] = $this->input->post('disc');
-        $detail['PPN'] = $this->input->post('ppn');
-        $detail['PERSEN_PPN'] = $this->input->post('presentase');
-        $detail['PPH'] = $this->input->post('pph');
-        $detail['TOTAL'] = $this->input->post('totalall');
+        $detail['TTL_QTY'] = str_replace(',', '', trim($this->input->post('jmlbrg')));
+        $detail['SUB_TOTAL'] = str_replace(',', '', trim($this->input->post('subtotal'))); 
+        $detail['DISC'] = str_replace(',', '', trim($this->input->post('disc')));
+        $detail['PPN'] = str_replace(',', '', trim($this->input->post('ppn')));
+        $detail['PERSEN_PPN'] =  str_replace(',', '', trim($this->input->post('presentase')));
+        $detail['PPH'] = str_replace(',', '', trim($this->input->post('pph')));
+        $detail['TOTAL'] = str_replace(',', '', trim($this->input->post('totalall')));
         $detail['CREATE_BY'] = $this->session->userdata('user_id');
         $detail['CREATE_DATE'] = date('Y-m-d H:i:s');
-        $this->master_po_m->save_detail_total($detail);
+        $model = $this->master_po_m->save_detail_total($detail);
         
         //request log
         $log['RequestID'] = $this->input->post('id_pr');
+         if( $this->session->userdata('usergroup')==17){
+        $log['status_dari'] = $this->global_m->getNextFlow($this->input->post('id_pr'),'17-1');
+        $log['status_ke'] = $this->global_m->getNextFlow($this->input->post('id_pr'),$this->global_m->getNextFlow($this->input->post('id_pr'),'17-1'));
+    }else{
         $log['status_dari'] = $this->global_m->getNextFlow($this->input->post('id_pr'),'7-2');
-        $log['action'] = 'approve';
         $log['status_ke'] = $this->global_m->getNextFlow($this->input->post('id_pr'),$this->global_m->getNextFlow($this->input->post('id_pr'),'7-2'));
+    }
+        $log['action'] = 'approve';
         $log['user_id'] = $this->session->userdata('user_id');
         $log['date'] = date('Y-m-d H:i:s');
-        $this->master_po_m->save_log($log);
+        $model = $this->master_po_m->save_log($log);
 
         //berdasarkan vendor
         for ($i=0; $i < count($_POST['barang']); $i++) { 
@@ -236,8 +270,8 @@ class po extends CI_Controller {
             $data['ITEM_ID'] = $_POST['itemid'][$i];
             $data['NAMA_BARANG'] = $_POST['barang'][$i];
             $data['QTY'] = $_POST['qty'][$i];
-            $data['HARGA'] = $_POST['satuan'][$i];
-            $data['TTL_HARGA'] = $_POST['hargatotal'][$i];
+            $data['HARGA'] = str_replace('Rp ','',str_replace(',','',$_POST['satuan_X'][$i]));
+            $data['TTL_HARGA'] = str_replace('Rp ','',str_replace(',','',$_POST['hargatotal_X'][$i]));
             $data['JNS_PERIODE'] = $_POST['jns_periode'][$i];
             $data['START_PERIODE'] = $_POST['start_periode'][$i];
             $data['END_PERIODE'] = $_POST['end_periode'][$i];
@@ -245,30 +279,42 @@ class po extends CI_Controller {
             $data['CREATE_BY'] = $this->session->userdata('user_id');
             $data['CREATE_DATE'] = date('Y-m-d H:i:s');
 
-            $this->master_po_m->save_po_detail($data);
+            $model = $this->master_po_m->save_po_detail($data);
         }
         
         // termin
         for ($i=0; $i < count($_POST['persentase']); $i++) {
+        	if(isset($_POST['persentaseBrg'])){ //kalo ada
+                $persenBRG = $_POST['persentaseBrg'][$i];
+            }else{
+                $persenBRG = 0;
+            }
             $termin = array(
                             'ID_PO' => $id_po,
                             'TERMIN' => $_POST['term'][$i],
                             'ID_PO_DETAIL' => $id_po_detail,
                             'PERSENTASE' => $_POST['persentase'][$i],
-                            'NILAI' => $_POST['nilai'][$i],
-                            'TGL_JATUH_TEMPO' => DateTime::createFromFormat('d/m/Y', $_POST['tempo'][$i])->format('Y-m-d')
-                            );
+                            'NILAI' => str_replace(',', '', trim($_POST['nilai'][$i])),
+//                            'TGL_JATUH_TEMPO' => DateTime::createFromFormat('d/m/Y', $_POST['tempo'][$i])->format('Y-m-d'),
+                            'TGL_JATUH_TEMPO' => date('Y-m-d',strtotime(str_replace('/', '-', trim($_POST['tempo'][$i])))),
+                            'PERSENTASE_TERIMA_BRG' => $persenBRG,
+                        );
+            // print_r($termin);
 
             if (!empty($this->input->post('dterima'))) {
                 // $date2 = DateTime::createFromFormat('d/m/Y', $this->input->post('dterima'));
-                $termin['TGL_JT_TERIMA_BRG'] = DateTime::createFromFormat('d/m/Y', $this->input->post('dterima'))->format('Y-m-d');
+                $termin['TGL_JT_TERIMA_BRG'] = date('Y-m-d',strtotime(str_replace('/', '-', trim($_POST['dterima'])))); 
+                // date('Y-m-d',strtotime($_POST['dterima']));
+//                $termin['TGL_JT_TERIMA_BRG'] = DateTime::createFromFormat('d/m/Y', $this->input->post('dterima'))->format('Y-m-d');
             }else{
-                $termin['TGL_JT_TERIMA_BRG'] = DateTime::createFromFormat('d/m/Y', $_POST['akhir'][$i])->format('Y-m-d');
+                $termin['TGL_JT_TERIMA_BRG'] = date('Y-m-d',strtotime(str_replace('/', '-', trim($_POST['akhir'][$i])))); 
+                // date('Y-m-d',strtotime($_POST['akhir'][$i]));
+//                $termin['TGL_JT_TERIMA_BRG'] = DateTime::createFromFormat('d/m/Y', $_POST['akhir'][$i])->format('Y-m-d');
             }
 
-            $this->master_po_m->save_termin($termin);
+            $model = $this->master_po_m->save_termin($termin);
         }
-
+// die();
         if (count($_POST['check'] > 0)) {
             for ($i=0; $i < count($_POST['check']); $i++) { 
                 $doc['ID'] = $this->global_m->getIdMax('ID','TBL_T_PO_GENERATE_DOC');
@@ -317,16 +363,32 @@ class po extends CI_Controller {
                     $doc['NO_DOC'] = $kode_psw.sprintf("%04s", $urut_psw+1);
                 }
 
-                $this->master_po_m->save_doc($doc);
+                $model = $this->master_po_m->save_doc($doc);
             }
         }
+        if ($model) {
+            $array = array(
+                'act' => 1,
+                'tipePesan' => 'success',
+                'pesan' => 'File has been saved.'
 
-        $return['status'] = true;
-        if (!empty($this->input->post('redirect'))) {
-            $return['redirect'] = true;
+            );
+        } else {
+            $array = array(
+                'act' => 0,
+                'tipePesan' => 'error',
+                'pesan' => 'Data gagal disimpan.'
+
+            );
         }
+        $this->output->set_output(json_encode($array));
 
-        echo json_encode($return);
+//        $return['status'] = true;
+//        if (!empty($this->input->post('redirect'))) {
+//            $return['redirect'] = true;
+//        }
+//
+//        echo json_encode($return);
     }
 
     public function uploaddok()
@@ -337,7 +399,7 @@ class po extends CI_Controller {
                 $new_name = time().$_FILES[$key]['name'];
                 $config = array(
                         'upload_path' => "./uploads/template/doc/",
-                        'allowed_types' => "doc|docx",
+                        'allowed_types' => "doc|docx|pdf",
                         'file_name' => $new_name,
                         'overwrite' => TRUE,
                         // 'max_size' => "2048000", // Can be set to particular file size , here it is 2 MB(2048 Kb)

@@ -68,9 +68,9 @@ class transferin extends CI_Controller {
 //datatabel di button pilih asset
     public function get_server_side() { 
         $icolumn = array('ID_ASSET', 'ITEM_ID', 'ItemName',  'QTY', 'TGL_ASSET', 'BranchID', 'BranchID', 'BRANCH_DESC', 'DivisionID','DIV_DESC','ZONE_ID','ZoneName','AssetType','IMAGE_PATH','KONDISI','ID_ASSET_OLD');
-
+		$iwhere = array('AssetType' => 0);
         $iorder = array('ID_ASSET' => 'asc');
-        $list = $this->datatables->get_datatables('VW_ASSET', $icolumn, $iorder);
+        $list = $this->datatables->get_datatables('VW_ASSET', $icolumn, $iorder,$iwhere);
             // print_r($list);
             // die();
         $data = array();
@@ -130,7 +130,7 @@ class transferin extends CI_Controller {
             $row[] = $idatatables->ID;
             $row[] = $idatatables->BRANCH;
             $row[] = $idatatables->DIV;
-            $row[] = '';
+            
             $row[] = $idatatables->BRANCH;
             $row[] = date('d-m-Y', strtotime($idatatables->TGL_PENGIRIMAN));
             $row[] = $idatatables->PENGIRIM;
@@ -175,7 +175,7 @@ class transferin extends CI_Controller {
             $row[] = $idatatables->ID;
             $row[] = $idatatables->BRANCH;
             $row[] = $idatatables->DIV;
-            $row[] = '';
+            
             $row[] = $idatatables->BRANCH;
             $row[] = date('d-m-Y', strtotime($idatatables->TGL_PENGIRIMAN));
             $row[] = $idatatables->PENGIRIM;
